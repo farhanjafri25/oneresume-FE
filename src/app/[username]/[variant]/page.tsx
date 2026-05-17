@@ -5,9 +5,11 @@ import { notFound } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
-export default async function PublicResumePage({ params }: { params: { username: string, variant: string } }) {
+export default async function PublicResumePage({ params }: { params: Promise<{ username: string, variant: string }> }) {
+  const { username, variant } = await params;
+
   // Fetch from the public backend endpoint
-  const res = await fetch(`${API_URL}/${params.username}/${params.variant}`, {
+  const res = await fetch(`${API_URL}/${username}/${variant}`, {
     // Next.js config for revalidation or cache
     next: { revalidate: 60 }
   });
@@ -26,8 +28,8 @@ export default async function PublicResumePage({ params }: { params: { username:
           <div className={styles.left}>
             <span className={styles.logo}>OneResume</span>
             <span className={styles.divider}></span>
-            <span className={styles.name}>{params.username}</span>
-            <span className={styles.variantBadge}>{params.variant} Variant</span>
+            <span className={styles.name}>{username}</span>
+            <span className={styles.variantBadge}>{variant} Variant</span>
           </div>
           {fileUrl && (
             <a href={fileUrl} target="_blank" rel="noopener noreferrer" className={`btn-primary ${styles.downloadBtn}`}>

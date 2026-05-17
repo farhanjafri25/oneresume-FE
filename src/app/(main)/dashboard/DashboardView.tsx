@@ -14,6 +14,8 @@ interface DashboardViewProps {
 
 export default function DashboardView({ user, resumes }: DashboardViewProps) {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [selectedResumeId, setSelectedResumeId] = useState<string | undefined>(undefined);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined);
 
   return (
     <div className={styles.container}>
@@ -24,7 +26,11 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
         </div>
         <button 
           className={`btn-primary ${styles.newBtn}`}
-          onClick={() => setIsUploadOpen(true)}
+          onClick={() => {
+            setSelectedResumeId(undefined);
+            setSelectedVariantId(undefined);
+            setIsUploadOpen(true);
+          }}
         >
           <Plus size={18} />
           New Masterpiece
@@ -40,12 +46,24 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
               timeAgo={new Date(resume.createdAt).toLocaleDateString()}
               tags={[variant.slug]}
               imageUrl="https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=600&auto=format&fit=crop"
+              onUploadClick={() => {
+                setSelectedResumeId(resume.id);
+                setSelectedVariantId(variant.id);
+                setIsUploadOpen(true);
+              }}
             />
           ))
         ))}
 
         {resumes.length === 0 && (
-          <div className={styles.newVariantCard} onClick={() => setIsUploadOpen(true)}>
+          <div 
+            className={styles.newVariantCard} 
+            onClick={() => {
+              setSelectedResumeId(undefined);
+              setSelectedVariantId(undefined);
+              setIsUploadOpen(true);
+            }}
+          >
             <div className={styles.newVariantIcon}>
               <Plus size={24} />
             </div>
@@ -60,7 +78,11 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
         {resumes.length > 0 && (
           <div 
             className={styles.newVariantCard}
-            onClick={() => setIsUploadOpen(true)}
+            onClick={() => {
+              setSelectedResumeId(undefined);
+              setSelectedVariantId(undefined);
+              setIsUploadOpen(true);
+            }}
           >
             <div className={styles.newVariantIcon}>
               <Plus size={24} />
@@ -75,7 +97,13 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
 
       <UploadModal 
         isOpen={isUploadOpen} 
-        onClose={() => setIsUploadOpen(false)} 
+        onClose={() => {
+          setIsUploadOpen(false);
+          setSelectedResumeId(undefined);
+          setSelectedVariantId(undefined);
+        }} 
+        resumeId={selectedResumeId}
+        variantId={selectedVariantId}
       />
     </div>
   );

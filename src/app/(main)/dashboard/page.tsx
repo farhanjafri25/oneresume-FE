@@ -10,6 +10,7 @@ export default async function DashboardPage() {
     
     return <DashboardView user={user} resumes={resumes} />;
   } catch (err) {
+    console.error("DashboardPage error:", err);
     redirect('/login');
   }
 }

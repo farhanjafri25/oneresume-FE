@@ -8,7 +8,10 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
 
+  console.log("MainLayout: token present:", !!token);
+
   if (!token) {
+    console.log("MainLayout: No token found, redirecting to /login");
     redirect('/login');
   }
 
@@ -26,6 +29,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
       </>
     );
   } catch (err) {
+    console.error("MainLayout auth check failed:", err);
     // Token might be expired or invalid
     redirect('/login');
   }

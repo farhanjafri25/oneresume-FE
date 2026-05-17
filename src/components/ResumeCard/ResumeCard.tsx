@@ -7,9 +7,10 @@ interface ResumeCardProps {
   timeAgo: string;
   tags: string[];
   imageUrl: string;
+  onUploadClick?: () => void;
 }
 
-export default function ResumeCard({ title, timeAgo, tags, imageUrl }: ResumeCardProps) {
+export default function ResumeCard({ title, timeAgo, tags, imageUrl, onUploadClick }: ResumeCardProps) {
   return (
     <div className={styles.card}>
       <div className={styles.imageContainer}>
@@ -35,7 +36,7 @@ export default function ResumeCard({ title, timeAgo, tags, imageUrl }: ResumeCar
           </button>
           
           <div className={styles.rightActions}>
-            <button className={styles.iconBtn}>
+            <button className={styles.iconBtn} onClick={onUploadClick} title="Upload new version">
               <Upload size={16} />
             </button>
             <button className={styles.iconBtn}>
