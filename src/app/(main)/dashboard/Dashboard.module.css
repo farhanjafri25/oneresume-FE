@@ -1,0 +1,86 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 48px 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.newBtn {
+  margin-top: 4px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* New Variant Card specific styles */
+.newVariantCard {
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 400px;
+}
+
+.newVariantCard:hover {
+  border-color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.newVariantIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--surface-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.newVariantCard:hover .newVariantIcon {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.newVariantTitle {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.newVariantDesc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 200px;
+}
