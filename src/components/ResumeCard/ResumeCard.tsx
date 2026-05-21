@@ -1,50 +1,187 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical } from 'lucide-react';
+import { Link2, Upload, MoreVertical, CheckCircle, Trash2 } from 'lucide-react';
+import { deleteResumeAction } from '@/app/actions/resume';
 
 interface ResumeCardProps {
+  id: string;
   title: string;
   timeAgo: string;
   tags: string[];
   imageUrl: string;
+  pdfUrl?: string;
+  publicUrl?: string;
   onUploadClick?: () => void;
 }
 
-export default function ResumeCard({ title, timeAgo, tags, imageUrl, onUploadClick }: ResumeCardProps) {
+export default function ResumeCard({
+  id,
+  title,
+  timeAgo,
+  tags,
+  imageUrl,
+  pdfUrl,
+  publicUrl,
+  onUploadClick,
+}: ResumeCardProps) {
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Shareable link copied to clipboard!');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handleDocumentClick = () => setShowDropdown(false);
+    document.addEventListener('click', handleDocumentClick);
+    return () => document.removeEventListener('click', handleDocumentClick);
+  }, [showDropdown]);
+
+  const handleCardClick = () => {
+    if (isDeleting) return;
+    if (pdfUrl && pdfUrl !== '#') {
+      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleCopyLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (publicUrl) {
+      const fullUrl = `${window.location.origin}${publicUrl}`;
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        setToastMessage('Shareable link copied to clipboard!');
+        setShowToast(true);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+  };
+
+  const handleToggleDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isDeleting) return;
+    setShowDropdown(!showDropdown);
+  };
+
+  const handleReplace = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDropdown(false);
+    onUploadClick?.();
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDropdown(false);
+
+    if (!window.confirm(`Are you sure you want to delete "${title}"? This will delete all versions and variants.`)) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      setToastMessage('Deleting resume...');
+      setShowToast(true);
+
+      const result = await deleteResumeAction(id);
+      if (result.error) {
+        setToastMessage(result.error);
+        setShowToast(true);
+      } else {
+        setToastMessage('Resume deleted successfully.');
+        setShowToast(true);
+      }
+    } catch (err) {
+      console.error('Failed to delete resume:', err);
+      setToastMessage('Failed to delete resume.');
+      setShowToast(true);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
-    <div className={styles.card}>
-      <div className={styles.imageContainer}>
-        <img src={imageUrl} alt={title} className={styles.image} />
-      </div>
-      
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <h3 className={styles.title}>{title}</h3>
-          <span className={styles.time}>{timeAgo}</span>
+    <>
+      <div
+        className={`${styles.card} ${isDeleting ? styles.deleting : ''}`}
+        onClick={handleCardClick}
+        style={{ cursor: pdfUrl && pdfUrl !== '#' && !isDeleting ? 'pointer' : 'default' }}
+      >
+        <div className={styles.imageContainer}>
+          <img src={imageUrl} alt={title} className={styles.image} />
         </div>
-        
-        <div className={styles.tags}>
-          {tags.map((tag) => (
-            <span key={tag} className={styles.tag}>{tag}</span>
-          ))}
-        </div>
-        
-        <div className={styles.footer}>
-          <button className={styles.actionBtn}>
-            <Link2 size={16} />
-            Copy Link
-          </button>
-          
-          <div className={styles.rightActions}>
-            <button className={styles.iconBtn} onClick={onUploadClick} title="Upload new version">
-              <Upload size={16} />
+
+        <div className={styles.content}>
+          <div className={styles.header}>
+            <h3 className={styles.title}>{title}</h3>
+            <span className={styles.time}>{timeAgo}</span>
+          </div>
+
+          <div className={styles.tags}>
+            {tags.map((tag) => (
+              <span key={tag} className={styles.tag}>
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className={styles.footer}>
+            <button className={styles.actionBtn} onClick={handleCopyLink} disabled={isDeleting}>
+              <Link2 size={16} />
+              Copy Link
             </button>
-            <button className={styles.iconBtn}>
-              <MoreVertical size={16} />
-            </button>
+
+            <div className={styles.rightActions}>
+              <button
+                className={styles.iconBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUploadClick?.();
+                }}
+                disabled={isDeleting}
+                title="Upload new version"
+              >
+                <Upload size={16} />
+              </button>
+              
+              <div className={styles.dropdownContainer}>
+                <button 
+                  className={styles.iconBtn} 
+                  onClick={handleToggleDropdown}
+                  disabled={isDeleting}
+                >
+                  <MoreVertical size={16} />
+                </button>
+
+                {showDropdown && (
+                  <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
+                    <button className={styles.dropdownItem} onClick={handleReplace}>
+                      <Upload size={14} />
+                      Replace File
+                    </button>
+                    <button className={`${styles.dropdownItem} ${styles.deleteItem}`} onClick={handleDelete}>
+                      <Trash2 size={14} />
+                      Delete Resume
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {showToast && (
+        <div className={styles.toast}>
+          <CheckCircle size={16} className={styles.toastIcon} />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+    </>
   );
 }

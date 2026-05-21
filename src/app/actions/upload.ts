@@ -28,24 +28,41 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
 
     // If no resume exists yet, we create a default one first
     if (!resumeId || !variantId) {
-      // 1. Create a resume
-      const slug = `resume-${Date.now()}`;
+      const customName = formData.get('resumeName') as string;
+      let title = 'Master Resume';
+      let rawName = file.name || 'resume';
+      if (rawName.toLowerCase().endsWith('.pdf')) {
+        rawName = rawName.slice(0, -4);
+      }
+
+      if (customName && customName.trim().length > 0) {
+        title = customName.trim();
+        rawName = title;
+      }
+
+      const slug = rawName
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      
+      const finalSlug = slug || `resume-${Date.now()}`;
+
       const resumeRes = await fetch(`${API_URL}/resumes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ userId: user.id, slug })
+        body: JSON.stringify({ userId: user.id, slug: finalSlug, title })
       });
 
       if (!resumeRes.ok) {
-        return { error: 'Failed to create resume container' };
+        return { error: 'Failed to create or resolve resume container' };
       }
 
       const resumeData = await resumeRes.json();
       resumeId = resumeData.id;
-      // The backend auto-creates a 'default' variant
       variantId = resumeData.variants[0].id;
     }
 

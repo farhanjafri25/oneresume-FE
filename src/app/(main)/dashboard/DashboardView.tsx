@@ -12,6 +12,15 @@ interface DashboardViewProps {
   resumes: Resume[];
 }
 
+function formatUTCDate(dateInput: string | Date): string {
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '';
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const year = d.getUTCFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 export default function DashboardView({ user, resumes }: DashboardViewProps) {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [selectedResumeId, setSelectedResumeId] = useState<string | undefined>(undefined);
@@ -39,20 +48,30 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
       
       <div className={styles.grid}>
         {resumes.map(resume => (
-          resume.variants?.map(variant => (
-            <ResumeCard 
-              key={variant.id}
-              title={variant.slug === 'default' ? 'Master Resume' : `${variant.slug} Resume`}
-              timeAgo={new Date(resume.createdAt).toLocaleDateString()}
-              tags={[variant.slug]}
-              imageUrl="https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=600&auto=format&fit=crop"
-              onUploadClick={() => {
-                setSelectedResumeId(resume.id);
-                setSelectedVariantId(variant.id);
-                setIsUploadOpen(true);
-              }}
-            />
-          ))
+          resume.variants?.map(variant => {
+            const latestVersion = variant.versions && variant.versions.length > 0
+              ? variant.versions[0]
+              : null;
+            const pdfUrl = latestVersion ? latestVersion.fileUrl : '#';
+            const publicUrl = `/${user.username}/${resume.slug}`;
+            return (
+              <ResumeCard 
+                key={variant.id}
+                id={resume.id}
+                title={variant.slug === 'default' ? resume.title : `${resume.title} (${variant.slug})`}
+                timeAgo={formatUTCDate(resume.createdAt)}
+                tags={[variant.slug]}
+                imageUrl="https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=600&auto=format&fit=crop"
+                pdfUrl={pdfUrl}
+                publicUrl={publicUrl}
+                onUploadClick={() => {
+                  setSelectedResumeId(resume.id);
+                  setSelectedVariantId(variant.id);
+                  setIsUploadOpen(true);
+                }}
+              />
+            );
+          })
         ))}
 
         {resumes.length === 0 && (

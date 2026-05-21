@@ -30,6 +30,7 @@ export interface Variant {
 export interface Resume {
   id: string;
   userId: string;
+  title: string;
   slug: string;
   createdAt: string;
   variants?: Variant[];
