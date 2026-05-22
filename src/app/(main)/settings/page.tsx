@@ -1,0 +1,77 @@
+import React from 'react';
+import styles from './settings.module.css';
+import { getMe } from '@/lib/api';
+import { ShieldAlert } from 'lucide-react';
+import { redirect } from 'next/navigation';
+
+function formatDate(dateInput: string | Date): string {
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
+export default async function SettingsPage() {
+  try {
+    const user = await getMe();
+    
+    return (
+      <div className={styles.container}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Account Settings</h1>
+          <p className={styles.subtitle}>View your account details and manage settings.</p>
+        </header>
+
+        <div className={styles.card}>
+          <div className={styles.profileSection}>
+            <div className={styles.avatarContainer}>
+              <div className={styles.avatar}>
+                <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random&size=128`} alt="Avatar" />
+              </div>
+              <span className={styles.badge}>Pro</span>
+            </div>
+            <div className={styles.profileInfo}>
+              <h2>{user.username}</h2>
+              <p>OneResume Creator Account</p>
+            </div>
+          </div>
+
+          <div className={styles.detailsGrid}>
+            <div className={styles.detailField}>
+              <span className={styles.label}>Username</span>
+              <span className={styles.value}>{user.username}</span>
+            </div>
+            <div className={styles.detailField}>
+              <span className={styles.label}>Email Address</span>
+              <span className={styles.value}>{user.email}</span>
+            </div>
+            <div className={styles.detailField}>
+              <span className={styles.label}>Account ID</span>
+              <span className={styles.value} style={{ fontSize: '12px', fontFamily: 'monospace' }}>{user.id}</span>
+            </div>
+            <div className={styles.detailField}>
+              <span className={styles.label}>Member Since</span>
+              <span className={styles.value}>{formatDate(user.createdAt)}</span>
+            </div>
+          </div>
+
+          <div className={styles.alert}>
+            <ShieldAlert size={20} className={styles.alertIcon} />
+            <div>
+              <h3 className={styles.alertTitle}>Profile Editing is Read-Only</h3>
+              <p className={styles.alertDesc}>
+                To maintain database security during active testing, profile modifications and password updates are temporarily read-only. Full configuration features will be unlocked in the upcoming release.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  } catch (err) {
+    console.error("SettingsPage error:", err);
+    redirect('/login');
+  }
+}

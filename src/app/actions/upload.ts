@@ -26,14 +26,15 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
       return { error: 'Unauthorized' };
     }
 
-    // If no resume exists yet, we create a default one first
+    // If no resume exists yet (e.g. creating a new top-level resume card), we create a new masterpiece container
     if (!resumeId || !variantId) {
       const customName = formData.get('resumeName') as string;
-      let title = 'Master Resume';
       let rawName = file.name || 'resume';
       if (rawName.toLowerCase().endsWith('.pdf')) {
         rawName = rawName.slice(0, -4);
       }
+
+      let title = rawName;
 
       if (customName && customName.trim().length > 0) {
         title = customName.trim();

@@ -36,7 +36,9 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <div>
-            <h2 className={styles.title}>Import Document</h2>
+            <h2 className={styles.title}>
+              {resumeId && variantId ? 'Replace Version' : 'Import Masterpiece'}
+            </h2>
             <p className={styles.subtitle}>
               Upload your existing resume to let our AI begin the optimization process.
             </p>
@@ -71,6 +73,8 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
               />
             </div>
           )}
+
+
 
           <div
             className={styles.dropzone}

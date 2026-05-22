@@ -33,7 +33,7 @@ export default async function PublicResumeVersionPage({
             <span className={styles.divider}></span>
             <span className={styles.name}>{username}</span>
             <span className={styles.variantBadge}>
-              {filename} - {version.toUpperCase()}
+              {filename}
             </span>
           </div>
           {fileUrl && (
@@ -44,7 +44,7 @@ export default async function PublicResumeVersionPage({
               className={`btn-primary ${styles.downloadBtn}`}
             >
               <Download size={14} />
-              Download PDF ({version.toUpperCase()})
+              Download PDF
             </a>
           )}
         </div>

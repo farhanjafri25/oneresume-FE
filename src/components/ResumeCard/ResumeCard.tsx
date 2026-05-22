@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical, CheckCircle, Trash2 } from 'lucide-react';
+import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History } from 'lucide-react';
 import { deleteResumeAction } from '@/app/actions/resume';
 
 interface ResumeCardProps {
@@ -178,6 +178,17 @@ export default function ResumeCard({
 
                 {showDropdown && (
                   <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
+                    <button 
+                      className={styles.dropdownItem} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDropdown(false);
+                        window.location.href = `/dashboard/versions/${id}`;
+                      }}
+                    >
+                      <History size={14} />
+                      Version History
+                    </button>
                     <button className={styles.dropdownItem} onClick={handleReplace}>
                       <Upload size={14} />
                       Replace File

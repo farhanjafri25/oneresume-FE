@@ -42,13 +42,13 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
           }}
         >
           <Plus size={18} />
-          New Masterpiece
+          Upload Resume
         </button>
       </header>
       
       <div className={styles.grid}>
         {resumes.map(resume => (
-          resume.variants?.map(variant => {
+          resume.variants?.filter(variant => variant.slug === 'default').map(variant => {
             const latestVersion = variant.versions && variant.versions.length > 0
               ? variant.versions[0]
               : null;
@@ -105,9 +105,9 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
             <div className={styles.newVariantIcon}>
               <Plus size={24} />
             </div>
-            <h3 className={styles.newVariantTitle}>Create new variant</h3>
+            <h3 className={styles.newVariantTitle}>Upload new resume</h3>
             <p className={styles.newVariantDesc}>
-              Tailor your master document for a new role.
+              Add a completely separate resume to your dashboard.
             </p>
           </div>
         )}
