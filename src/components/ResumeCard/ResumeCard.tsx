@@ -8,7 +8,7 @@ interface ResumeCardProps {
   title: string;
   timeAgo: string;
   tags: string[];
-  imageUrl: string;
+  imageUrl?: string;
   pdfUrl?: string;
   publicUrl?: string;
   onUploadClick?: () => void;
@@ -113,7 +113,25 @@ export default function ResumeCard({
         style={{ cursor: pdfUrl && pdfUrl !== '#' && !isDeleting ? 'pointer' : 'default' }}
       >
         <div className={styles.imageContainer}>
-          <img src={imageUrl} alt={title} className={styles.image} />
+          {pdfUrl && pdfUrl !== '#' ? (
+            <iframe
+              src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+              className={styles.pdfPreview}
+              title={title}
+            />
+          ) : (
+            <div 
+              className={styles.placeholder} 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                onUploadClick?.(); 
+              }}
+            >
+              <Upload size={32} className={styles.placeholderIcon} />
+              <span className={styles.placeholderText}>No PDF Uploaded</span>
+              <span className={styles.placeholderSubtext}>Click to upload your masterpiece</span>
+            </div>
+          )}
         </div>
 
         <div className={styles.content}>

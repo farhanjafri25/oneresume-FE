@@ -61,7 +61,6 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
                 title={variant.slug === 'default' ? resume.title : `${resume.title} (${variant.slug})`}
                 timeAgo={formatUTCDate(resume.createdAt)}
                 tags={[variant.slug]}
-                imageUrl="https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=600&auto=format&fit=crop"
                 pdfUrl={pdfUrl}
                 publicUrl={publicUrl}
                 onUploadClick={() => {
