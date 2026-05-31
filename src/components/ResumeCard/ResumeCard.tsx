@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2 } from 'lucide-react';
+import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain } from 'lucide-react';
 import { deleteResumeAction } from '@/app/actions/resume';
 
 interface ResumeCardProps {
@@ -201,6 +201,19 @@ export default function ResumeCard({
 
                 {showDropdown && (
                   <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
+                    <button 
+                      className={styles.dropdownItem} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDropdown(false);
+                        window.location.href = `/dashboard/ai-review/${id}`;
+                      }}
+                      disabled={!pdfUrl || pdfUrl === '#'}
+                      title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Reviewer' : 'Review resume against a job description'}
+                    >
+                      <Brain size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? '#a855f7' : '#9ca3af' }} />
+                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? '#e2e8f0' : '#9ca3af' }}>AI Match Reviewer</span>
+                    </button>
                     <button 
                       className={styles.dropdownItem} 
                       onClick={(e) => {
