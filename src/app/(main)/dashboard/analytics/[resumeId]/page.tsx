@@ -1,0 +1,281 @@
+import React from 'react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, BarChart2, Globe, Eye, Download, ShieldAlert, Award } from 'lucide-react';
+import { getResumeAnalyticsAction } from '@/app/actions/resume';
+import styles from './Analytics.module.css';
+
+// Helper to format dates cleanly
+function formatDate(dateInput: string | Date): string {
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+// Convert country code to emoji flag
+function getFlagEmoji(countryCode: string | null): string {
+  if (!countryCode || countryCode.length !== 2) return '🌐';
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  try {
+    return String.fromCodePoint(...codePoints);
+  } catch {
+    return '🌐';
+  }
+}
+
+export default async function ResumeAnalyticsPage({
+  params,
+}: {
+  params: Promise<{ resumeId: string }>;
+}) {
+  const { resumeId } = await params;
+
+  // Fetch metrics from backend using Server Action
+  const analyticsData = await getResumeAnalyticsAction(resumeId);
+
+  if (analyticsData.error) {
+    return (
+      <div className={styles.container}>
+        <Link href="/dashboard" className={styles.backBtn}>
+          <ArrowLeft size={16} />
+          Back to Dashboard
+        </Link>
+        <div className={styles.emptyState}>
+          <ShieldAlert size={48} className={styles.emptyStateIcon} />
+          <h2 className={styles.emptyStateTitle}>Failed to Load Analytics</h2>
+          <p>{analyticsData.error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { summary, referrers, timeline, recentLogs } = analyticsData;
+
+  const totalViews = summary.totalViews || 0;
+  const uniqueViews = summary.uniqueViews || 0;
+  const desktop = summary.desktop || 0;
+  const mobile = summary.mobile || 0;
+  const tablet = summary.tablet || 0;
+
+  // Calculate percentages
+  const maxViews = Math.max(...timeline.map((t: any) => t.count), 1);
+  const maxReferrals = Math.max(...referrers.map((r: any) => r.count), 1);
+  const deviceTotal = (desktop + mobile + tablet) || 1;
+  const desktopPct = Math.round((desktop / deviceTotal) * 100);
+  const mobilePct = Math.round((mobile / deviceTotal) * 100);
+  const tabletPct = Math.round((tablet / deviceTotal) * 100);
+
+  // Generate dynamic SVG coordinates for the 30-day timeline chart (500x150 grid)
+  const chartPoints = timeline.map((item: any, index: number) => {
+    const x = (index * 500) / (timeline.length - 1);
+    const y = 150 - (item.count / maxViews) * 110; // leave padding at top
+    return `${x},${y}`;
+  }).join(' ');
+
+  const chartAreaPath = timeline.length > 0 
+    ? `M 0 150 ` + timeline.map((item: any, index: number) => {
+        const x = (index * 500) / (timeline.length - 1);
+        const y = 150 - (item.count / maxViews) * 110;
+        return `L ${x} ${y}`;
+      }).join(' ') + ` L 500 150 Z`
+    : '';
+
+  return (
+    <div className={styles.container}>
+      <Link href="/dashboard" className={styles.backBtn}>
+        <ArrowLeft size={16} />
+        Back to Dashboard
+      </Link>
+
+      <header className={styles.header}>
+        <h1 className={styles.title}>Resume Insights</h1>
+        <p className={styles.subtitle}>Track recruiter activity and engagement metrics below.</p>
+      </header>
+
+      {/* Summary Scorecards */}
+      <div className={styles.statsGrid}>
+        <div className={styles.card}>
+          <span className={styles.cardLabel}>Total Views</span>
+          <span className={styles.cardValue}>{totalViews}</span>
+          <span className={styles.cardSubtext}>Lifetime link impressions</span>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.cardLabel}>Unique Views</span>
+          <span className={styles.cardValue}>{uniqueViews}</span>
+          <span className={styles.cardSubtext}>Individual recruiter hits</span>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.cardLabel}>Desktop Visitors</span>
+          <span className={styles.cardValue}>{desktopPct}%</span>
+          <span className={styles.cardSubtext}>{desktop} sessions recorded</span>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.cardLabel}>Mobile Visitors</span>
+          <span className={styles.cardValue}>{mobilePct + tabletPct}%</span>
+          <span className={styles.cardSubtext}>{mobile + tablet} on-the-go sessions</span>
+        </div>
+      </div>
+
+      {totalViews === 0 ? (
+        <div className={styles.emptyState}>
+          <BarChart2 size={48} className={styles.emptyStateIcon} />
+          <h2 className={styles.emptyStateTitle}>No Traffic Recorded Yet</h2>
+          <p>Share your resume link with recruiters to begin capturing visitor intelligence!</p>
+        </div>
+      ) : (
+        <>
+          {/* Custom SVG Line Chart */}
+          <div className={styles.chartCard}>
+            <div className={styles.chartHeader}>
+              <h2 className={styles.chartTitle}>Views Timeline (Last 30 Days)</h2>
+            </div>
+            
+            <div className={styles.chartContainer}>
+              <svg viewBox="0 0 500 150" className={styles.chartSvg} preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.3"/>
+                    <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.0"/>
+                  </linearGradient>
+                </defs>
+
+                {/* Grid Lines */}
+                <g className={styles.gridLines}>
+                  <line x1="0" y1="150" x2="500" y2="150" />
+                  <line x1="0" y1="100" x2="500" y2="100" />
+                  <line x1="0" y1="40" x2="500" y2="40" />
+                </g>
+
+                {/* Filled Area */}
+                {chartAreaPath && <path d={chartAreaPath} className={styles.chartArea} />}
+
+                {/* Smooth Glowing Polyline */}
+                {chartPoints && (
+                  <polyline
+                    points={chartPoints}
+                    className={styles.chartPath}
+                  />
+                )}
+
+                {/* Data Points */}
+                {timeline.map((item: any, idx: number) => {
+                  const x = (idx * 500) / (timeline.length - 1);
+                  const y = 150 - (item.count / maxViews) * 110;
+                  return item.count > 0 ? (
+                    <circle
+                      key={idx}
+                      cx={x}
+                      cy={y}
+                      r="4"
+                      className={styles.chartPoint}
+                    />
+                  ) : null;
+                })}
+              </svg>
+            </div>
+          </div>
+
+          <div className={styles.detailGrid}>
+            {/* Traffic Sources */}
+            <div className={styles.card}>
+              <h2 className={styles.chartTitle} style={{ marginBottom: '20px' }}>Traffic Sources</h2>
+              <div className={styles.sourceList}>
+                {referrers.map((ref: any, idx: number) => {
+                  const percent = Math.round((ref.count / maxReferrals) * 100) || 5;
+                  return (
+                    <div key={idx} className={styles.sourceItem}>
+                      <div className={styles.sourceHeader}>
+                        <span className={styles.sourceName}>{ref.source}</span>
+                        <span className={styles.sourceCount}>{ref.count} views</span>
+                      </div>
+                      <div className={styles.progressBarBg}>
+                        <div className={styles.progressBar} style={{ width: `${percent}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+                {referrers.length === 0 && (
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>No referrer data available.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Device Profile */}
+            <div className={styles.card}>
+              <h2 className={styles.chartTitle} style={{ marginBottom: '20px' }}>Device Distribution</h2>
+              <div className={styles.sourceList}>
+                <div className={styles.sourceItem}>
+                  <div className={styles.sourceHeader}>
+                    <span className={styles.sourceName}>🖥️ Desktop Sessions</span>
+                    <span className={styles.sourceCount}>{desktop} views ({desktopPct}%)</span>
+                  </div>
+                  <div className={styles.progressBarBg}>
+                    <div className={styles.progressBar} style={{ width: `${desktopPct}%` }} />
+                  </div>
+                </div>
+
+                <div className={styles.sourceItem}>
+                  <div className={styles.sourceHeader}>
+                    <span className={styles.sourceName}>📱 Mobile Sessions</span>
+                    <span className={styles.sourceCount}>{mobile} views ({mobilePct}%)</span>
+                  </div>
+                  <div className={styles.progressBarBg}>
+                    <div className={styles.progressBar} style={{ width: `${mobilePct}%`, backgroundColor: '#818cf8' }} />
+                  </div>
+                </div>
+
+                <div className={styles.sourceItem}>
+                  <div className={styles.sourceHeader}>
+                    <span className={styles.sourceName}>📟 Tablet Sessions</span>
+                    <span className={styles.sourceCount}>{tablet} views ({tabletPct}%)</span>
+                  </div>
+                  <div className={styles.progressBarBg}>
+                    <div className={styles.progressBar} style={{ width: `${tabletPct}%`, backgroundColor: '#34d399' }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Visitor Logs */}
+          <div className={styles.card} style={{ marginBottom: '0px' }}>
+            <h2 className={styles.chartTitle}>Recent Recruiter Visits</h2>
+            <div className={styles.tableContainer}>
+              <table className={styles.logTable}>
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Referrer Source</th>
+                    <th>Browser</th>
+                    <th>Location</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentLogs.map((log: any) => (
+                    <tr key={log.id}>
+                      <td>{formatDate(log.viewedAt)}</td>
+                      <td style={{ fontWeight: '500' }}>{log.referer}</td>
+                      <td>{log.browser}</td>
+                      <td>
+                        <span className={styles.flag}>{getFlagEmoji(log.country)}</span>
+                        <span>{log.country || 'Global'}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
