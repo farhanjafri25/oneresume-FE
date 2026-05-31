@@ -6,8 +6,15 @@ import { notFound } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
-export default async function PublicResumePage({ params }: { params: Promise<{ username: string, filename: string }> }) {
+export default async function PublicResumePage({ 
+  params,
+  searchParams,
+}: { 
+  params: Promise<{ username: string; filename: string }>;
+  searchParams: Promise<{ for?: string }>;
+}) {
   const { username, filename } = await params;
+  const { for: forParam } = await searchParams;
 
   // Capture original browser headers from Next.js request context
   const headersList = await headers();
@@ -16,8 +23,10 @@ export default async function PublicResumePage({ params }: { params: Promise<{ u
   const ip = headersList.get('x-forwarded-for') || '';
   const country = headersList.get('x-vercel-ip-country') || '';
 
-  // Fetch from the public backend endpoint, forwarding browser context headers
-  const res = await fetch(`${API_URL}/${username}/${filename}`, {
+  const forQuery = forParam ? `?for=${encodeURIComponent(forParam)}` : '';
+
+  // Fetch from the public backend endpoint, forwarding browser context headers & campaign tag
+  const res = await fetch(`${API_URL}/${username}/${filename}${forQuery}`, {
     headers: {
       'user-agent': userAgent,
       'referer': referer,

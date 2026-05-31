@@ -8,10 +8,13 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 export default async function PublicResumeVersionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ username: string; filename: string; version: string }>;
+  searchParams: Promise<{ for?: string }>;
 }) {
   const { username, filename, version } = await params;
+  const { for: forParam } = await searchParams;
 
   // Capture original browser headers from Next.js request context
   const headersList = await headers();
@@ -20,8 +23,10 @@ export default async function PublicResumeVersionPage({
   const ip = headersList.get('x-forwarded-for') || '';
   const country = headersList.get('x-vercel-ip-country') || '';
 
-  // Fetch from the public backend endpoint for specific version, forwarding browser context headers
-  const res = await fetch(`${API_URL}/${username}/${filename}/${version}`, {
+  const forQuery = forParam ? `?for=${encodeURIComponent(forParam)}` : '';
+
+  // Fetch from the public backend endpoint for specific version, forwarding browser context headers & campaign tag
+  const res = await fetch(`${API_URL}/${username}/${filename}/${version}${forQuery}`, {
     headers: {
       'user-agent': userAgent,
       'referer': referer,

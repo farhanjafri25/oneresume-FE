@@ -63,6 +63,29 @@ export default function ResumeCard({
     }
   };
 
+  const handleCreateTrackingLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDropdown(false);
+    
+    const tag = window.prompt(
+      'Enter an application label to create a personalized tracking link:\n(e.g., Google-Frontend, Netflix-Recruiter, LinkedIn-Signature)',
+      ''
+    );
+    
+    if (tag && tag.trim()) {
+      const cleanTag = tag.trim().replace(/\s+/g, '-');
+      if (publicUrl) {
+        const fullUrl = `${window.location.origin}${publicUrl}?for=${encodeURIComponent(cleanTag)}`;
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          setToastMessage(`Tracking link for "${cleanTag}" copied to clipboard!`);
+          setShowToast(true);
+        }).catch(err => {
+          console.error('Failed to copy tracking link:', err);
+        });
+      }
+    }
+  };
+
   const handleToggleDropdown = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isDeleting) return;
@@ -188,6 +211,13 @@ export default function ResumeCard({
                     >
                       <BarChart2 size={14} />
                       View Analytics
+                    </button>
+                    <button 
+                      className={styles.dropdownItem} 
+                      onClick={handleCreateTrackingLink}
+                    >
+                      <Link2 size={14} />
+                      Create Tracking Link
                     </button>
                     <button 
                       className={styles.dropdownItem} 

@@ -57,7 +57,7 @@ export default async function ResumeAnalyticsPage({
     );
   }
 
-  const { summary, referrers, timeline, recentLogs } = analyticsData;
+  const { summary, referrers, timeline, campaigns, recentLogs } = analyticsData;
 
   const totalViews = summary.totalViews || 0;
   const uniqueViews = summary.uniqueViews || 0;
@@ -68,6 +68,7 @@ export default async function ResumeAnalyticsPage({
   // Calculate percentages
   const maxViews = Math.max(...timeline.map((t: any) => t.count), 1);
   const maxReferrals = Math.max(...referrers.map((r: any) => r.count), 1);
+  const maxCampaigns = Math.max(...campaigns.map((c: any) => c.count), 1);
   const deviceTotal = (desktop + mobile + tablet) || 1;
   const desktopPct = Math.round((desktop / deviceTotal) * 100);
   const mobilePct = Math.round((mobile / deviceTotal) * 100);
@@ -208,6 +209,30 @@ export default async function ResumeAnalyticsPage({
               </div>
             </div>
 
+            {/* Campaign Links Performance */}
+            <div className={styles.card}>
+              <h2 className={styles.chartTitle} style={{ marginBottom: '20px' }}>Link Performance (per Role/App)</h2>
+              <div className={styles.sourceList}>
+                {campaigns.map((camp: any, idx: number) => {
+                  const percent = Math.round((camp.count / maxCampaigns) * 100) || 5;
+                  return (
+                    <div key={idx} className={styles.sourceItem}>
+                      <div className={styles.sourceHeader}>
+                        <span className={styles.sourceName}>{camp.label}</span>
+                        <span className={styles.sourceCount}>{camp.count} views</span>
+                      </div>
+                      <div className={styles.progressBarBg}>
+                        <div className={styles.progressBar} style={{ width: `${percent}%`, backgroundColor: '#f59e0b' }} />
+                      </div>
+                    </div>
+                  );
+                })}
+                {campaigns.length === 0 && (
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>No targeted link views recorded yet.</p>
+                )}
+              </div>
+            </div>
+
             {/* Device Profile */}
             <div className={styles.card}>
               <h2 className={styles.chartTitle} style={{ marginBottom: '20px' }}>Device Distribution</h2>
@@ -254,6 +279,7 @@ export default async function ResumeAnalyticsPage({
                   <tr>
                     <th>Timestamp</th>
                     <th>Referrer Source</th>
+                    <th>Application Link</th>
                     <th>Browser</th>
                     <th>Location</th>
                   </tr>
@@ -263,6 +289,9 @@ export default async function ResumeAnalyticsPage({
                     <tr key={log.id}>
                       <td>{formatDate(log.viewedAt)}</td>
                       <td style={{ fontWeight: '500' }}>{log.referer}</td>
+                      <td style={{ color: log.label ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: log.label ? '500' : '400' }}>
+                        {log.label || 'Default / General'}
+                      </td>
                       <td>{log.browser}</td>
                       <td>
                         <span className={styles.flag}>{getFlagEmoji(log.country)}</span>
