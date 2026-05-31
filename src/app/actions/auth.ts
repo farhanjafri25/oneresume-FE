@@ -85,6 +85,42 @@ export async function signupUser(prevState: any, formData: FormData) {
   redirect('/dashboard');
 }
 
+export async function loginWithGoogle(googleToken: string) {
+  if (!googleToken) {
+    return { error: 'Google token is required' };
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ googleToken }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      return { error: data.message || 'Google login failed' };
+    }
+
+    const data: AuthResponse = await res.json();
+    
+    // Set token cookie
+    const cookieStore = await cookies();
+    cookieStore.set('token', data.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+
+  } catch (error) {
+    return { error: 'An unexpected error occurred during Google sign-in' };
+  }
+
+  redirect('/dashboard');
+}
+
 export async function logoutUser() {
   const cookieStore = await cookies();
   cookieStore.delete('token');
