@@ -1,4 +1,5 @@
 import React from 'react';
+import { headers } from 'next/headers';
 import styles from './page.module.css';
 import { Download } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -8,8 +9,21 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 export default async function PublicResumePage({ params }: { params: Promise<{ username: string, filename: string }> }) {
   const { username, filename } = await params;
 
-  // Fetch from the public backend endpoint
+  // Capture original browser headers from Next.js request context
+  const headersList = await headers();
+  const userAgent = headersList.get('user-agent') || '';
+  const referer = headersList.get('referer') || '';
+  const ip = headersList.get('x-forwarded-for') || '';
+  const country = headersList.get('x-vercel-ip-country') || '';
+
+  // Fetch from the public backend endpoint, forwarding browser context headers
   const res = await fetch(`${API_URL}/${username}/${filename}`, {
+    headers: {
+      'user-agent': userAgent,
+      'referer': referer,
+      'x-forwarded-for': ip,
+      'x-vercel-ip-country': country,
+    },
     next: { revalidate: 60 }
   });
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { headers } from 'next/headers';
 import styles from '../page.module.css';
 import { Download } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -12,8 +13,21 @@ export default async function PublicResumeVersionPage({
 }) {
   const { username, filename, version } = await params;
 
-  // Fetch from the public backend endpoint for specific version
+  // Capture original browser headers from Next.js request context
+  const headersList = await headers();
+  const userAgent = headersList.get('user-agent') || '';
+  const referer = headersList.get('referer') || '';
+  const ip = headersList.get('x-forwarded-for') || '';
+  const country = headersList.get('x-vercel-ip-country') || '';
+
+  // Fetch from the public backend endpoint for specific version, forwarding browser context headers
   const res = await fetch(`${API_URL}/${username}/${filename}/${version}`, {
+    headers: {
+      'user-agent': userAgent,
+      'referer': referer,
+      'x-forwarded-for': ip,
+      'x-vercel-ip-country': country,
+    },
     next: { revalidate: 60 },
   });
 
