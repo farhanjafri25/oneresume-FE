@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain } from 'lucide-react';
+import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles } from 'lucide-react';
 import { deleteResumeAction } from '@/app/actions/resume';
 
 interface ResumeCardProps {
@@ -213,6 +213,30 @@ export default function ResumeCard({
                     >
                       <Brain size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? '#a855f7' : '#9ca3af' }} />
                       <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? '#e2e8f0' : '#9ca3af' }}>AI Match Reviewer</span>
+                    </button>
+                    <button 
+                      className={styles.dropdownItem} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDropdown(false);
+                        window.location.href = `/dashboard/ai-builder/${id}`;
+                      }}
+                      disabled={!pdfUrl || pdfUrl === '#'}
+                      title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Builder' : 'Tailor resume and generate styled PDF'}
+                    >
+                      <Sparkles size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? '#a855f7' : '#9ca3af' }} />
+                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? '#e2e8f0' : '#9ca3af' }}>AI Tailor & Generate</span>
+                    </button>
+                    <button 
+                      className={styles.dropdownItem} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDropdown(false);
+                        window.location.href = `/dashboard/variants`;
+                      }}
+                    >
+                      <Sparkles size={14} />
+                      View Tailored Variants
                     </button>
                     <button 
                       className={styles.dropdownItem} 

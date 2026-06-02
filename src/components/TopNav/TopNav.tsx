@@ -28,6 +28,13 @@ export default function TopNav({ user }: { user?: User }) {
             </Link>
 
             <Link 
+              href="/dashboard/variants" 
+              className={`${styles.link} ${pathname === '/dashboard/variants' ? styles.active : ''}`}
+            >
+              Variants
+            </Link>
+
+            <Link 
               href="/settings" 
               className={`${styles.link} ${pathname === '/settings' ? styles.active : ''}`}
             >

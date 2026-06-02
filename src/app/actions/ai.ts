@@ -33,3 +33,126 @@ export async function analyzeResumeAction(resumeId: string, jd: string) {
     return { error: 'An unexpected error occurred while communicating with the AI server.' };
   }
 }
+
+export async function tailorResumeAction(resumeId: string, jd: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return { error: 'Unauthorized. Please log in first.' };
+    }
+
+    const res = await fetch(`${API_URL}/resumes/${resumeId}/tailor`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ jd }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      return { error: errorData.message || 'Tailoring failed. Please check your network and try again.' };
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('Tailor Resume Error:', err);
+    return { error: 'An unexpected error occurred while communicating with the AI tailoring server.' };
+  }
+}
+
+export async function createVariantAction(
+  resumeId: string,
+  title: string,
+  slug: string,
+  themeId: string,
+  tailoredData: any,
+) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return { error: 'Unauthorized. Please log in first.' };
+    }
+
+    const res = await fetch(`${API_URL}/resumes/${resumeId}/variants`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ title, slug, themeId, tailoredData }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      return { error: errorData.message || 'Variant creation failed. Please check your inputs.' };
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('Create Variant Error:', err);
+    return { error: 'An unexpected error occurred while generating the resume PDF.' };
+  }
+}
+
+export async function getThemesAction() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return { error: 'Unauthorized. Please log in first.' };
+    }
+
+    const res = await fetch(`${API_URL}/resumes/themes`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      return { error: 'Failed to fetch themes' };
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('Get Themes Error:', err);
+    return { error: 'An unexpected error occurred while loading themes.' };
+  }
+}
+
+export async function previewResumeAction(themeId: string, tailoredData: any) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return { error: 'Unauthorized. Please log in first.' };
+    }
+
+    const res = await fetch(`${API_URL}/resumes/preview`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ themeId, tailoredData }),
+    });
+
+    if (!res.ok) {
+      return { error: 'Failed to generate preview' };
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('Preview Resume Error:', err);
+    return { error: 'An unexpected error occurred while loading layout preview.' };
+  }
+}
