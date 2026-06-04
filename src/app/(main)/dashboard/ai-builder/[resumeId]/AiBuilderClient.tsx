@@ -572,11 +572,32 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
       <div className={styles.panel} style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
         <div className={styles.panelTitle}>
           <Wrench size={20} style={{ color: 'var(--primary)' }} />
-          Save Variant
+          Choose Layout & Save
         </div>
         <p className={styles.panelSubtitle}>
-          Specify the new variant's details and save your tailored resume.
+          Select one of the templates below and specify the new variant's details.
         </p>
+
+        {/* CSS Themes List */}
+        <div className={styles.themesGrid}>
+          {themes.map((theme) => {
+            const isSelected = selectedThemeId === theme.id;
+            return (
+              <div 
+                key={theme.id} 
+                className={`${styles.themeCard} ${isSelected ? styles.selectedThemeCard : ''}`}
+                onClick={() => setSelectedThemeId(theme.id)}
+              >
+                <div className={styles.themeName}>
+                  <span>{theme.name}</span>
+                  {isSelected && <span className={styles.themeBadge}>Active</span>}
+                </div>
+                <div className={styles.themeMeta}>{theme.description}</div>
+                <div className={styles.themeVibe}>⚡ {theme.vibe}</div>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Live Layout Preview Card */}
         <div style={{ marginTop: '10px', marginBottom: '20px' }}>

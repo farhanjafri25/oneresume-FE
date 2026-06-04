@@ -65,7 +65,7 @@ export default async function PublicResumePage({
       <main className={styles.main}>
         {fileUrl ? (
           <iframe
-            src={fileUrl}
+            src={`${fileUrl}#toolbar=0&navpanes=0&view=FitH`}
             className={styles.pdfPreview}
             title={`${username}'s Resume - ${filename}`}
           />
