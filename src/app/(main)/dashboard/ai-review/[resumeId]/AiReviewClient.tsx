@@ -119,7 +119,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
       {/* LEFT SIDE: Inputs */}
       <div className={styles.panel}>
         <div className={styles.panelTitle}>
-          <Sparkles size={20} style={{ color: '#a855f7' }} />
+          <Sparkles size={20} style={{ color: 'var(--primary)' }} />
           Job Description
         </div>
         <p className={styles.panelSubtitle}>
@@ -256,7 +256,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
             {/* Step-by-Step Actionable Recommendations Checklist */}
             <div className={styles.recommendationsSection}>
               <h4 className={styles.recommendationsTitle}>
-                <ListTodo size={18} style={{ color: '#a855f7' }} />
+                <ListTodo size={18} style={{ color: 'var(--primary)' }} />
                 Optimize Your Resume (Action Items)
               </h4>
               <div className={styles.checklist}>

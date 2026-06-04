@@ -241,7 +241,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     return (
       <div className={styles.jdContainer} style={{ maxWidth: '900px' }}>
         <div className={styles.panelTitle}>
-          <Sparkles size={24} style={{ color: '#a855f7' }} />
+          <Sparkles size={24} style={{ color: 'var(--primary)' }} />
           Create Tailored Resume Variant
         </div>
         <p className={styles.panelSubtitle} style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }}>
@@ -361,7 +361,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
       {/* LEFT COLUMN: Editing Wizard */}
       <div className={styles.panel}>
         <div className={styles.panelTitle}>
-          <User size={20} style={{ color: '#a855f7' }} />
+          <User size={20} style={{ color: 'var(--primary)' }} />
           Inspect & Edit Tailored Content
         </div>
         <p className={styles.panelSubtitle}>
@@ -594,7 +594,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
       {/* RIGHT COLUMN: Vibe selection & PDF Save details */}
       <div className={styles.panel} style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
         <div className={styles.panelTitle}>
-          <Wrench size={20} style={{ color: '#a855f7' }} />
+          <Wrench size={20} style={{ color: 'var(--primary)' }} />
           Choose Layout & Save
         </div>
         <p className={styles.panelSubtitle}>
@@ -626,7 +626,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
         <div style={{ marginTop: '10px', marginBottom: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span className={styles.fieldLabel} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Eye size={14} style={{ color: '#a855f7' }} />
+              <Eye size={14} style={{ color: 'var(--primary)' }} />
               Live HTML Theme Preview
             </span>
             <button
@@ -684,9 +684,9 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center', 
-                color: '#6b7280', 
+                color: 'var(--text-secondary)', 
                 fontSize: '12px',
-                background: '#121214'
+                background: 'var(--surface)'
               }}>
                 Generating preview layout...
               </div>

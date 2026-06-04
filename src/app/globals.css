@@ -1,25 +1,25 @@
 :root {
-  --background: #080808;
-  --surface: #141414;
-  --surface-hover: #1e1e1e;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  --background: #ebe5d9;
+  --surface: #f4f0e9;
+  --surface-hover: #fcfbfa;
+  --border: rgba(30, 27, 24, 0.1);
+  --border-hover: rgba(30, 27, 24, 0.2);
   
-  --text-primary: #ffffff;
-  --text-secondary: #a3a3a3;
-  --text-tertiary: #737373;
+  --text-primary: #1e1b18;
+  --text-secondary: #6b6359;
+  --text-tertiary: #a07855;
   
-  --primary: #7c3aed; /* Violet */
-  --primary-hover: #6d28d9;
+  --primary: #a07855; /* Warm goldish brown */
+  --primary-hover: #8c6746;
   
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 24px;
   --radius-full: 9999px;
   
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px rgba(30, 27, 24, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(30, 27, 24, 0.05), 0 2px 4px -1px rgba(30, 27, 24, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(30, 27, 24, 0.1), 0 4px 6px -2px rgba(30, 27, 24, 0.05);
 }
 
 html, body {

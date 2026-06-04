@@ -141,6 +141,7 @@ export default function ResumeCard({
               src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
               className={styles.pdfPreview}
               title={title}
+              frameBorder="0"
             />
           ) : (
             <div 
@@ -211,8 +212,8 @@ export default function ResumeCard({
                       disabled={!pdfUrl || pdfUrl === '#'}
                       title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Reviewer' : 'Review resume against a job description'}
                     >
-                      <Brain size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? '#a855f7' : '#9ca3af' }} />
-                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? '#e2e8f0' : '#9ca3af' }}>AI Match Reviewer</span>
+                      <Brain size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? 'var(--primary)' : '#9ca3af' }} />
+                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? 'var(--text-primary)' : '#9ca3af' }}>AI Match Reviewer</span>
                     </button>
                     <button 
                       className={styles.dropdownItem} 
@@ -224,8 +225,8 @@ export default function ResumeCard({
                       disabled={!pdfUrl || pdfUrl === '#'}
                       title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Builder' : 'Tailor resume and generate styled PDF'}
                     >
-                      <Sparkles size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? '#a855f7' : '#9ca3af' }} />
-                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? '#e2e8f0' : '#9ca3af' }}>AI Tailor & Generate</span>
+                      <Sparkles size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? 'var(--primary)' : '#9ca3af' }} />
+                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? 'var(--text-primary)' : '#9ca3af' }}>AI Tailor & Generate</span>
                     </button>
                     <button 
                       className={styles.dropdownItem} 

@@ -31,7 +31,7 @@ export default async function AiReviewPage({ params }: PageProps) {
 
       <header className={styles.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-          <Brain size={32} style={{ color: '#a855f7' }} />
+          <Brain size={32} style={{ color: 'var(--primary)' }} />
           <h1 className={styles.title} style={{ margin: 0 }}>AI Match Reviewer</h1>
         </div>
         <p className={styles.subtitle}>

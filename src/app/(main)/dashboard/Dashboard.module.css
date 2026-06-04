@@ -51,7 +51,7 @@
 
 .newVariantCard:hover {
   border-color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--surface);
 }
 
 .newVariantIcon {
@@ -69,7 +69,7 @@
 
 .newVariantCard:hover .newVariantIcon {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-hover);
 }
 
 .newVariantTitle {
