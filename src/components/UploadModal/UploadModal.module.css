@@ -4,22 +4,35 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(30, 27, 24, 0.4);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 24px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal {
-  background: #0a0a0a;
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 600px;
   padding: 40px;
   box-shadow: var(--shadow-lg);
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .header {
@@ -31,8 +44,10 @@
 
 .title {
   font-size: 24px;
-  font-weight: 500;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
@@ -41,7 +56,7 @@
 }
 
 .closeBtn {
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   transition: color 0.2s ease;
   padding: 4px;
 }
@@ -60,19 +75,20 @@
   justify-content: center;
   text-align: center;
   margin-bottom: 32px;
-  background: rgba(255, 255, 255, 0.01);
-  transition: background 0.2s ease;
+  background: var(--surface);
+  transition: all 0.2s ease;
 }
 
 .dropzone:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-hover);
+  border-color: var(--primary);
 }
 
 .iconContainer {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(124, 58, 237, 0.1);
+  background: rgba(160, 120, 85, 0.1);
   color: var(--primary);
   display: flex;
   align-items: center;
@@ -82,18 +98,19 @@
 
 .dropzoneTitle {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .dropzoneDesc {
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 13px;
   margin-bottom: 24px;
 }
 
 .browseBtn {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(30, 27, 24, 0.05);
   color: var(--text-primary);
   padding: 10px 24px;
   border-radius: var(--radius-full);
@@ -104,7 +121,7 @@
 }
 
 .browseBtn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(30, 27, 24, 0.1);
 }
 
 .footer {
@@ -112,12 +129,13 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 12px;
+  margin-top: 16px;
 }
 
 .lockIcon {
-  color: var(--text-tertiary);
+  color: var(--primary);
 }
 
 .inputGroup {
@@ -128,44 +146,51 @@
 }
 
 .label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .textInput {
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   padding: 12px 16px;
   color: var(--text-primary);
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .textInput:focus {
   border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(160, 120, 85, 0.15);
 }
 
 .submitBtn {
   background: var(--primary);
   color: #fff;
   padding: 12px 24px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   width: 100%;
   margin-bottom: 24px;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(160, 120, 85, 0.15);
 }
 
 .submitBtn:hover {
-  opacity: 0.9;
+  background: var(--primary-hover);
+  box-shadow: 0 4px 8px rgba(160, 120, 85, 0.25);
 }
 
 .submitBtn:disabled {
-  opacity: 0.5;
+  background: rgba(30, 27, 24, 0.08);
+  color: rgba(30, 27, 24, 0.4);
   cursor: not-allowed;
+  box-shadow: none;
 }

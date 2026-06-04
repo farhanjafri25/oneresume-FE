@@ -100,6 +100,15 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     });
   }, []);
 
+  // Pre-fill JD if navigated from AI Match Reviewer
+  useEffect(() => {
+    const storedJd = sessionStorage.getItem('shared_jd');
+    if (storedJd) {
+      setJd(storedJd);
+      sessionStorage.removeItem('shared_jd');
+    }
+  }, []);
+
   const updatePreviewHtml = async (themeId: string, data: TailoredData | null) => {
     if (!data) return;
     setPreviewLoading(true);
@@ -245,45 +254,13 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
           Create Tailored Resume Variant
         </div>
         <p className={styles.panelSubtitle} style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }}>
-          Select a resume layout style, paste the Job Description, and Gemini will automatically tailor your CV content to fit the role.
+          Paste the Job Description, and Gemini will automatically tailor your CV content to fit the role.
         </p>
 
-        {/* Step 1: Select Theme */}
-        <div style={{ width: '100%', marginBottom: '24px' }}>
-          <h3 className={styles.panelTitle} style={{ fontSize: '15px', marginBottom: '12px' }}>
-            1. Select a Theme Design Style
-          </h3>
-          <div className={styles.themesGrid} style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', 
-            maxHeight: 'none', 
-            overflowY: 'visible',
-            marginBottom: '10px'
-          }}>
-            {themes.map((theme) => {
-              const isSelected = selectedThemeId === theme.id;
-              return (
-                <div 
-                  key={theme.id}
-                  className={`${styles.themeCard} ${isSelected ? styles.selectedThemeCard : ''}`}
-                  onClick={() => setSelectedThemeId(theme.id)}
-                >
-                  <div className={styles.themeName}>
-                    <span>{theme.name}</span>
-                    {isSelected && <span className={styles.themeBadge}>Active</span>}
-                  </div>
-                  <div className={styles.themeMeta}>{theme.description}</div>
-                  <div className={styles.themeVibe}>⚡ {theme.vibe}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Step 2: Paste JD */}
+        {/* Step 1: Paste JD */}
         <div style={{ width: '100%', marginBottom: '20px' }}>
           <h3 className={styles.panelTitle} style={{ fontSize: '15px', marginBottom: '12px' }}>
-            2. Paste Job Description (JD)
+            Paste Job Description (JD)
           </h3>
           <textarea
             className={styles.jdTextarea}
@@ -595,32 +572,11 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
       <div className={styles.panel} style={{ position: 'sticky', top: '20px', height: 'fit-content' }}>
         <div className={styles.panelTitle}>
           <Wrench size={20} style={{ color: 'var(--primary)' }} />
-          Choose Layout & Save
+          Save Variant
         </div>
         <p className={styles.panelSubtitle}>
-          Select one of your parsed themes.css styles and specify the new variant's details.
+          Specify the new variant's details and save your tailored resume.
         </p>
-
-        {/* CSS Themes List */}
-        <div className={styles.themesGrid}>
-          {themes.map((theme) => {
-            const isSelected = selectedThemeId === theme.id;
-            return (
-              <div 
-                key={theme.id} 
-                className={`${styles.themeCard} ${isSelected ? styles.selectedThemeCard : ''}`}
-                onClick={() => setSelectedThemeId(theme.id)}
-              >
-                <div className={styles.themeName}>
-                  <span>{theme.name}</span>
-                  {isSelected && <span className={styles.themeBadge}>Active</span>}
-                </div>
-                <div className={styles.themeMeta}>{theme.description}</div>
-                <div className={styles.themeVibe}>⚡ {theme.vibe}</div>
-              </div>
-            );
-          })}
-        </div>
 
         {/* Live Layout Preview Card */}
         <div style={{ marginTop: '10px', marginBottom: '20px' }}>

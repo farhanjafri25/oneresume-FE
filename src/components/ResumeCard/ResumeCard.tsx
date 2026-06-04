@@ -172,6 +172,58 @@ export default function ResumeCard({
             ))}
           </div>
 
+          <div className={styles.actionsBar}>
+            <button 
+              className={styles.actionIconBtn} 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `/dashboard/ai-review/${id}`;
+              }}
+              disabled={!pdfUrl || pdfUrl === '#'}
+              title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Reviewer' : 'AI Match Reviewer'}
+            >
+              <Brain size={16} />
+            </button>
+            <button 
+              className={styles.actionIconBtn} 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `/dashboard/ai-builder/${id}`;
+              }}
+              disabled={!pdfUrl || pdfUrl === '#'}
+              title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Builder' : 'AI Tailor & Build'}
+            >
+              <Sparkles size={16} />
+            </button>
+            <button 
+              className={styles.actionIconBtn} 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `/dashboard/analytics/${id}`;
+              }}
+              title="View Page Views & Analytics"
+            >
+              <BarChart2 size={16} />
+            </button>
+            <button 
+              className={styles.actionIconBtn} 
+              onClick={handleCreateTrackingLink}
+              title="Create Personalized Tracking Link"
+            >
+              <Link2 size={16} />
+            </button>
+            <button 
+              className={styles.actionIconBtn} 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `/dashboard/versions/${id}`;
+              }}
+              title="Version History"
+            >
+              <History size={16} />
+            </button>
+          </div>
+
           <div className={styles.footer}>
             <button className={styles.actionBtn} onClick={handleCopyLink} disabled={isDeleting}>
               <Link2 size={16} />
@@ -207,66 +259,11 @@ export default function ResumeCard({
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowDropdown(false);
-                        window.location.href = `/dashboard/ai-review/${id}`;
-                      }}
-                      disabled={!pdfUrl || pdfUrl === '#'}
-                      title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Reviewer' : 'Review resume against a job description'}
-                    >
-                      <Brain size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? 'var(--primary)' : '#9ca3af' }} />
-                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? 'var(--text-primary)' : '#9ca3af' }}>AI Match Reviewer</span>
-                    </button>
-                    <button 
-                      className={styles.dropdownItem} 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDropdown(false);
-                        window.location.href = `/dashboard/ai-builder/${id}`;
-                      }}
-                      disabled={!pdfUrl || pdfUrl === '#'}
-                      title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Builder' : 'Tailor resume and generate styled PDF'}
-                    >
-                      <Sparkles size={14} style={{ color: pdfUrl && pdfUrl !== '#' ? 'var(--primary)' : '#9ca3af' }} />
-                      <span style={{ fontWeight: pdfUrl && pdfUrl !== '#' ? 600 : 400, color: pdfUrl && pdfUrl !== '#' ? 'var(--text-primary)' : '#9ca3af' }}>AI Tailor & Generate</span>
-                    </button>
-                    <button 
-                      className={styles.dropdownItem} 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDropdown(false);
                         window.location.href = `/dashboard/variants`;
                       }}
                     >
                       <Sparkles size={14} />
                       View Tailored Variants
-                    </button>
-                    <button 
-                      className={styles.dropdownItem} 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDropdown(false);
-                        window.location.href = `/dashboard/analytics/${id}`;
-                      }}
-                    >
-                      <BarChart2 size={14} />
-                      View Analytics
-                    </button>
-                    <button 
-                      className={styles.dropdownItem} 
-                      onClick={handleCreateTrackingLink}
-                    >
-                      <Link2 size={14} />
-                      Create Tracking Link
-                    </button>
-                    <button 
-                      className={styles.dropdownItem} 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDropdown(false);
-                        window.location.href = `/dashboard/versions/${id}`;
-                      }}
-                    >
-                      <History size={14} />
-                      Version History
                     </button>
                     <button className={styles.dropdownItem} onClick={handleReplace}>
                       <Upload size={14} />

@@ -49,7 +49,7 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
         </div>
 
         {state?.error && (
-          <div style={{ color: '#fca5a5', marginBottom: '16px', fontSize: '14px' }}>
+          <div style={{ color: '#991b1b', marginBottom: '16px', fontSize: '14px' }}>
             {state.error}
           </div>
         )}

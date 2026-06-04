@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, BarChart2, Globe, Eye, Download, ShieldAlert, Award } from 'lucide-react';
 import { getResumeAnalyticsAction } from '@/app/actions/resume';
 import styles from './Analytics.module.css';
+import AnalyticsChart from './AnalyticsChart';
 
 // Helper to format dates cleanly
 function formatDate(dateInput: string | Date): string {
@@ -74,20 +75,7 @@ export default async function ResumeAnalyticsPage({
   const mobilePct = Math.round((mobile / deviceTotal) * 100);
   const tabletPct = Math.round((tablet / deviceTotal) * 100);
 
-  // Generate dynamic SVG coordinates for the 30-day timeline chart (500x150 grid)
-  const chartPoints = timeline.map((item: any, index: number) => {
-    const x = (index * 500) / (timeline.length - 1);
-    const y = 150 - (item.count / maxViews) * 110; // leave padding at top
-    return `${x},${y}`;
-  }).join(' ');
 
-  const chartAreaPath = timeline.length > 0 
-    ? `M 0 150 ` + timeline.map((item: any, index: number) => {
-        const x = (index * 500) / (timeline.length - 1);
-        const y = 150 - (item.count / maxViews) * 110;
-        return `L ${x} ${y}`;
-      }).join(' ') + ` L 500 150 Z`
-    : '';
 
   return (
     <div className={styles.container}>
@@ -133,56 +121,8 @@ export default async function ResumeAnalyticsPage({
         </div>
       ) : (
         <>
-          {/* Custom SVG Line Chart */}
-          <div className={styles.chartCard}>
-            <div className={styles.chartHeader}>
-              <h2 className={styles.chartTitle}>Views Timeline (Last 30 Days)</h2>
-            </div>
-            
-            <div className={styles.chartContainer}>
-              <svg viewBox="0 0 500 150" className={styles.chartSvg} preserveAspectRatio="none">
-                <defs>
-                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.3"/>
-                    <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.0"/>
-                  </linearGradient>
-                </defs>
-
-                {/* Grid Lines */}
-                <g className={styles.gridLines}>
-                  <line x1="0" y1="150" x2="500" y2="150" />
-                  <line x1="0" y1="100" x2="500" y2="100" />
-                  <line x1="0" y1="40" x2="500" y2="40" />
-                </g>
-
-                {/* Filled Area */}
-                {chartAreaPath && <path d={chartAreaPath} className={styles.chartArea} />}
-
-                {/* Smooth Glowing Polyline */}
-                {chartPoints && (
-                  <polyline
-                    points={chartPoints}
-                    className={styles.chartPath}
-                  />
-                )}
-
-                {/* Data Points */}
-                {timeline.map((item: any, idx: number) => {
-                  const x = (idx * 500) / (timeline.length - 1);
-                  const y = 150 - (item.count / maxViews) * 110;
-                  return item.count > 0 ? (
-                    <circle
-                      key={idx}
-                      cx={x}
-                      cy={y}
-                      r="4"
-                      className={styles.chartPoint}
-                    />
-                  ) : null;
-                })}
-              </svg>
-            </div>
-          </div>
+          {/* Custom SVG Line Chart Component */}
+          <AnalyticsChart timeline={timeline} />
 
           <div className={styles.detailGrid}>
             {/* Traffic Sources */}

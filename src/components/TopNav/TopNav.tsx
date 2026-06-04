@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { logoutUser } from '@/app/actions/auth';
 import { User } from '@/types';
 import styles from './TopNav.module.css';
@@ -46,9 +46,6 @@ export default function TopNav({ user }: { user?: User }) {
         <div className={styles.right}>
           {user ? (
             <>
-              <button className={styles.iconButton}>
-                <Bell size={18} />
-              </button>
               <div className={styles.avatar}>
                 <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" />
               </div>

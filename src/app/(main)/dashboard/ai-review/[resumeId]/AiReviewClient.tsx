@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
@@ -28,12 +29,12 @@ interface AiReport {
 }
 
 export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
+  const router = useRouter();
   const [jd, setJd] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState('Downloading PDF resume...');
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<AiReport | null>(null);
-  const [checkedRecommendations, setCheckedRecommendations] = useState<Record<number, boolean>>({});
 
   // Dynamic status update messages during AI processing
   useEffect(() => {
@@ -63,7 +64,6 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
     setLoading(true);
     setError(null);
     setReport(null);
-    setCheckedRecommendations({});
 
     try {
       const result = await analyzeResumeAction(resumeId, jd);
@@ -77,13 +77,6 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const toggleRecommendation = (index: number) => {
-    setCheckedRecommendations((prev) => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
   };
 
   // Word counting logic
@@ -261,23 +254,33 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
               </h4>
               <div className={styles.checklist}>
                 {report.recommendations.map((recommendation, idx) => {
-                  const isChecked = !!checkedRecommendations[idx];
                   return (
                     <div 
                       key={idx} 
                       className={styles.checklistItem}
-                      onClick={() => toggleRecommendation(idx)}
                     >
-                      <div className={`${styles.checkbox} ${isChecked ? styles.checkedBox : ''}`}>
-                        {isChecked && <Check size={12} strokeWidth={3} />}
-                      </div>
-                      <span className={`${styles.checklistText} ${isChecked ? styles.completedText : ''}`}>
+                      <span className={styles.checklistText}>
                         {recommendation}
                       </span>
                     </div>
                   );
                 })}
               </div>
+            </div>
+
+            <div style={{ marginTop: '32px', textAlign: 'center' }}>
+              <button 
+                type="button" 
+                className={styles.actionBtn} 
+                onClick={() => {
+                  sessionStorage.setItem('shared_jd', jd);
+                  router.push(`/dashboard/ai-builder/${resumeId}`);
+                }}
+                style={{ display: 'inline-flex', width: 'auto', padding: '12px 24px', fontSize: '15px' }}
+              >
+                <Sparkles size={18} style={{ marginRight: '8px' }} />
+                Generate AI Resume from this JD
+              </button>
             </div>
           </div>
         ) : (
