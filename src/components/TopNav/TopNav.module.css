@@ -14,9 +14,6 @@
   padding: 8px 24px;
   backdrop-filter: blur(10px);
   gap: 32px;
-  width: 100%;
-  max-width: 1200px;
-  justify-content: space-between;
 }
 
 .left {
