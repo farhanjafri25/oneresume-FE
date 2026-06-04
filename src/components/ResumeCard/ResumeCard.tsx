@@ -32,6 +32,7 @@ export default function ResumeCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [linkLabel, setLinkLabel] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     if (showToast) {
@@ -102,13 +103,14 @@ export default function ResumeCard({
     onUploadClick?.();
   };
 
-  const handleDelete = async (e: React.MouseEvent) => {
+  const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowDropdown(false);
+    setShowDeleteModal(true);
+  };
 
-    if (!window.confirm(`Are you sure you want to delete "${title}"? This will delete all versions and variants.`)) {
-      return;
-    }
+  const confirmDelete = async () => {
+    setShowDeleteModal(false);
 
     try {
       setIsDeleting(true);
@@ -314,6 +316,26 @@ export default function ResumeCard({
             <div className={styles.modalActions}>
               <button className={styles.modalCancel} onClick={() => { setShowLinkModal(false); setLinkLabel(''); }}>Cancel</button>
               <button className={styles.modalSubmit} onClick={submitTrackingLink}>Copy Link</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showDeleteModal && (
+        <div className={styles.modalOverlay} onClick={(e) => { e.stopPropagation(); setShowDeleteModal(false); }}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle} style={{ color: '#ef4444' }}>Delete Resume</h3>
+            <p className={styles.modalDesc}>
+              Are you sure you want to delete <strong>"{title}"</strong>? This will permanently delete all versions and variants. This action cannot be undone.
+            </p>
+            <div className={styles.modalActions}>
+              <button className={styles.modalCancel} onClick={() => setShowDeleteModal(false)}>Cancel</button>
+              <button 
+                className={styles.modalSubmit} 
+                style={{ background: '#ef4444', borderColor: '#ef4444' }} 
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
