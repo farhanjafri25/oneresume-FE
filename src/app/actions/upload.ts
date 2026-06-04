@@ -14,6 +14,9 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
     }
 
     const user = await getMe();
+    if (!user) {
+      return { error: 'Unauthorized' };
+    }
     
     // Check if we passed resumeId and variantId (if uploading a new version to an existing variant)
     let resumeId = formData.get('resumeId') as string;

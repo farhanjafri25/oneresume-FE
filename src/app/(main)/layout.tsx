@@ -14,23 +14,23 @@ export default async function MainLayout({ children }: { children: React.ReactNo
     console.log("MainLayout: No token found, redirecting to /login");
     redirect('/login');
   }
-
+  let user;
   try {
-    // Verify token and fetch user
-    const user = await getMe();
-    
-    return (
-      <>
-        {/* Pass user to TopNav if needed */}
-        <TopNav user={user} />
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {children}
-        </main>
-      </>
-    );
+    user = await getMe();
   } catch (err) {
     console.error("MainLayout auth check failed:", err);
-    // Token might be expired or invalid
+  }
+
+  if (!user) {
     redirect('/login');
   }
+
+  return (
+    <>
+      <TopNav user={user} />
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </main>
+    </>
+  );
 }

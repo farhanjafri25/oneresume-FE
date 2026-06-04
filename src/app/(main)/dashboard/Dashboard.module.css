@@ -84,3 +84,41 @@
   line-height: 1.5;
   max-width: 200px;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 24px 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .newBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 22px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .newVariantCard {
+    min-height: 280px;
+    padding: 32px 20px;
+  }
+}

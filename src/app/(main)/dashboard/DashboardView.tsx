@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styles from './Dashboard.module.css';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
+import VersionsModal from '@/components/VersionsModal/VersionsModal';
 import { Plus } from 'lucide-react';
 import { Resume, User } from '@/types';
 
@@ -25,6 +26,7 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [selectedResumeId, setSelectedResumeId] = useState<string | undefined>(undefined);
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined);
+  const [selectedVersionsResume, setSelectedVersionsResume] = useState<Resume | null>(null);
 
   return (
     <div className={styles.container}>
@@ -68,6 +70,7 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
                   setSelectedVariantId(variant.id);
                   setIsUploadOpen(true);
                 }}
+                onVersionsClick={() => setSelectedVersionsResume(resume)}
               />
             );
           })
@@ -122,6 +125,13 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
         }} 
         resumeId={selectedResumeId}
         variantId={selectedVariantId}
+      />
+
+      <VersionsModal
+        isOpen={!!selectedVersionsResume}
+        onClose={() => setSelectedVersionsResume(null)}
+        resume={selectedVersionsResume}
+        username={user.username}
       />
     </div>
   );

@@ -59,3 +59,33 @@ export async function getResumeAnalyticsAction(resumeId: string) {
     return { error: 'An unexpected error occurred while loading analytics' };
   }
 }
+
+export async function getResumeVariantsAction(resumeId: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return { error: 'Unauthorized' };
+    }
+
+    const res = await fetch(`${API_URL}/resumes/${resumeId}/variants`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      return { error: 'Failed to load variants' };
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('Get Resume Variants Error:', err);
+    return { error: 'An unexpected error occurred while loading variants' };
+  }
+}
+
+

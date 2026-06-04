@@ -39,8 +39,15 @@ export async function serverFetch<T>(endpoint: string, options: RequestInit = {}
 
 // ─── Data Fetching Utilities (Server-Side) ─────────────────────────
 
-export async function getMe(): Promise<User> {
-  return serverFetch<User>('/auth/me');
+export async function getMe(): Promise<User | null> {
+  try {
+    return await serverFetch<User>('/auth/me');
+  } catch (err: any) {
+    if (err.message === 'Unauthorized') {
+      return null;
+    }
+    throw err;
+  }
 }
 
 export async function getResumes(): Promise<Resume[]> {

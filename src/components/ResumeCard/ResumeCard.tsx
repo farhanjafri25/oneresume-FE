@@ -12,6 +12,7 @@ interface ResumeCardProps {
   pdfUrl?: string;
   publicUrl?: string;
   onUploadClick?: () => void;
+  onVersionsClick?: () => void;
 }
 
 export default function ResumeCard({
@@ -23,11 +24,14 @@ export default function ResumeCard({
   pdfUrl,
   publicUrl,
   onUploadClick,
+  onVersionsClick,
 }: ResumeCardProps) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('Shareable link copied to clipboard!');
   const [showDropdown, setShowDropdown] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkLabel, setLinkLabel] = useState('');
 
   useEffect(() => {
     if (showToast) {
@@ -66,14 +70,12 @@ export default function ResumeCard({
   const handleCreateTrackingLink = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowDropdown(false);
-    
-    const tag = window.prompt(
-      'Enter an application label to create a personalized tracking link:\n(e.g., Google-Frontend, Netflix-Recruiter, LinkedIn-Signature)',
-      ''
-    );
-    
-    if (tag && tag.trim()) {
-      const cleanTag = tag.trim().replace(/\s+/g, '-');
+    setShowLinkModal(true);
+  };
+
+  const submitTrackingLink = () => {
+    if (linkLabel && linkLabel.trim()) {
+      const cleanTag = linkLabel.trim().replace(/\s+/g, '-');
       if (publicUrl) {
         const fullUrl = `${window.location.origin}${publicUrl}?for=${encodeURIComponent(cleanTag)}`;
         navigator.clipboard.writeText(fullUrl).then(() => {
@@ -84,6 +86,8 @@ export default function ResumeCard({
         });
       }
     }
+    setShowLinkModal(false);
+    setLinkLabel('');
   };
 
   const handleToggleDropdown = (e: React.MouseEvent) => {
@@ -216,7 +220,7 @@ export default function ResumeCard({
               className={styles.actionIconBtn} 
               onClick={(e) => {
                 e.stopPropagation();
-                window.location.href = `/dashboard/versions/${id}`;
+                onVersionsClick?.();
               }}
               title="Version History"
             >
@@ -283,8 +287,35 @@ export default function ResumeCard({
 
       {showToast && (
         <div className={styles.toast}>
-          <CheckCircle size={16} className={styles.toastIcon} />
-          <span>{toastMessage}</span>
+          <CheckCircle size={16} />
+          {toastMessage}
+        </div>
+      )}
+
+      {showLinkModal && (
+        <div className={styles.modalOverlay} onClick={(e) => { e.stopPropagation(); setShowLinkModal(false); }}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>Create Custom Tracking Link</h3>
+            <p className={styles.modalDesc}>
+              Enter an application label to create a personalized tracking link:
+              <br/><span style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>(e.g., Google-Frontend, Netflix-Recruiter)</span>
+            </p>
+            <input 
+              type="text" 
+              className={styles.modalInput} 
+              value={linkLabel}
+              onChange={(e) => setLinkLabel(e.target.value)}
+              placeholder="Application Label"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') submitTrackingLink();
+              }}
+            />
+            <div className={styles.modalActions}>
+              <button className={styles.modalCancel} onClick={() => { setShowLinkModal(false); setLinkLabel(''); }}>Cancel</button>
+              <button className={styles.modalSubmit} onClick={submitTrackingLink}>Copy Link</button>
+            </div>
+          </div>
         </div>
       )}
     </>

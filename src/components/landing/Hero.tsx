@@ -12,7 +12,7 @@ export default function Hero() {
         </h1>
         <p className={styles.subtitle}>
           The premium resume platform powered by AI to elevate your professional journey.
-          Upload your master document, tailor with AI, and track every view.
+          Upload your Resume, tailor with AI, and track every view.
         </p>
         
         <div className={styles.ctaContainer}>
