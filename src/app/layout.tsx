@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist, Hubot_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] }); 
+const geist = Geist({ subsets: ["latin"] });
+
+const hubotSans = Hubot_Sans({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  axes: ["wdth"],
+});
 
 export const metadata: Metadata = {
-  title: "OneResume - The Last Resume Link You'll Ever Need",
-  description: "Share one link, update everywhere, and track every view with OneResume.",
+  title: "OneCV - The Last Resume Link You'll Ever Need",
+  description: "Share one link, update everywhere, and track every view with OneCV.",
 };
 
 export default function RootLayout({
@@ -16,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={`${geist.className} ${hubotSans.variable}`}>
       <body>
         {children}
         <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />

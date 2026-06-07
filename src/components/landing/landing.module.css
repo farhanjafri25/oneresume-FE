@@ -26,9 +26,6 @@
 }
 
 .titleAccent {
-  font-family: Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
   color: var(--primary);
 }
 
@@ -114,7 +111,7 @@
 .iconWrapper {
   width: 48px;
   height: 48px;
-  background: #ebe5d9; /* slightly darker than surface, matching background */
+  background: var(--background); /* slightly darker than surface, matching background */
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -166,7 +163,7 @@
   left: 0;
   right: 0;
   height: 40px;
-  background: #f4f0e9;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
   z-index: 10;
 }

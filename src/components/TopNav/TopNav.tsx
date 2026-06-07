@@ -19,7 +19,9 @@ export default function TopNav({ user }: { user?: User }) {
     <div className={styles.container}>
       <nav className={`${styles.nav} ${isOpen ? styles.open : ''}`}>
         <div className={styles.left}>
-          <Link href="/" className={styles.logo} onClick={closeMenu}>OneResume</Link>
+          <Link href="/" className={styles.logo} onClick={closeMenu}>
+            <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
+          </Link>
         </div>
         
         {/* Toggle Button for Mobile */}

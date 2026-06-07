@@ -43,7 +43,7 @@ export default async function SettingsPage() {
           </div>
           <div className={styles.profileInfo}>
             <h2>{user.username}</h2>
-            <p>OneResume Creator Account</p>
+            <p>OneCV Creator Account</p>
           </div>
         </div>
 

@@ -54,9 +54,11 @@ export default function SignupPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <Link href="/" className={styles.logo}>OneResume</Link>
+          <Link href="/" className={styles.logo}>
+            <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
+          </Link>
           <h1 className={styles.title}>Create an account</h1>
-          <p className={styles.subtitle}>Get started with OneResume today</p>
+          <p className={styles.subtitle}>Get started with OneCV today</p>
         </div>
 
         {(state?.error || googleError) && (
