@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(30, 27, 24, 0.4);
+  background: rgba(28, 25, 23, 0.4);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -110,7 +110,7 @@
 }
 
 .browseBtn {
-  background: rgba(30, 27, 24, 0.05);
+  background: rgba(28, 25, 23, 0.05);
   color: var(--text-primary);
   padding: 10px 24px;
   border-radius: var(--radius-full);
@@ -121,7 +121,7 @@
 }
 
 .browseBtn:hover {
-  background: rgba(30, 27, 24, 0.1);
+  background: rgba(28, 25, 23, 0.1);
 }
 
 .footer {
@@ -189,8 +189,8 @@
 }
 
 .submitBtn:disabled {
-  background: rgba(30, 27, 24, 0.08);
-  color: rgba(30, 27, 24, 0.4);
+  background: rgba(28, 25, 23, 0.08);
+  color: rgba(28, 25, 23, 0.4);
   cursor: not-allowed;
   box-shadow: none;
 }

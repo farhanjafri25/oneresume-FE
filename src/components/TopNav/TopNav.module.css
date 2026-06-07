@@ -8,7 +8,7 @@
 .nav {
   display: flex;
   align-items: center;
-  background: rgba(244, 240, 233, 0.85); /* Light surface with opacity */
+  background: rgba(251, 248, 241, 0.85); /* Light surface with opacity */
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   padding: 8px 24px;
@@ -22,9 +22,14 @@
 }
 
 .logo {
-  font-weight: 500;
-  font-size: 15px;
-  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.logoImg {
+  height: 18px;
+  width: auto;
+  display: block;
 }
 
 .center {
@@ -117,7 +122,7 @@
 
   .nav.open {
     border-radius: var(--radius-lg);
-    background: rgba(244, 240, 233, 0.95);
+    background: rgba(251, 248, 241, 0.95);
   }
 
   .hamburger {

@@ -48,7 +48,7 @@ export default async function PublicResumePage({
       <header className={styles.topBar}>
         <div className={styles.barContent}>
           <div className={styles.left}>
-            <span className={styles.logo}>OneResume</span>
+            <span className={styles.logo}>OneCV</span>
             <span className={styles.divider}></span>
             <span className={styles.name}>{username}</span>
             <span className={styles.variantBadge}>{filename}</span>

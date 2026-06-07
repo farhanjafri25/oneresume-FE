@@ -22,11 +22,14 @@
 }
 
 .logo {
-  font-weight: 600;
-  font-size: 18px;
-  color: var(--text-primary);
   display: inline-block;
   margin-bottom: 24px;
+}
+
+.logoImg {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 
 .title {

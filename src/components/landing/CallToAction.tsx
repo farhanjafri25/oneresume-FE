@@ -16,7 +16,7 @@ export default function CallToAction() {
         Ready to <span className={styles.titleAccent}>Upgrade</span> Your Career?
       </h2>
       <p style={{ fontSize: '18px', color: 'var(--text-secondary)', marginBottom: '40px', maxWidth: '600px', margin: '0 auto 40px auto' }}>
-        Join thousands of professionals who have already elevated their job search with OneResume.
+        Join thousands of professionals who have already elevated their job search with OneCV.
       </p>
       <Link href="/signup" className="btn-primary" style={{ padding: '16px 32px', fontSize: '18px' }}>
         Get Started for Free <ArrowRight size={20} />

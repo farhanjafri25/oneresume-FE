@@ -296,7 +296,7 @@
 .actionIconBtn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-  background: rgba(30, 27, 24, 0.02);
+  background: rgba(28, 25, 23, 0.02);
   border-color: var(--border);
   box-shadow: none;
 }

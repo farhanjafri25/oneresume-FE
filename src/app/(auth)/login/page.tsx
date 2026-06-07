@@ -54,7 +54,9 @@ export default function LoginPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <Link href="/" className={styles.logo}>OneResume</Link>
+          <Link href="/" className={styles.logo}>
+            <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
+          </Link>
           <h1 className={styles.title}>Welcome back</h1>
           <p className={styles.subtitle}>Sign in to your account</p>
         </div>

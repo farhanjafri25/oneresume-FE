@@ -322,7 +322,7 @@
 .chartTooltip {
   position: absolute;
   transform: translate(-50%, -110%);
-  background: #1e1b18;
+  background: var(--text-primary);
   color: #ffffff;
   padding: 8px 12px;
   border-radius: 8px;
@@ -347,7 +347,7 @@
   transform: translateX(-50%);
   border-width: 6px;
   border-style: solid;
-  border-color: #1e1b18 transparent transparent transparent;
+  border-color: var(--text-primary) transparent transparent transparent;
 }
 
 .tooltipDate {
