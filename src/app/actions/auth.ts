@@ -66,6 +66,40 @@ export async function signupUser(prevState: any, formData: FormData) {
       return { error: data.message || 'Failed to sign up' };
     }
 
+    const data = await res.json();
+    
+    if (data.requiresOtp) {
+      return { requiresOtp: true, email: data.email };
+    }
+
+  } catch (error) {
+    return { error: 'An unexpected error occurred' };
+  }
+
+  // Fallback redirect if OTP wasn't required (e.g., future flow)
+  redirect('/login');
+}
+
+export async function verifyOtpAction(prevState: any, formData: FormData) {
+  const email = formData.get('email');
+  const code = formData.get('code');
+
+  if (!email || !code) {
+    return { error: 'Email and verification code are required' };
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      return { error: data.message || 'Verification failed' };
+    }
+
     const data: AuthResponse = await res.json();
     
     // Set cookie
@@ -83,6 +117,27 @@ export async function signupUser(prevState: any, formData: FormData) {
   }
 
   redirect('/dashboard');
+}
+
+export async function resendOtpAction(email: string) {
+  if (!email) return { error: 'Email is required' };
+
+  try {
+    const res = await fetch(`${API_URL}/auth/resend-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      return { error: data.message || 'Failed to resend code' };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { error: 'An unexpected error occurred' };
+  }
 }
 
 export async function loginWithGoogle(googleToken: string) {

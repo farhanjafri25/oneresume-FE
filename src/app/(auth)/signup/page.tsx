@@ -2,16 +2,24 @@
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { signupUser, loginWithGoogle } from '@/app/actions/auth';
-import styles from '../login/page.module.css'; // Reuse login styles
+import { signupUser, loginWithGoogle, verifyOtpAction, resendOtpAction } from '@/app/actions/auth';
+import styles from '../login/page.module.css';
 
 export default function SignupPage() {
-  const [state, formAction, isPending] = useActionState(signupUser, null);
+  const [signupState, signupAction, isSignupPending] = useActionState(signupUser, null);
+  const [verifyState, verifyAction, isVerifyPending] = useActionState(verifyOtpAction, null);
+  
   const [googleError, setGoogleError] = useState<string | null>(null);
   const [isGooglePending, setIsGooglePending] = useState(false);
+  const [resendStatus, setResendStatus] = useState<string | null>(null);
   const googleBtnRef = useRef<HTMLDivElement>(null);
 
+  const requiresOtp = signupState?.requiresOtp;
+  const email = signupState?.email;
+
   useEffect(() => {
+    if (requiresOtp) return; // Don't init google signin on OTP screen
+
     let checkInterval: NodeJS.Timeout;
 
     const initGoogleSignIn = () => {
@@ -48,7 +56,72 @@ export default function SignupPage() {
     checkInterval = setInterval(initGoogleSignIn, 500);
 
     return () => clearInterval(checkInterval);
-  }, []);
+  }, [requiresOtp]);
+
+  const handleResend = async () => {
+    if (!email) return;
+    setResendStatus('Sending...');
+    const result = await resendOtpAction(email);
+    if (result?.error) {
+      setResendStatus(`Error: ${result.error}`);
+    } else {
+      setResendStatus('Code sent!');
+      setTimeout(() => setResendStatus(null), 3000);
+    }
+  };
+
+  if (requiresOtp && email) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.card}>
+          <div className={styles.header}>
+            <Link href="/" className={styles.logo}>
+              <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
+            </Link>
+            <h1 className={styles.title}>Verify your email</h1>
+            <p className={styles.subtitle}>We sent a 6-digit code to {email}</p>
+          </div>
+
+          {verifyState?.error && (
+            <div className={styles.errorAlert}>
+              {verifyState.error}
+            </div>
+          )}
+
+          <form className={styles.form} action={verifyAction}>
+            <input type="hidden" name="email" value={email} />
+            
+            <div className={styles.inputGroup}>
+              <label htmlFor="code">Verification Code</label>
+              <input 
+                type="text" 
+                name="code" 
+                id="code" 
+                placeholder="123456" 
+                maxLength={6}
+                required 
+                disabled={isVerifyPending} 
+              />
+            </div>
+
+            <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={isVerifyPending}>
+              {isVerifyPending ? 'Verifying...' : 'Verify Email'}
+            </button>
+          </form>
+
+          <div style={{ marginTop: '16px', textAlign: 'center' }}>
+            <button 
+              type="button" 
+              onClick={handleResend}
+              style={{ background: 'none', border: 'none', color: '#6366f1', cursor: 'pointer', fontSize: '14px' }}
+            >
+              {resendStatus || 'Resend Code'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -61,30 +134,30 @@ export default function SignupPage() {
           <p className={styles.subtitle}>Get started with OneCV today</p>
         </div>
 
-        {(state?.error || googleError) && (
+        {(signupState?.error || googleError) && (
           <div className={styles.errorAlert}>
-            {state?.error || googleError}
+            {signupState?.error || googleError}
           </div>
         )}
 
-        <form className={styles.form} action={formAction}>
+        <form className={styles.form} action={signupAction}>
           <div className={styles.inputGroup}>
             <label htmlFor="username">Username</label>
-            <input type="text" name="username" id="username" placeholder="alexj" required disabled={isPending || isGooglePending} />
+            <input type="text" name="username" id="username" placeholder="alexj" required disabled={isSignupPending || isGooglePending} />
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
-            <input type="email" name="email" id="email" placeholder="alex@example.com" required disabled={isPending || isGooglePending} />
+            <input type="email" name="email" id="email" placeholder="alex@example.com" required disabled={isSignupPending || isGooglePending} />
           </div>
           
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="••••••••" required disabled={isPending || isGooglePending} />
+            <input type="password" name="password" id="password" placeholder="••••••••" required disabled={isSignupPending || isGooglePending} />
           </div>
 
-          <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={isPending || isGooglePending}>
-            {isPending ? 'Creating Account...' : 'Sign Up'}
+          <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={isSignupPending || isGooglePending}>
+            {isSignupPending ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
 

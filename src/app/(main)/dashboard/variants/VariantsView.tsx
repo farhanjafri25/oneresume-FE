@@ -94,7 +94,7 @@ export default function VariantsView({ user, resumes }: VariantsViewProps) {
             </div>
             <h3 className={styles.newVariantTitle}>No tailored variants yet</h3>
             <p className={styles.newVariantDesc} style={{ maxWidth: '400px', margin: '8px auto 0' }}>
-              Create role-specific variants (like "frontend", "backend") by clicking the upload button or "Replace File" on your master resumes on the main page.
+              Create role-specific variants (like "frontend", "backend") by generating a resume from our AI on top of existing resumes.
             </p>
           </div>
         )}
