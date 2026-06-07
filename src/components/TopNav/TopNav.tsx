@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, MessageSquare, UserRound, X } from 'lucide-react';
 import { logoutUser } from '@/app/actions/auth';
 import { User } from '@/types';
 import styles from './TopNav.module.css';
@@ -14,12 +14,32 @@ const NAV_TABS = [
   { name: 'Settings', href: '/settings' },
 ];
 
+const FEEDBACK_EMAIL = 'feedback@onecv.app';
+
 export default function TopNav({ user }: { user?: User }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
+  const closeMenu = () => {
+    setIsOpen(false);
+    setIsProfileOpen(false);
+  };
+
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close the profile menu when clicking outside of it.
+  useEffect(() => {
+    if (!isProfileOpen) return;
+    const handleDocumentClick = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleDocumentClick);
+    return () => document.removeEventListener('mousedown', handleDocumentClick);
+  }, [isProfileOpen]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const activeTabRef = useRef<HTMLAnchorElement>(null);
@@ -103,16 +123,52 @@ export default function TopNav({ user }: { user?: User }) {
 
         <div className={`${user ? styles.right : styles.rightPublic} ${isOpen ? styles.active : ''}`}>
           {user ? (
-            <>
-              <div className={styles.avatar}>
+            <div className={styles.profileMenu} ref={profileMenuRef}>
+              <button
+                type="button"
+                className={styles.avatar}
+                onClick={() => setIsProfileOpen((prev) => !prev)}
+                aria-haspopup="menu"
+                aria-expanded={isProfileOpen}
+                title={user.username}
+              >
                 <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" />
-              </div>
-              <form action={logoutUser} onSubmit={closeMenu}>
-                <button type="submit" className={styles.iconButton} title="Logout">
-                  <LogOut size={18} />
-                </button>
-              </form>
-            </>
+              </button>
+
+              {isProfileOpen && (
+                <div className={styles.profileDropdown} role="menu">
+                  <Link
+                    href="/settings"
+                    className={styles.dropdownItem}
+                    role="menuitem"
+                    onClick={closeMenu}
+                  >
+                    <UserRound size={16} />
+                    View Profile
+                  </Link>
+                  <a
+                    href={`mailto:${FEEDBACK_EMAIL}?subject=OneCV%20Feedback`}
+                    className={styles.dropdownItem}
+                    role="menuitem"
+                    onClick={closeMenu}
+                  >
+                    <MessageSquare size={16} />
+                    Give Feedback
+                  </a>
+                  <div className={styles.dropdownDivider} />
+                  <form action={logoutUser} onSubmit={closeMenu}>
+                    <button
+                      type="submit"
+                      className={`${styles.dropdownItem} ${styles.logoutItem}`}
+                      role="menuitem"
+                    >
+                      <LogOut size={16} />
+                      Log out
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
           ) : (
             <Link href="/login" className={styles.link} onClick={closeMenu}>Sign In</Link>
           )}
