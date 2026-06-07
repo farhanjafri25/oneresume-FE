@@ -32,10 +32,47 @@
   display: block;
 }
 
+/* ---- Clip-path animated tabs ---- */
 .center {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 24px;
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list .link {
+  display: block;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* Highlight overlay: a green pill revealed via clip-path over the active tab */
+.clipContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+  clip-path: inset(0 100% 0 0 round 9999px);
+  transition: clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: clip-path;
+}
+
+.listOverlay .link {
+  color: var(--surface);
+}
+
+.listOverlay .link:hover {
+  color: var(--surface);
 }
 
 .link {
@@ -46,12 +83,6 @@
 
 .link:hover {
   color: var(--text-primary);
-}
-
-.link.active {
-  color: var(--text-primary);
-  border-bottom: 2px solid var(--primary);
-  padding-bottom: 2px;
 }
 
 .right, .rightPublic {
@@ -131,11 +162,8 @@
 
   .center {
     display: none;
-    flex-direction: column;
     width: 100%;
-    align-items: flex-start;
     padding-top: 16px;
-    gap: 16px;
     border-top: 1px solid var(--border);
     margin-top: 16px;
   }
@@ -144,17 +172,29 @@
     display: flex;
   }
 
-  .link {
+  /* On mobile the clip-path pill is dropped in favor of a simple vertical menu */
+  .clipContainer {
+    display: none;
+  }
+
+  .list {
+    flex-direction: column;
+    width: 100%;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .list .link {
     width: 100%;
     padding: 4px 0;
     font-size: 15px;
+    border-radius: 0;
   }
 
-  .link.active {
-    border-bottom: none;
+  .list .link.active {
+    color: var(--text-primary);
     border-left: 2px solid var(--primary);
     padding-left: 8px;
-    padding-bottom: 0;
   }
 
   .right {
@@ -172,7 +212,7 @@
   .right.active {
     display: flex;
   }
-  
+
   .rightPublic {
     display: flex;
   }
