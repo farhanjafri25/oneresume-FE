@@ -14,7 +14,7 @@ const NAV_TABS = [
   { name: 'Settings', href: '/settings' },
 ];
 
-const FEEDBACK_EMAIL = 'feedback@onecv.app';
+const FEEDBACK_EMAIL = 'hello@onecv.co';
 
 export default function TopNav({ user }: { user?: User }) {
   const pathname = usePathname();
@@ -29,7 +29,6 @@ export default function TopNav({ user }: { user?: User }) {
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close the profile menu when clicking outside of it.
   useEffect(() => {
     if (!isProfileOpen) return;
     const handleDocumentClick = (e: MouseEvent) => {
