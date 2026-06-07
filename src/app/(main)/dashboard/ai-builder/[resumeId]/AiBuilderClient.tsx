@@ -131,13 +131,13 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     }
   }, [selectedThemeId, step]);
 
-  // timed progress text rotation during Gemini compilation
+  // timed progress text rotation during AI compilation
   useEffect(() => {
     if (step !== 'loading') return;
 
     const phases = [
       { delay: 0, text: 'Downloading resume PDF from storage...' },
-      { delay: 3000, text: 'Deconstructing resume layout using Gemini 2.5 Flash...' },
+      { delay: 3000, text: 'Deconstructing resume layout using advanced AI...' },
       { delay: 6500, text: 'Tailoring professional summary and highlighting keyword fits...' },
       { delay: 10000, text: 'Aligning experiences achievements and formatting work bullet points...' }
     ];
@@ -153,7 +153,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     };
   }, [step]);
 
-  // Step 1 Trigger: Run Gemini Tailoring API
+  // Step 1 Trigger: Run AI Tailoring API
   const handleTailor = async () => {
     if (!jd.trim()) return;
 
@@ -254,7 +254,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
           Create Tailored Resume Variant
         </div>
         <p className={styles.panelSubtitle} style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }}>
-          Paste the Job Description, and Gemini will automatically tailor your CV content to fit the role.
+          Paste the Job Description, and our AI will automatically tailor your CV content to fit the role.
         </p>
 
         {/* Step 1: Paste JD */}
@@ -342,7 +342,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
           Inspect & Edit Tailored Content
         </div>
         <p className={styles.panelSubtitle}>
-          Gemini has rewritten your summary and experiences to align with the JD. Tweak any detail to perfection.
+          The AI has rewritten your summary and experiences to align with the JD. Tweak any detail to perfection.
         </p>
 
         {formData && (

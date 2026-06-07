@@ -42,7 +42,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
 
     const phases = [
       { delay: 0, text: 'Downloading resume PDF from storage...' },
-      { delay: 2500, text: 'Parsing layout natively using Gemini 2.5 Flash...' },
+      { delay: 2500, text: 'Parsing layout natively using advanced AI...' },
       { delay: 5500, text: 'Extracting skills and performing ATS keyword checks...' },
       { delay: 9000, text: 'Structuring optimization report and interactive checklist...' }
     ];
@@ -288,7 +288,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
             <FileText size={48} className={styles.emptyIcon} />
             <h3 className={styles.emptyTitle}>Ready for Alignment Scan</h3>
             <p className={styles.emptyDesc}>
-              Enter a Job Description on the left and click "Analyze CV Alignment" to trigger the Google Gemini scanner.
+              Enter a Job Description on the left and click "Analyze CV Alignment" to trigger the AI scanner.
             </p>
           </div>
         )}
