@@ -259,10 +259,13 @@ export default function ResumeCard({
               </button>
               
               <div className={styles.dropdownContainer}>
-                <button 
-                  className={styles.iconBtn} 
+                <button
+                  className={styles.iconBtn}
                   onClick={handleToggleDropdown}
                   disabled={isDeleting}
+                  aria-label="More options"
+                  aria-haspopup="menu"
+                  aria-expanded={showDropdown}
                 >
                   <MoreVertical size={16} />
                 </button>
