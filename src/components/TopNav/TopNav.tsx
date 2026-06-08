@@ -16,7 +16,7 @@ const NAV_TABS = [
 
 const FEEDBACK_EMAIL = 'hello@onecv.co';
 
-export default function TopNav({ user }: { user?: User }) {
+export default function TopNav({ user, landing = false }: { user?: User; landing?: boolean }) {
   const pathname = usePathname();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -87,7 +87,7 @@ export default function TopNav({ user }: { user?: User }) {
 
   return (
     <nav className={styles.container}>
-      <div className={styles.left}>
+      <div className={`${styles.left} ${landing ? '' : styles.flat}`}>
         <Link href="/" className={styles.logo} onClick={closeMenu}>
           <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
         </Link>
@@ -107,7 +107,7 @@ export default function TopNav({ user }: { user?: User }) {
         </div>
       )}
 
-      <div className={user ? styles.right : styles.rightPublic}>
+      <div className={`${user ? styles.right : styles.rightPublic} ${landing ? '' : styles.flat}`}>
         {user ? (
           <div className={styles.profileMenu} ref={profileMenuRef}>
             <button
