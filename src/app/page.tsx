@@ -22,7 +22,7 @@ export default async function LandingPage() {
 
   return (
     <>
-      <TopNav user={user} />
+      <TopNav user={user} landing />
       <div className={styles.container}>
         <Hero />
         <Features />
