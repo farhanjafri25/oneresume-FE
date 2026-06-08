@@ -93,7 +93,7 @@ export default function AnalyticsChart({ timeline }: AnalyticsChartProps) {
               tick={{ fill: 'var(--text-secondary)', fontSize: 12 }}
               dx={-10}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(160, 120, 85, 0.25)', strokeWidth: 1, strokeDasharray: '4 4' }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(20, 85, 51, 0.25)', strokeWidth: 1, strokeDasharray: '4 4' }} />
             <Area
               type="monotone"
               dataKey="count"
