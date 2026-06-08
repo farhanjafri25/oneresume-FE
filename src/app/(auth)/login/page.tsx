@@ -10,14 +10,24 @@ export default function LoginPage() {
   const [googleError, setGoogleError] = useState<string | null>(null);
   const [isGooglePending, setIsGooglePending] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement>(null);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    let checkInterval: NodeJS.Timeout;
+    let checkInterval: ReturnType<typeof setInterval> | undefined;
 
     const initGoogleSignIn = () => {
-      if (typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
+      // Only ever initialize and render the button once. Re-rendering the GSI
+      // button tears down and rebuilds its iframe, which causes the card to
+      // flicker/blank out (e.g. on tab change or warm navigation).
+      if (initializedRef.current) {
+        if (checkInterval) clearInterval(checkInterval);
+        return;
+      }
+
+      if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleBtnRef.current) {
         const google = (window as any).google;
-        
+        initializedRef.current = true;
+
         google.accounts.id.initialize({
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
           callback: async (response: any) => {
@@ -31,23 +41,28 @@ export default function LoginPage() {
           },
         });
 
-        if (googleBtnRef.current) {
-          google.accounts.id.renderButton(googleBtnRef.current, {
-            theme: 'filled_black',
-            size: 'large',
-            width: googleBtnRef.current.clientWidth || 336,
-            text: 'signin_with',
-            shape: 'rectangular',
-          });
-        }
-        clearInterval(checkInterval);
+        google.accounts.id.renderButton(googleBtnRef.current, {
+          theme: 'filled_black',
+          size: 'large',
+          width: googleBtnRef.current.clientWidth || 336,
+          text: 'signin_with',
+          shape: 'rectangular',
+        });
+
+        if (checkInterval) clearInterval(checkInterval);
       }
     };
 
+    // Try immediately (script may already be cached); otherwise poll until the
+    // GSI script finishes loading.
     initGoogleSignIn();
-    checkInterval = setInterval(initGoogleSignIn, 500);
+    if (!initializedRef.current) {
+      checkInterval = setInterval(initGoogleSignIn, 500);
+    }
 
-    return () => clearInterval(checkInterval);
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+    };
   }, []);
 
   return (
