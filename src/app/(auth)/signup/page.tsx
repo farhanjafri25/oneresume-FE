@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [isGooglePending, setIsGooglePending] = useState(false);
   const [resendStatus, setResendStatus] = useState<string | null>(null);
   const googleBtnRef = useRef<HTMLDivElement>(null);
+  const initializedRef = useRef(false);
 
   const requiresOtp = signupState?.requiresOtp;
   const email = signupState?.email;
@@ -20,12 +21,18 @@ export default function SignupPage() {
   useEffect(() => {
     if (requiresOtp) return; // Don't init google signin on OTP screen
 
-    let checkInterval: NodeJS.Timeout;
+    let checkInterval: ReturnType<typeof setInterval> | undefined;
 
     const initGoogleSignIn = () => {
-      if (typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
+      if (initializedRef.current) {
+        if (checkInterval) clearInterval(checkInterval);
+        return;
+      }
+
+      if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleBtnRef.current) {
         const google = (window as any).google;
-        
+        initializedRef.current = true;
+
         google.accounts.id.initialize({
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
           callback: async (response: any) => {
@@ -39,23 +46,26 @@ export default function SignupPage() {
           },
         });
 
-        if (googleBtnRef.current) {
-          google.accounts.id.renderButton(googleBtnRef.current, {
-            theme: 'filled_black',
-            size: 'large',
-            width: googleBtnRef.current.clientWidth || 336,
-            text: 'signup_with',
-            shape: 'rectangular',
-          });
-        }
-        clearInterval(checkInterval);
+        google.accounts.id.renderButton(googleBtnRef.current, {
+          theme: 'filled_black',
+          size: 'large',
+          width: googleBtnRef.current.clientWidth || 336,
+          text: 'signup_with',
+          shape: 'rectangular',
+        });
+
+        if (checkInterval) clearInterval(checkInterval);
       }
     };
 
     initGoogleSignIn();
-    checkInterval = setInterval(initGoogleSignIn, 500);
+    if (!initializedRef.current) {
+      checkInterval = setInterval(initGoogleSignIn, 500);
+    }
 
-    return () => clearInterval(checkInterval);
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+    };
   }, [requiresOtp]);
 
   const handleResend = async () => {
