@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Menu, MessageSquare, UserRound, X } from 'lucide-react';
+import { LogOut, MessageSquare, UserRound } from 'lucide-react';
 import { logoutUser } from '@/app/actions/auth';
 import { User } from '@/types';
 import styles from './TopNav.module.css';
@@ -18,14 +18,9 @@ const FEEDBACK_EMAIL = 'hello@onecv.co';
 
 export default function TopNav({ user }: { user?: User }) {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => {
-    setIsOpen(false);
-    setIsProfileOpen(false);
-  };
+  const closeMenu = () => setIsProfileOpen(false);
 
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -80,7 +75,7 @@ export default function TopNav({ user }: { user?: User }) {
       <Link
         href={tab.href}
         ref={!isOverlay && activeTab === tab.name ? activeTabRef : undefined}
-        className={`${styles.link} ${!isOverlay && activeTab === tab.name ? styles.active : ''}`}
+        className={styles.link}
         onClick={closeMenu}
         tabIndex={isOverlay ? -1 : undefined}
         aria-hidden={isOverlay ? true : undefined}
@@ -91,88 +86,79 @@ export default function TopNav({ user }: { user?: User }) {
   );
 
   return (
-    <div className={styles.container}>
-      <nav className={`${styles.nav} ${isOpen ? styles.open : ''}`}>
-        <div className={styles.left}>
-          <Link href="/" className={styles.logo} onClick={closeMenu}>
-            <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
-          </Link>
-        </div>
+    <nav className={styles.container}>
+      <div className={styles.left}>
+        <Link href="/" className={styles.logo} onClick={closeMenu}>
+          <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
+        </Link>
+      </div>
 
-        {/* Toggle Button for Mobile */}
-        {user && (
-          <button className={styles.hamburger} onClick={toggleMenu} aria-label="Toggle Menu">
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        )}
+      {user && (
+        <div className={styles.center}>
+          <ul className={styles.list}>
+            {NAV_TABS.map((tab) => renderTab(tab, false))}
+          </ul>
 
-        {user && (
-          <div className={`${styles.center} ${isOpen ? styles.active : ''}`}>
-            <ul className={styles.list}>
-              {NAV_TABS.map((tab) => renderTab(tab, false))}
+          <div aria-hidden className={styles.clipContainer} ref={containerRef}>
+            <ul className={`${styles.list} ${styles.listOverlay}`}>
+              {NAV_TABS.map((tab) => renderTab(tab, true))}
             </ul>
-
-            <div aria-hidden className={styles.clipContainer} ref={containerRef}>
-              <ul className={`${styles.list} ${styles.listOverlay}`}>
-                {NAV_TABS.map((tab) => renderTab(tab, true))}
-              </ul>
-            </div>
           </div>
-        )}
-
-        <div className={`${user ? styles.right : styles.rightPublic} ${isOpen ? styles.active : ''}`}>
-          {user ? (
-            <div className={styles.profileMenu} ref={profileMenuRef}>
-              <button
-                type="button"
-                className={styles.avatar}
-                onClick={() => setIsProfileOpen((prev) => !prev)}
-                aria-haspopup="menu"
-                aria-expanded={isProfileOpen}
-                title={user.username}
-              >
-                <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" />
-              </button>
-
-              {isProfileOpen && (
-                <div className={styles.profileDropdown} role="menu">
-                  <Link
-                    href="/settings"
-                    className={styles.dropdownItem}
-                    role="menuitem"
-                    onClick={closeMenu}
-                  >
-                    <UserRound size={16} />
-                    View Profile
-                  </Link>
-                  <a
-                    href={`mailto:${FEEDBACK_EMAIL}?subject=OneCV%20Feedback`}
-                    className={styles.dropdownItem}
-                    role="menuitem"
-                    onClick={closeMenu}
-                  >
-                    <MessageSquare size={16} />
-                    Give Feedback
-                  </a>
-                  <div className={styles.dropdownDivider} />
-                  <form action={logoutUser} onSubmit={closeMenu}>
-                    <button
-                      type="submit"
-                      className={`${styles.dropdownItem} ${styles.logoutItem}`}
-                      role="menuitem"
-                    >
-                      <LogOut size={16} />
-                      Log out
-                    </button>
-                  </form>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link href="/login" className={styles.link} onClick={closeMenu}>Sign In</Link>
-          )}
         </div>
-      </nav>
-    </div>
+      )}
+
+      <div className={user ? styles.right : styles.rightPublic}>
+        {user ? (
+          <div className={styles.profileMenu} ref={profileMenuRef}>
+            <button
+              type="button"
+              className={styles.avatar}
+              onClick={() => setIsProfileOpen((prev) => !prev)}
+              aria-haspopup="menu"
+              aria-expanded={isProfileOpen}
+              title={user.username}
+            >
+              <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" />
+            </button>
+
+            {isProfileOpen && (
+              <div className={styles.profileDropdown} role="menu">
+                <Link
+                  href="/settings"
+                  className={styles.dropdownItem}
+                  role="menuitem"
+                  onClick={closeMenu}
+                >
+                  <UserRound size={16} />
+                  View Profile
+                </Link>
+                <a
+                  href={`mailto:${FEEDBACK_EMAIL}?subject=OneCV%20Feedback`}
+                  className={styles.dropdownItem}
+                  role="menuitem"
+                  onClick={closeMenu}
+                >
+                  <MessageSquare size={16} />
+                  Give Feedback
+                </a>
+                <div className={styles.dropdownDivider} />
+                <form action={logoutUser} onSubmit={closeMenu}>
+                  <button
+                    type="submit"
+                    className={`${styles.dropdownItem} ${styles.logoutItem}`}
+                    role="menuitem"
+                  >
+                    <LogOut size={16} />
+                    Log out
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link href="/login" className={styles.link} onClick={closeMenu}>Sign In</Link>
+        )}
+      </div>
+    </nav>
   );
 }

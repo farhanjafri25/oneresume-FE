@@ -1,24 +1,43 @@
 .container {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: 'logo tabs profile';
+  align-items: center;
+  gap: 16px;
   padding: 24px;
   width: 100%;
 }
 
-.nav {
+/* Shared pill treatment for all three sections, all the same height. */
+.left,
+.center,
+.right,
+.rightPublic {
   display: flex;
   align-items: center;
+  height: 44px;
   background: rgba(251, 248, 241, 0.85); /* Light surface with opacity */
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  padding: 8px 8px 8px 24px;
   backdrop-filter: blur(10px);
-  gap: 32px;
 }
 
 .left {
-  display: flex;
-  align-items: center;
+  grid-area: logo;
+  justify-self: start;
+  padding: 0 20px;
+}
+
+.center {
+  grid-area: tabs;
+  justify-self: center;
+  padding: 0 8px;
+}
+
+.right,
+.rightPublic {
+  grid-area: profile;
+  justify-self: end;
 }
 
 .logo {
@@ -35,8 +54,6 @@
 /* ---- Clip-path animated tabs ---- */
 .center {
   position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .list {
@@ -55,10 +72,14 @@
   white-space: nowrap;
 }
 
-/* Highlight overlay: a green pill revealed via clip-path over the active tab */
+/* Highlight overlay: a green pill revealed via clip-path over the active tab.
+   Matches .center's horizontal padding so the overlay list aligns with the base list. */
 .clipContainer {
   position: absolute;
   inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
   pointer-events: none;
   background: var(--primary);
   border-radius: var(--radius-full);
@@ -85,26 +106,13 @@
   color: var(--text-primary);
 }
 
-.right, .rightPublic {
-  display: flex;
-  align-items: center;
+.right {
   gap: 16px;
+  padding: 0 8px;
 }
 
 .rightPublic {
-  padding-right: 16px;
-}
-
-.iconButton {
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s ease;
-}
-
-.iconButton:hover {
-  color: var(--text-primary);
+  padding: 0 20px;
 }
 
 .avatar {
@@ -196,103 +204,25 @@
   color: #f87171;
 }
 
-/* Hamburger toggle button - hidden on desktop */
-.hamburger {
-  display: none;
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 4px;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s ease;
-}
-
-.hamburger:hover {
-  color: var(--text-primary);
-}
-
-/* Responsive styles */
+/* Responsive styles: two-row header — logo + profile on row 1, full-width tabs on row 2. */
 @media (max-width: 768px) {
   .container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'logo profile'
+      'tabs tabs';
+    gap: 12px;
     padding: 16px;
   }
 
-  .nav {
-    border-radius: var(--radius-md);
-    flex-wrap: wrap;
-    padding: 12px 20px;
-    gap: 0;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .nav.open {
-    border-radius: var(--radius-lg);
-    background: rgba(251, 248, 241, 0.95);
-  }
-
-  .hamburger {
-    display: flex;
-  }
-
   .center {
-    display: none;
+    justify-self: stretch;
     width: 100%;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    margin-top: 16px;
+    justify-content: center;
   }
 
-  .center.active {
-    display: flex;
-  }
-
-  /* On mobile the clip-path pill is dropped in favor of a simple vertical menu */
-  .clipContainer {
-    display: none;
-  }
-
-  .list {
-    flex-direction: column;
-    width: 100%;
-    align-items: flex-start;
-    gap: 16px;
-  }
-
-  .list .link {
-    width: 100%;
-    padding: 4px 0;
-    font-size: 15px;
-    border-radius: 0;
-  }
-
-  .list .link.active {
-    color: var(--text-primary);
-    border-left: 2px solid var(--primary);
-    padding-left: 8px;
-  }
-
-  .right {
-    display: none;
-    flex-direction: row;
-    width: 100%;
-    align-items: center;
-    justify-content: flex-start;
-    padding-top: 16px;
-    gap: 16px;
-    margin-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  .right.active {
-    display: flex;
-  }
-
-  .rightPublic {
-    display: flex;
+  /* Keep the clip overlay centered in step with the base list. */
+  .center .clipContainer {
+    justify-content: center;
   }
 }
