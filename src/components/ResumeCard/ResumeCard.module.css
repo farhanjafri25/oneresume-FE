@@ -6,12 +6,12 @@
   isolation: isolate;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  /* transform (lift) is handled by motion's whileHover; CSS owns color/shadow */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 @media (hover: hover) {
   .card:hover {
-    transform: translateY(-2px);
     border-color: var(--border-hover);
     box-shadow: var(--shadow-md);
   }
@@ -157,22 +157,11 @@
   gap: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* enter/exit handled by motion (slideUp variant) */
 }
 
 .toastIcon {
   color: #10b981; /* Premium green check mark */
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
 }
 
 .dropdownContainer {
@@ -378,7 +367,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  /* enter/exit handled by motion Modal (overlayFade) */
 }
 
 .modalContent {
@@ -388,7 +377,7 @@
   width: 90%;
   max-width: 450px;
   box-shadow: var(--shadow-lg);
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  /* enter/exit handled by motion Modal (scaleIn) */
 }
 
 .modalTitle {
@@ -462,16 +451,6 @@
     border-color: var(--primary-hover);
     transform: translateY(-1px);
   }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 768px) {

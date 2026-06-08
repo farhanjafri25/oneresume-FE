@@ -5,6 +5,8 @@ import { ArrowLeft, BarChart2, Globe, Eye, Download, ShieldAlert, Award } from '
 import { getResumeAnalyticsAction } from '@/app/actions/resume';
 import styles from './Analytics.module.css';
 import AnalyticsChart from './AnalyticsChart';
+import PageTransition from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/Stagger';
 
 // Helper to format dates cleanly
 function formatDate(dateInput: string | Date): string {
@@ -44,7 +46,7 @@ export default async function ResumeAnalyticsPage({
 
   if (analyticsData.error) {
     return (
-      <div className={styles.container}>
+      <PageTransition className={styles.container}>
         <Link href="/dashboard" className={styles.backBtn}>
           <ArrowLeft size={16} />
           Back to Dashboard
@@ -54,7 +56,7 @@ export default async function ResumeAnalyticsPage({
           <h2 className={styles.emptyStateTitle}>Failed to Load Analytics</h2>
           <p>{analyticsData.error}</p>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
@@ -79,7 +81,7 @@ export default async function ResumeAnalyticsPage({
 
 
   return (
-    <div className={styles.container}>
+    <PageTransition className={styles.container}>
       <Link href="/dashboard" className={styles.backBtn}>
         <ArrowLeft size={16} />
         Back to Dashboard
@@ -91,33 +93,33 @@ export default async function ResumeAnalyticsPage({
       </header>
 
       {/* Summary Scorecards */}
-      <div className={styles.statsGrid}>
-        <div className={styles.card}>
+      <StaggerContainer className={styles.statsGrid}>
+        <StaggerItem className={styles.card}>
           <span className={styles.cardLabel}>Total Views</span>
           <span className={styles.cardValue}>{totalViews}</span>
           <span className={styles.cardSubtext}>Lifetime link impressions</span>
-        </div>
-        <div className={styles.card}>
+        </StaggerItem>
+        <StaggerItem className={styles.card}>
           <span className={styles.cardLabel}>Unique Views</span>
           <span className={styles.cardValue}>{uniqueViews}</span>
           <span className={styles.cardSubtext}>Individual recruiter hits</span>
-        </div>
-        <div className={styles.card}>
+        </StaggerItem>
+        <StaggerItem className={styles.card}>
           <span className={styles.cardLabel}>Total Downloads</span>
           <span className={styles.cardValue}>{totalDownloads}</span>
           <span className={styles.cardSubtext}>PDF saves & exports</span>
-        </div>
-        <div className={styles.card}>
+        </StaggerItem>
+        <StaggerItem className={styles.card}>
           <span className={styles.cardLabel}>Desktop Visitors</span>
           <span className={styles.cardValue}>{desktopPct}%</span>
           <span className={styles.cardSubtext}>{desktop} sessions recorded</span>
-        </div>
-        <div className={styles.card}>
+        </StaggerItem>
+        <StaggerItem className={styles.card}>
           <span className={styles.cardLabel}>Mobile Visitors</span>
           <span className={styles.cardValue}>{mobilePct + tabletPct}%</span>
           <span className={styles.cardSubtext}>{mobile + tablet} on-the-go sessions</span>
-        </div>
-      </div>
+        </StaggerItem>
+      </StaggerContainer>
 
       {totalViews === 0 ? (
         <div className={styles.emptyState}>
@@ -251,6 +253,6 @@ export default async function ResumeAnalyticsPage({
           </div>
         </>
       )}
-    </div>
+    </PageTransition>
   );
 }

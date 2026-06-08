@@ -5,6 +5,7 @@ import { ArrowLeft, Brain } from 'lucide-react';
 import { serverFetch } from '@/lib/api';
 import { Resume } from '@/types';
 import AiReviewClient from './AiReviewClient';
+import PageTransition from '@/components/motion/PageTransition';
 import styles from './AiReview.module.css';
 
 interface PageProps {
@@ -23,7 +24,7 @@ export default async function AiReviewPage({ params }: PageProps) {
   }
 
   return (
-    <div className={styles.container}>
+    <PageTransition className={styles.container}>
       <Link href="/dashboard" className={styles.backBtn}>
         <ArrowLeft size={16} />
         Back to Dashboard
@@ -40,6 +41,6 @@ export default async function AiReviewPage({ params }: PageProps) {
       </header>
 
       <AiReviewClient resumeId={resumeId} />
-    </div>
+    </PageTransition>
   );
 }

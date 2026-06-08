@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Hubot_Sans } from "next/font/google";
 import Script from "next/script";
+import MotionProvider from "@/components/motion/MotionProvider";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"] });
@@ -24,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.className} ${hubotSans.variable}`}>
       <body>
-        {children}
+        <MotionProvider>{children}</MotionProvider>
         <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
       </body>
     </html>

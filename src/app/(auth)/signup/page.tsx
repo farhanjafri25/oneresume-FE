@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { signupUser, loginWithGoogle, verifyOtpAction, resendOtpAction } from '@/app/actions/auth';
+import { transitions } from '@/lib/motion';
 import styles from '../login/page.module.css';
 
 export default function SignupPage() {
@@ -83,7 +85,12 @@ export default function SignupPage() {
   if (requiresOtp && email) {
     return (
       <div className={styles.container}>
-        <div className={styles.card}>
+        <motion.div
+          className={styles.card}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={transitions.base}
+        >
           <div className={styles.header}>
             <Link href="/" className={styles.logo}>
               <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
@@ -128,14 +135,19 @@ export default function SignupPage() {
               {resendStatus || 'Resend Code'}
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
+      <motion.div
+        className={styles.card}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={transitions.base}
+      >
         <div className={styles.header}>
           <Link href="/" className={styles.logo}>
             <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
@@ -182,7 +194,7 @@ export default function SignupPage() {
         <p className={styles.footer}>
           Already have an account? <Link href="/login" className={styles.link}>Sign in</Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

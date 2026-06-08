@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { loginUser, loginWithGoogle } from '@/app/actions/auth';
+import { transitions } from '@/lib/motion';
 import styles from './page.module.css';
 
 export default function LoginPage() {
@@ -62,7 +64,12 @@ export default function LoginPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
+      <motion.div
+        className={styles.card}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={transitions.base}
+      >
         <div className={styles.header}>
           <Link href="/" className={styles.logo}>
             <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
@@ -106,7 +113,7 @@ export default function LoginPage() {
         <p className={styles.footer}>
           Don't have an account? <Link href="/signup" className={styles.link}>Sign up</Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

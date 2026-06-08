@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link2, ExternalLink, CheckCircle, Clock, X, Loader2 } from 'lucide-react';
 import styles from './VersionsModal.module.css';
 import { Resume } from '@/types';
 import { getResumeVariantsAction } from '@/app/actions/resume';
+import Modal from '@/components/motion/Modal';
+import { slideUp } from '@/lib/motion';
 
 interface Version {
   id: string;
@@ -25,7 +28,9 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [fetchedVersions, setFetchedVersions] = useState<Version[]>([]);
+  const [fetchedResumeId, setFetchedResumeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const resumeId = resume?.id;
 
   useEffect(() => {
     if (showToast) {
@@ -35,27 +40,38 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
   }, [showToast]);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function loadVersions() {
-      if (!isOpen || !resume) return;
+      if (!isOpen || !resumeId) return;
       setLoading(true);
       try {
-        const variants = await getResumeVariantsAction(resume.id);
-        if (variants && !variants.error) {
-          const defaultVariant = variants.find((v: any) => v.slug === 'default') || variants[0];
-          if (defaultVariant && defaultVariant.versions) {
-            setFetchedVersions(defaultVariant.versions);
-          }
+        const result = await getResumeVariantsAction(resumeId);
+        const variants: { slug: string; versions?: Version[] }[] = Array.isArray(result) ? result : [];
+        const defaultVariant = variants.find((variant) => variant.slug === 'default') || variants[0];
+
+        if (!cancelled) {
+          setFetchedVersions(defaultVariant?.versions || []);
+          setFetchedResumeId(resumeId);
         }
       } catch (err) {
         console.error('Failed to load versions:', err);
+        if (!cancelled) {
+          setFetchedVersions([]);
+          setFetchedResumeId(resumeId);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
-    loadVersions();
-  }, [isOpen, resume]);
 
-  if (!isOpen || !resume) return null;
+    loadVersions();
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, resumeId]);
 
   const formatDate = (dateStr: string | Date) => {
     try {
@@ -67,12 +83,13 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
         hour: '2-digit',
         minute: '2-digit',
       });
-    } catch (e) {
+    } catch {
       return String(dateStr);
     }
   };
 
   const handleCopyLink = (versionNumber: number) => {
+    if (!resume) return;
     // Unique version shareable link format: /[username]/[resume-slug]/v[versionNumber]
     const relativeUrl = `/${username}/${resume.slug}/v${versionNumber}`;
     const fullUrl = `${window.location.origin}${relativeUrl}`;
@@ -89,85 +106,101 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
 
   return (
     <>
-      <div className={styles.modalOverlay} onClick={onClose}>
-        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-          <button className={styles.closeBtn} onClick={onClose}>
-            <X size={24} />
-          </button>
+      <Modal
+        isOpen={isOpen && !!resume}
+        onClose={onClose}
+        overlayClassName={styles.modalOverlay}
+        contentClassName={styles.modalContent}
+        labelledBy="versions-modal-title"
+      >
+        {resume && (
+          <>
+            <button className={styles.closeBtn} onClick={onClose}>
+              <X size={24} />
+            </button>
 
-          <div className={styles.header}>
-            <h1 className={styles.title}>{resume.title}</h1>
-            <p className={styles.subtitle}>
-              Track, preview, and share every historical version of this resume.
-            </p>
-          </div>
+            <div className={styles.header}>
+              <h1 id="versions-modal-title" className={styles.title}>{resume.title}</h1>
+              <p className={styles.subtitle}>
+                Track, preview, and share every historical version of this resume.
+              </p>
+            </div>
 
-          <div className={styles.glassCard}>
-            {loading ? (
-              <div className={styles.emptyState}>
-                <Loader2 size={48} className={`${styles.emptyIcon} spin`} />
-                <h3 className={styles.emptyTitle}>Loading versions...</h3>
-              </div>
-            ) : fetchedVersions.length === 0 ? (
-              <div className={styles.emptyState}>
-                <Clock size={48} className={styles.emptyIcon} />
-                <h3 className={styles.emptyTitle}>No Versions Found</h3>
-                <p className={styles.date}>Upload your first file to begin version tracking.</p>
-              </div>
-            ) : (
-              <div className={styles.timeline}>
-                {fetchedVersions.map((version, index) => {
-                  const isLatest = index === 0;
-                  return (
-                    <div key={version.id} className={styles.row}>
-                      <div className={styles.dotContainer}>
-                        <div className={`${styles.dot} ${isLatest ? styles.activeDot : ''}`} />
-                      </div>
-
-                      <div className={styles.details}>
-                        <div className={styles.versionHeader}>
-                          <span className={styles.versionTitle}>Version {version.versionNumber}</span>
-                          {isLatest && <span className={styles.badge}>Active</span>}
+            <div className={styles.glassCard}>
+              {loading || fetchedResumeId !== resume.id ? (
+                <div className={styles.emptyState}>
+                  <Loader2 size={48} className={`${styles.emptyIcon} spin`} />
+                  <h3 className={styles.emptyTitle}>Loading versions...</h3>
+                </div>
+              ) : fetchedVersions.length === 0 ? (
+                <div className={styles.emptyState}>
+                  <Clock size={48} className={styles.emptyIcon} />
+                  <h3 className={styles.emptyTitle}>No Versions Found</h3>
+                  <p className={styles.date}>Upload your first file to begin version tracking.</p>
+                </div>
+              ) : (
+                <div className={styles.timeline}>
+                  {fetchedVersions.map((version, index) => {
+                    const isLatest = index === 0;
+                    return (
+                      <div key={version.id} className={styles.row}>
+                        <div className={styles.dotContainer}>
+                          <div className={`${styles.dot} ${isLatest ? styles.activeDot : ''}`} />
                         </div>
-                        <span className={styles.date}>{formatDate(version.createdAt)}</span>
-                      </div>
 
-                      <div className={styles.actions}>
-                        <button
-                          className={`btn-primary ${styles.actionBtn} ${styles.primaryBtn}`}
-                          onClick={() => handleCopyLink(version.versionNumber)}
-                        >
-                          <Link2 size={14} />
-                          Copy Share Link
-                        </button>
+                        <div className={styles.details}>
+                          <div className={styles.versionHeader}>
+                            <span className={styles.versionTitle}>Version {version.versionNumber}</span>
+                            {isLatest && <span className={styles.badge}>Active</span>}
+                          </div>
+                          <span className={styles.date}>{formatDate(version.createdAt)}</span>
+                        </div>
 
-                        {version.fileUrl && (
-                          <a
-                            href={version.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.actionBtn}
+                        <div className={styles.actions}>
+                          <button
+                            className={`btn-primary ${styles.actionBtn} ${styles.primaryBtn}`}
+                            onClick={() => handleCopyLink(version.versionNumber)}
                           >
-                            <ExternalLink size={14} />
-                            View PDF
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+                            <Link2 size={14} />
+                            Copy Share Link
+                          </button>
 
-      {showToast && (
-        <div className={styles.toast}>
-          <CheckCircle size={16} className={styles.toastIcon} />
-          <span>{toastMessage}</span>
-        </div>
-      )}
+                          {version.fileUrl && (
+                            <a
+                              href={version.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={styles.actionBtn}
+                            >
+                              <ExternalLink size={14} />
+                              View PDF
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </Modal>
+
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            className={styles.toast}
+            variants={slideUp}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <CheckCircle size={16} className={styles.toastIcon} />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
