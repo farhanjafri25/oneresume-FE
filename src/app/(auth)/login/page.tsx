@@ -16,9 +16,6 @@ export default function LoginPage() {
     let checkInterval: ReturnType<typeof setInterval> | undefined;
 
     const initGoogleSignIn = () => {
-      // Only ever initialize and render the button once. Re-rendering the GSI
-      // button tears down and rebuilds its iframe, which causes the card to
-      // flicker/blank out (e.g. on tab change or warm navigation).
       if (initializedRef.current) {
         if (checkInterval) clearInterval(checkInterval);
         return;
@@ -53,8 +50,6 @@ export default function LoginPage() {
       }
     };
 
-    // Try immediately (script may already be cached); otherwise poll until the
-    // GSI script finishes loading.
     initGoogleSignIn();
     if (!initializedRef.current) {
       checkInterval = setInterval(initGoogleSignIn, 500);
