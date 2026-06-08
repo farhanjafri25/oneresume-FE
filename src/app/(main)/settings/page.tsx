@@ -3,6 +3,7 @@ import styles from './settings.module.css';
 import { getMe } from '@/lib/api';
 import { ShieldAlert } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import PageTransition from '@/components/motion/PageTransition';
 
 function formatDate(dateInput: string | Date): string {
   const d = new Date(dateInput);
@@ -27,7 +28,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className={styles.container}>
+    <PageTransition className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>Account Settings</h1>
         <p className={styles.subtitle}>View your account details and manage settings.</p>
@@ -76,6 +77,6 @@ export default async function SettingsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

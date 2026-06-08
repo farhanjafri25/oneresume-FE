@@ -1,7 +1,13 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import styles from './ResumeCard.module.css';
 import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles } from 'lucide-react';
 import { deleteResumeAction } from '@/app/actions/resume';
+import Modal from '@/components/motion/Modal';
+import { slideUp, springs, transitions } from '@/lib/motion';
+import { useHoverable } from '@/lib/useHoverable';
 
 interface ResumeCardProps {
   id: string;
@@ -11,6 +17,8 @@ interface ResumeCardProps {
   imageUrl?: string;
   pdfUrl?: string;
   publicUrl?: string;
+  /** Position in the grid — drives the staggered entrance delay. */
+  index?: number;
   onUploadClick?: () => void;
   onVersionsClick?: () => void;
 }
@@ -23,6 +31,7 @@ export default function ResumeCard({
   imageUrl,
   pdfUrl,
   publicUrl,
+  index = 0,
   onUploadClick,
   onVersionsClick,
 }: ResumeCardProps) {
@@ -35,6 +44,7 @@ export default function ResumeCard({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [loadedPdfUrl, setLoadedPdfUrl] = useState<string | null>(null);
   const isPdfLoaded = loadedPdfUrl === pdfUrl;
+  const hoverable = useHoverable();
 
   useEffect(() => {
     if (showToast) {
@@ -138,10 +148,14 @@ export default function ResumeCard({
 
   return (
     <>
-      <div
+      <motion.div
         className={`${styles.card} ${isDeleting ? styles.deleting : ''}`}
         onClick={handleCardClick}
         style={{ cursor: pdfUrl && pdfUrl !== '#' && !isDeleting ? 'pointer' : 'default' }}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...transitions.base, delay: index * 0.06 }}
+        whileHover={hoverable ? { y: -2, transition: springs.micro } : undefined}
       >
         <div className={styles.imageContainer}>
           {pdfUrl && pdfUrl !== '#' ? (
@@ -297,61 +311,74 @@ export default function ResumeCard({
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {showToast && (
-        <div className={styles.toast}>
-          <CheckCircle size={16} />
-          {toastMessage}
-        </div>
-      )}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            className={styles.toast}
+            variants={slideUp}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <CheckCircle size={16} />
+            {toastMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {showLinkModal && (
-        <div className={styles.modalOverlay} onClick={(e) => { e.stopPropagation(); setShowLinkModal(false); }}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitle}>Create Custom Tracking Link</h3>
-            <p className={styles.modalDesc}>
-              Enter an application label to create a personalized tracking link:
-              <br/><span style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>(e.g., Google-Frontend, Netflix-Recruiter)</span>
-            </p>
-            <input 
-              type="text" 
-              className={styles.modalInput} 
-              value={linkLabel}
-              onChange={(e) => setLinkLabel(e.target.value)}
-              placeholder="Application Label"
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') submitTrackingLink();
-              }}
-            />
-            <div className={styles.modalActions}>
-              <button className={styles.modalCancel} onClick={() => { setShowLinkModal(false); setLinkLabel(''); }}>Cancel</button>
-              <button className={styles.modalSubmit} onClick={submitTrackingLink}>Copy Link</button>
-            </div>
-          </div>
+      <Modal
+        isOpen={showLinkModal}
+        onClose={() => { setShowLinkModal(false); setLinkLabel(''); }}
+        overlayClassName={styles.modalOverlay}
+        contentClassName={styles.modalContent}
+        labelledBy="tracking-link-title"
+      >
+        <h3 id="tracking-link-title" className={styles.modalTitle}>Create Custom Tracking Link</h3>
+        <p className={styles.modalDesc}>
+          Enter an application label to create a personalized tracking link:
+          <br/><span style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>(e.g., Google-Frontend, Netflix-Recruiter)</span>
+        </p>
+        <input
+          type="text"
+          className={styles.modalInput}
+          value={linkLabel}
+          onChange={(e) => setLinkLabel(e.target.value)}
+          placeholder="Application Label"
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') submitTrackingLink();
+          }}
+        />
+        <div className={styles.modalActions}>
+          <button className={styles.modalCancel} onClick={() => { setShowLinkModal(false); setLinkLabel(''); }}>Cancel</button>
+          <button className={styles.modalSubmit} onClick={submitTrackingLink}>Copy Link</button>
         </div>
-      )}
-      {showDeleteModal && (
-        <div className={styles.modalOverlay} onClick={(e) => { e.stopPropagation(); setShowDeleteModal(false); }}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitle} style={{ color: '#ef4444' }}>Delete Resume</h3>
-            <p className={styles.modalDesc}>
-              Are you sure you want to delete <strong>"{title}"</strong>? This will permanently delete all versions and variants. This action cannot be undone.
-            </p>
-            <div className={styles.modalActions}>
-              <button className={styles.modalCancel} onClick={() => setShowDeleteModal(false)}>Cancel</button>
-              <button 
-                className={styles.modalSubmit} 
-                style={{ background: '#ef4444', borderColor: '#ef4444' }} 
-                onClick={confirmDelete}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+      </Modal>
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        overlayClassName={styles.modalOverlay}
+        contentClassName={styles.modalContent}
+        labelledBy="delete-resume-title"
+      >
+        <h3 id="delete-resume-title" className={styles.modalTitle} style={{ color: '#ef4444' }}>Delete Resume</h3>
+        <p className={styles.modalDesc}>
+          Are you sure you want to delete <strong>"{title}"</strong>? This will permanently delete all versions and variants. This action cannot be undone.
+        </p>
+        <div className={styles.modalActions}>
+          <button className={styles.modalCancel} onClick={() => setShowDeleteModal(false)}>Cancel</button>
+          <button
+            className={styles.modalSubmit}
+            style={{ background: '#ef4444', borderColor: '#ef4444' }}
+            onClick={confirmDelete}
+          >
+            Delete
+          </button>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  /* enter/exit handled by motion Modal (overlayFade) */
 }
 
 .modalContent {
@@ -22,7 +22,7 @@
   max-height: 85vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  /* enter/exit handled by motion Modal (scaleIn) */
   position: relative;
   color: var(--text-primary);
 }
@@ -233,23 +233,13 @@
   gap: 10px;
   box-shadow: var(--shadow-lg);
   z-index: 1100;
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  /* enter/exit handled by motion (slideUp variant) */
   font-weight: 500;
   font-size: 0.9rem;
 }
 
 .toastIcon {
   flex-shrink: 0;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
 }
 
 .spin {

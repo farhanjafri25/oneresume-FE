@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import styles from './Dashboard.module.css';
+import { transitions } from '@/lib/motion';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import VersionsModal from '@/components/VersionsModal/VersionsModal';
@@ -49,7 +51,7 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
       </header>
       
       <div className={styles.grid}>
-        {resumes.map(resume => (
+        {resumes.map((resume, resumeIndex) => (
           resume.variants?.filter(variant => variant.slug === 'default').map(variant => {
             const latestVersion = variant.versions && variant.versions.length > 0
               ? variant.versions[0]
@@ -57,8 +59,9 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
             const pdfUrl = latestVersion ? latestVersion.fileUrl : '#';
             const publicUrl = `/${user.username}/${resume.slug}`;
             return (
-              <ResumeCard 
+              <ResumeCard
                 key={variant.id}
+                index={resumeIndex}
                 id={resume.id}
                 title={variant.slug === 'default' ? resume.title : `${resume.title} (${variant.slug})`}
                 timeAgo={formatUTCDate(resume.createdAt)}
@@ -77,13 +80,16 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
         ))}
 
         {resumes.length === 0 && (
-          <div 
-            className={styles.newVariantCard} 
+          <motion.div
+            className={styles.newVariantCard}
             onClick={() => {
               setSelectedResumeId(undefined);
               setSelectedVariantId(undefined);
               setIsUploadOpen(true);
             }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={transitions.base}
           >
             <div className={styles.newVariantIcon}>
               <Plus size={24} />
@@ -92,18 +98,21 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
             <p className={styles.newVariantDesc}>
               Get started by uploading your master PDF.
             </p>
-          </div>
+          </motion.div>
         )}
-        
+
         {/* New Variant Card (only show if they have a master) */}
         {resumes.length > 0 && (
-          <div 
+          <motion.div
             className={styles.newVariantCard}
             onClick={() => {
               setSelectedResumeId(undefined);
               setSelectedVariantId(undefined);
               setIsUploadOpen(true);
             }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...transitions.base, delay: resumes.length * 0.06 }}
           >
             <div className={styles.newVariantIcon}>
               <Plus size={24} />
@@ -112,7 +121,7 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
             <p className={styles.newVariantDesc}>
               Add a completely separate resume to your dashboard.
             </p>
-          </div>
+          </motion.div>
         )}
       </div>
 

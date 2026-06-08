@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link2, ExternalLink, CheckCircle, Clock, X, Loader2 } from 'lucide-react';
 import styles from './VersionsModal.module.css';
 import { Resume } from '@/types';
 import { getResumeVariantsAction } from '@/app/actions/resume';
+import Modal from '@/components/motion/Modal';
+import { slideUp } from '@/lib/motion';
 
 interface Version {
   id: string;
@@ -26,6 +29,9 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
   const [toastMessage, setToastMessage] = useState('');
   const [fetchedVersions, setFetchedVersions] = useState<Version[]>([]);
   const [loading, setLoading] = useState(false);
+  // Retain the last non-null resume so content stays rendered during the
+  // modal's exit animation (the parent nulls `resume` the moment it closes).
+  const [displayResume, setDisplayResume] = useState<Resume | null>(resume);
 
   useEffect(() => {
     if (showToast) {
@@ -55,7 +61,9 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
     loadVersions();
   }, [isOpen, resume]);
 
-  if (!isOpen || !resume) return null;
+  useEffect(() => {
+    if (resume) setDisplayResume(resume);
+  }, [resume]);
 
   const formatDate = (dateStr: string | Date) => {
     try {
@@ -73,8 +81,9 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
   };
 
   const handleCopyLink = (versionNumber: number) => {
+    if (!displayResume) return;
     // Unique version shareable link format: /[username]/[resume-slug]/v[versionNumber]
-    const relativeUrl = `/${username}/${resume.slug}/v${versionNumber}`;
+    const relativeUrl = `/${username}/${displayResume.slug}/v${versionNumber}`;
     const fullUrl = `${window.location.origin}${relativeUrl}`;
 
     navigator.clipboard.writeText(fullUrl)
@@ -89,14 +98,19 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
 
   return (
     <>
-      <div className={styles.modalOverlay} onClick={onClose}>
-        <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+      <Modal
+        isOpen={isOpen && !!displayResume}
+        onClose={onClose}
+        overlayClassName={styles.modalOverlay}
+        contentClassName={styles.modalContent}
+        labelledBy="versions-modal-title"
+      >
           <button className={styles.closeBtn} onClick={onClose}>
             <X size={24} />
           </button>
 
           <div className={styles.header}>
-            <h1 className={styles.title}>{resume.title}</h1>
+            <h1 id="versions-modal-title" className={styles.title}>{displayResume?.title}</h1>
             <p className={styles.subtitle}>
               Track, preview, and share every historical version of this resume.
             </p>
@@ -159,15 +173,22 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
               </div>
             )}
           </div>
-        </div>
-      </div>
+      </Modal>
 
-      {showToast && (
-        <div className={styles.toast}>
-          <CheckCircle size={16} className={styles.toastIcon} />
-          <span>{toastMessage}</span>
-        </div>
-      )}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            className={styles.toast}
+            variants={slideUp}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <CheckCircle size={16} className={styles.toastIcon} />
+            <span>{toastMessage}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

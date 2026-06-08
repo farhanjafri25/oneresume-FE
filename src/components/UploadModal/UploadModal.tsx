@@ -4,6 +4,7 @@ import React, { useActionState, useEffect, useRef, useState } from 'react';
 import styles from './UploadModal.module.css';
 import { X, UploadCloud, Lock } from 'lucide-react';
 import { uploadResumeAction } from '@/app/actions/upload';
+import Modal from '@/components/motion/Modal';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -29,14 +30,17 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className={styles.overlay} onClick={handleClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      overlayClassName={styles.overlay}
+      contentClassName={styles.modal}
+      labelledBy="upload-modal-title"
+    >
         <div className={styles.header}>
           <div>
-            <h2 className={styles.title}>
+            <h2 id="upload-modal-title" className={styles.title}>
               {resumeId && variantId ? 'Replace Version' : 'Import Masterpiece'}
             </h2>
             <p className={styles.subtitle}>
@@ -131,7 +135,6 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
           <Lock size={14} className={styles.lockIcon} />
           <span>End-to-end encrypted. We never share your data.</span>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
