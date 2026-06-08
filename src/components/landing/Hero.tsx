@@ -13,7 +13,7 @@ export default function Hero() {
         <p className={styles.subtitle}>
           Say goodbye to "Can I get your updated Resume link?" <br></br>
           {/* A premium platform designed to elevate your professional journey. <br></br> */}
-          Upload your resume, get a custom lifetime link, and track your views in real-time.
+          Upload your resume, get a custom lifetime link, and track in real-time.
         </p>
         
         <div className={styles.ctaContainer}>
