@@ -4,9 +4,14 @@ import { Sparkles, Brain, UploadCloud, BarChart3 } from 'lucide-react';
 
 const featuresList = [
   {
-    title: 'AI Resume Builder',
-    description: 'Smart suggestions, auto-formatting, and keyword optimization to create a tailored resume effortlessly.',
-    icon: <Sparkles size={24} />
+    title: 'PDF Upload & One-Link Sharing',
+    description: 'Upload existing resumes and share your profile via a professional, custom link.',
+    icon: <UploadCloud size={24} />
+  },
+  {
+    title: 'Version Control & Analytics',
+    description: 'Manage multiple resume versions, and view analytics on resume views and downloads.',
+    icon: <BarChart3 size={24} />
   },
   {
     title: 'AI Resume Review',
@@ -14,14 +19,9 @@ const featuresList = [
     icon: <Brain size={24} />
   },
   {
-    title: 'PDF Upload & One-Link Sharing',
-    description: 'Upload existing resumes, instantly convert to editable formats, and share your profile via a professional, custom link.',
-    icon: <UploadCloud size={24} />
-  },
-  {
-    title: 'Version Control & Analytics',
-    description: 'Manage multiple resume versions, track application status, and view analytics on resume views and downloads.',
-    icon: <BarChart3 size={24} />
+    title: 'AI Resume Builder',
+    description: 'Smart suggestions, auto-formatting, and keyword optimization to create a tailored resume effortlessly.',
+    icon: <Sparkles size={24} />
   }
 ];
 

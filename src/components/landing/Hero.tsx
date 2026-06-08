@@ -11,8 +11,9 @@ export default function Hero() {
           Crafting Your Next <span className={styles.titleAccent}>Chapter.</span>
         </h1>
         <p className={styles.subtitle}>
-          The premium resume platform powered by AI to elevate your professional journey.
-          Upload your Resume, tailor with AI, and track every view.
+          Say goodbye to "Can I get your updated Resume link?" <br></br>
+          {/* A premium platform designed to elevate your professional journey. <br></br> */}
+          Upload your resume, get a custom lifetime link, and track your views in real-time.
         </p>
         
         <div className={styles.ctaContainer}>
