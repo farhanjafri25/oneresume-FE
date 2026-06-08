@@ -33,6 +33,8 @@ export default function ResumeCard({
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [linkLabel, setLinkLabel] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [loadedPdfUrl, setLoadedPdfUrl] = useState<string | null>(null);
+  const isPdfLoaded = loadedPdfUrl === pdfUrl;
 
   useEffect(() => {
     if (showToast) {
@@ -143,12 +145,19 @@ export default function ResumeCard({
       >
         <div className={styles.imageContainer}>
           {pdfUrl && pdfUrl !== '#' ? (
-            <iframe
-              src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-              className={styles.pdfPreview}
-              title={title}
-              frameBorder="0"
-            />
+            <>
+              <iframe
+                src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                className={styles.pdfPreview}
+                title={title}
+                frameBorder="0"
+                onLoad={() => setLoadedPdfUrl(pdfUrl)}
+              />
+              <div
+                className={`${styles.pdfSkeleton} ${isPdfLoaded ? styles.pdfSkeletonHidden : ''}`}
+                aria-hidden="true"
+              />
+            </>
           ) : (
             <div 
               className={styles.placeholder} 
