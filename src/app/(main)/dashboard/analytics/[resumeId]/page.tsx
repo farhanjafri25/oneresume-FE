@@ -61,6 +61,7 @@ export default async function ResumeAnalyticsPage({
   const { summary, referrers, timeline, campaigns, recentLogs } = analyticsData;
 
   const totalViews = summary.totalViews || 0;
+  const totalDownloads = summary.totalDownloads || 0;
   const uniqueViews = summary.uniqueViews || 0;
   const desktop = summary.desktop || 0;
   const mobile = summary.mobile || 0;
@@ -100,6 +101,11 @@ export default async function ResumeAnalyticsPage({
           <span className={styles.cardLabel}>Unique Views</span>
           <span className={styles.cardValue}>{uniqueViews}</span>
           <span className={styles.cardSubtext}>Individual recruiter hits</span>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.cardLabel}>Total Downloads</span>
+          <span className={styles.cardValue}>{totalDownloads}</span>
+          <span className={styles.cardSubtext}>PDF saves & exports</span>
         </div>
         <div className={styles.card}>
           <span className={styles.cardLabel}>Desktop Visitors</span>

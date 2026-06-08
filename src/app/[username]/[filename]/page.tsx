@@ -54,7 +54,7 @@ export default async function PublicResumePage({
             <span className={styles.variantBadge}>{filename}</span>
           </div>
           {fileUrl && (
-            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className={`btn-primary ${styles.downloadBtn}`}>
+            <a href={`${API_URL}/${username}/${filename}/download${forQuery}`} target="_blank" rel="noopener noreferrer" className={`btn-primary ${styles.downloadBtn}`}>
               <Download size={14} />
               Download PDF
             </a>
