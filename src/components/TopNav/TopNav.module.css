@@ -91,6 +91,10 @@
   gap: 16px;
 }
 
+.rightPublic {
+  padding-right: 16px;
+}
+
 .iconButton {
   color: var(--text-secondary);
   display: flex;
