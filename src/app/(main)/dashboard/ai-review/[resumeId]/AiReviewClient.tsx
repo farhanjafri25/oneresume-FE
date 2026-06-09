@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Sparkles, 
   Send, 
@@ -17,6 +17,8 @@ import {
   Phone
 } from 'lucide-react';
 import { analyzeResumeAction, generalScanResumeAction } from '@/app/actions/ai';
+import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
+import { useLoadingPhases } from '@/lib/useLoadingPhases';
 import styles from './AiReview.module.css';
 
 interface AiReviewClientProps {
@@ -37,36 +39,22 @@ interface AiReport {
   missingContactInfo?: string;
 }
 
+// Dynamic status update messages during AI processing
+const LOADING_PHASES = [
+  { delay: 0, text: 'Downloading resume PDF from storage...' },
+  { delay: 2500, text: 'Parsing layout natively using advanced AI...' },
+  { delay: 5500, text: 'Extracting skills and performing ATS keyword checks...' },
+  { delay: 9000, text: 'Structuring optimization report and interactive checklist...' }
+];
+
 export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
   const router = useRouter();
   const [scanMode, setScanMode] = useState<'targeted' | 'general'>('targeted');
   const [jd, setJd] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingPhase, setLoadingPhase] = useState('Downloading PDF resume...');
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<AiReport | null>(null);
-
-  // Dynamic status update messages during AI processing
-  useEffect(() => {
-    if (!loading) return;
-
-    const phases = [
-      { delay: 0, text: 'Downloading resume PDF from storage...' },
-      { delay: 2500, text: 'Parsing layout natively using advanced AI...' },
-      { delay: 5500, text: 'Extracting skills and performing ATS keyword checks...' },
-      { delay: 9000, text: 'Structuring optimization report and interactive checklist...' }
-    ];
-
-    const timers = phases.map((phase) => 
-      setTimeout(() => {
-        setLoadingPhase(phase.text);
-      }, phase.delay)
-    );
-
-    return () => {
-      timers.forEach((t) => clearTimeout(t));
-    };
-  }, [loading]);
+  const loadingPhase = useLoadingPhases(LOADING_PHASES, loading);
 
   const handleAnalyze = async () => {
     if (scanMode === 'targeted' && !jd.trim()) return;
@@ -98,30 +86,6 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
   // Word counting logic
   const wordCount = jd.trim() === '' ? 0 : jd.trim().split(/\s+/).length;
   const charCount = jd.length;
-
-  // Circular gauge score parameters
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return '#10b981'; // Green
-    if (score >= 50) return '#f59e0b'; // Amber/Orange
-    return '#ef4444'; // Red
-  };
-
-  const getScoreLabel = (score: number) => {
-    if (score >= 80) return 'High Fit';
-    if (score >= 50) return 'Medium Fit';
-    return 'Weak Fit';
-  };
-
-  const getScoreShadow = (score: number) => {
-    const color = getScoreColor(score);
-    return `drop-shadow(0 0 8px ${color}40)`;
-  };
-
-  // SVG Gauge specifications (140px diameter, radius=56, circumference=351.85)
-  const radius = 56;
-  const strokeWidth = 8;
-  const circumference = 2 * Math.PI * radius;
-  const scoreOffset = report ? circumference - (report.score / 100) * circumference : circumference;
 
   return (
     <div className={styles.workspace}>
@@ -234,34 +198,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
           <div className={styles.reportCard}>
             {/* Scorecard Header & Gauge */}
             <div className={styles.scoreSummarySection}>
-              <div className={styles.gaugeContainer}>
-                <svg className={styles.gaugeSvg}>
-                  <circle
-                    className={styles.gaugeBg}
-                    cx="70"
-                    cy="70"
-                    r={radius}
-                  />
-                  <circle
-                    className={styles.gaugeFill}
-                    cx="70"
-                    cy="70"
-                    r={radius}
-                    stroke={getScoreColor(report.score)}
-                    strokeDasharray={circumference}
-                    strokeDashoffset={scoreOffset}
-                    style={{ filter: getScoreShadow(report.score) }}
-                  />
-                </svg>
-                <div className={styles.gaugeText}>
-                  <span className={styles.gaugeNumber} style={{ color: getScoreColor(report.score) }}>
-                    {report.score}
-                  </span>
-                  <span className={styles.gaugeLabel}>
-                    {getScoreLabel(report.score)}
-                  </span>
-                </div>
-              </div>
+              <ScoreGauge score={report.score} />
 
               <div className={styles.summaryTextContent}>
                 <h3 className={styles.summaryHeadline}>Executive Match Summary</h3>

@@ -95,7 +95,7 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
     }
 
     revalidatePath('/dashboard');
-    return { success: true };
+    return { success: true, resumeId };
 
   } catch (err) {
     console.error('Upload Error:', err);
