@@ -1,0 +1,53 @@
+/* Circular score gauge — shared by AI Review and Onboarding. */
+.gauge {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.svg {
+  width: 140px;
+  height: 140px;
+  transform: rotate(-90deg);
+}
+
+.bg {
+  fill: none;
+  stroke: rgba(28, 25, 23, 0.08);
+  stroke-width: 8;
+}
+
+.fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  /* Stroke-dashoffset is animated by motion; only the color transitions in CSS. */
+  transition: stroke 0.5s ease;
+}
+
+.text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.number {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
