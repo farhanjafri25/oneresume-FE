@@ -34,7 +34,7 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
-          <h1 className={styles.title}>Welcome back, {user.username}.</h1>
+          <h1 className={styles.title}>Welcome back.</h1>
           <p className={styles.subtitle}>Here are your active uploaded documents.</p>
         </div>
         <button 
