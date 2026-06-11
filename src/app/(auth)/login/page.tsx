@@ -32,7 +32,7 @@ export default function LoginPage() {
           callback: async (response: any) => {
             setGoogleError(null);
             setIsGooglePending(true);
-            const result = await loginWithGoogle(response.credential);
+            const result = await loginWithGoogle(response.credential, false);
             setIsGooglePending(false);
             if (result?.error) {
               setGoogleError(result.error);

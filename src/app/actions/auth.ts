@@ -140,7 +140,7 @@ export async function resendOtpAction(email: string) {
   }
 }
 
-export async function loginWithGoogle(googleToken: string) {
+export async function loginWithGoogle(googleToken: string, isSignUp = false) {
   if (!googleToken) {
     return { error: 'Google token is required' };
   }
@@ -149,7 +149,7 @@ export async function loginWithGoogle(googleToken: string) {
     const res = await fetch(`${API_URL}/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ googleToken }),
+      body: JSON.stringify({ googleToken, isSignUp }),
     });
 
     if (!res.ok) {

@@ -40,7 +40,7 @@ export default function SignupPage() {
           callback: async (response: any) => {
             setGoogleError(null);
             setIsGooglePending(true);
-            const result = await loginWithGoogle(response.credential);
+            const result = await loginWithGoogle(response.credential, true);
             setIsGooglePending(false);
             if (result?.error) {
               setGoogleError(result.error);
