@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles, FileText } from 'lucide-react';
+import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles, FileText, ExternalLink } from 'lucide-react';
 import { deleteResumeAction } from '@/app/actions/resume';
 import Modal from '@/components/motion/Modal';
 import Tooltip from '@/components/Tooltip/Tooltip';
@@ -226,13 +226,18 @@ export default function ResumeCard({
                   src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
                   className={styles.pdfPreview}
                   title={title}
-                  frameBorder="0"
                   onLoad={() => setLoadedPdfUrl(pdfUrl)}
                 />
                 <div
                   className={`${styles.pdfSkeleton} ${isPdfLoaded ? styles.pdfSkeletonHidden : ''}`}
                   aria-hidden="true"
                 />
+                <div className={styles.previewHint} aria-hidden="true">
+                  <span className={styles.previewHintPill}>
+                    <ExternalLink size={12} />
+                    Open
+                  </span>
+                </div>
               </>
             ) : (
               <div className={styles.pdfFallback}>
@@ -288,7 +293,7 @@ export default function ResumeCard({
 
           <div className={styles.footer}>
             <button className={styles.actionBtn} onClick={handleCopyLink} disabled={isDeleting}>
-              <Link2 size={16} />
+              <Link2 size={14} />
               Copy Link
             </button>
 
@@ -321,29 +326,39 @@ export default function ResumeCard({
                   </button>
                 </Tooltip>
 
-                {showDropdown && (
-                  <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
-                    <button 
-                      className={styles.dropdownItem} 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowDropdown(false);
-                        window.location.href = `/dashboard/variants`;
-                      }}
+                <AnimatePresence>
+                  {showDropdown && (
+                    <motion.div
+                      className={styles.dropdownMenu}
+                      onClick={(e) => e.stopPropagation()}
+                      initial={{ opacity: 0, scale: 0.95, y: 4 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      style={{ transformOrigin: 'bottom right' }}
                     >
-                      <Sparkles size={14} />
-                      View Tailored Variants
-                    </button>
-                    <button className={styles.dropdownItem} onClick={handleReplace}>
-                      <Upload size={14} />
-                      Replace File
-                    </button>
-                    <button className={`${styles.dropdownItem} ${styles.deleteItem}`} onClick={handleDelete}>
-                      <Trash2 size={14} />
-                      Delete Resume
-                    </button>
-                  </div>
-                )}
+                      <button
+                        className={styles.dropdownItem}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowDropdown(false);
+                          window.location.href = `/dashboard/variants`;
+                        }}
+                      >
+                        <Sparkles size={14} />
+                        View Tailored Variants
+                      </button>
+                      <button className={styles.dropdownItem} onClick={handleReplace}>
+                        <Upload size={14} />
+                        Replace File
+                      </button>
+                      <button className={`${styles.dropdownItem} ${styles.deleteItem}`} onClick={handleDelete}>
+                        <Trash2 size={14} />
+                        Delete Resume
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
