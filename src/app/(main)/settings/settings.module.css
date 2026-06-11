@@ -12,8 +12,10 @@
 
 .profileSection {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24px;
+  text-align: center;
+  gap: 16px;
   padding-bottom: 32px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 32px;
