@@ -1,43 +1,37 @@
 'use client';
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, UploadCloud, Lock } from 'lucide-react';
+import { UploadCloud, Lock } from 'lucide-react';
 import { uploadResumeAction } from '@/app/actions/upload';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
-export default function UploadStep({ state, patch, next, back }: StepProps) {
+export default function UploadStep({ patch, next, user }: StepProps) {
   const [formState, formAction, isPending] = useActionState(uploadResumeAction, null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const s = formState as { success?: boolean; resumeId?: string } | null;
+    const s = formState as { success?: boolean; resumeId?: string; slug?: string } | null;
     if (s?.success && s.resumeId) {
-      patch({ resumeId: s.resumeId });
+      patch({ resumeId: s.resumeId, slug: s.slug ?? null });
       next();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formState]);
 
   const error = (formState as { error?: string } | null)?.error;
+  const firstName = user.username?.split(/[\s@]/)[0] || 'there';
 
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>Upload your current CV</h2>
+      <h2 className={styles.title}>Welcome, {firstName} — upload your CV</h2>
       <p className={styles.subtitle}>
-        Use your most recent CV &mdash; a complete history gives the most accurate match score.
-        PDF only, up to 2MB.
+        In about a minute you&apos;ll get an instant ATS score and a shareable link you can
+        track. Start with your most recent CV &mdash; PDF only, up to 2MB.
       </p>
 
       <form action={formAction}>
-        {/* New top-level resume — seed an optional title from the target role. */}
-        <input
-          type="hidden"
-          name="resumeName"
-          value={state.targetRole ? `${state.targetRole} Resume` : ''}
-        />
-
         <div
           className={styles.dropzone}
           onClick={() => !isPending && fileInputRef.current?.click()}
@@ -70,11 +64,7 @@ export default function UploadStep({ state, patch, next, back }: StepProps) {
           </div>
         )}
 
-        <div className={styles.btnRow}>
-          <button type="button" className={styles.secondaryBtn} onClick={back} disabled={isPending}>
-            <ArrowLeft size={16} />
-            Back
-          </button>
+        <div className={styles.btnRow} style={{ justifyContent: 'flex-end' }}>
           <button
             type="submit"
             className={styles.primaryBtn}

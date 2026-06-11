@@ -5,21 +5,14 @@ import { AnimatePresence, motion } from 'motion/react';
 import { User } from '@/types';
 import {
   INITIAL_ONBOARDING, OnboardingState, OnboardingStepKey,
-  RAIL_STEPS, loadOnboarding, saveOnboarding,
+  RAIL_STEPS, STEP_ORDER, loadOnboarding, saveOnboarding,
 } from '@/lib/onboarding';
 import { fadeUp } from '@/lib/motion';
 import styles from './Onboarding.module.css';
 import OnboardingHeader from './OnboardingHeader';
-import WelcomeStep from './steps/WelcomeStep';
-import GoalStep from './steps/GoalStep';
 import UploadStep from './steps/UploadStep';
-import JobStep from './steps/JobStep';
-import EvaluationStep from './steps/EvaluationStep';
-import VariantStep from './steps/VariantStep';
+import ScoreStep from './steps/ScoreStep';
 import ShareStep from './steps/ShareStep';
-
-const ORDER: OnboardingStepKey[] =
-  ['welcome', 'goal', 'upload', 'job', 'evaluation', 'variant', 'share'];
 
 export default function OnboardingWizard({ user }: { user: User }) {
   const [state, setState] = useState<OnboardingState>(INITIAL_ONBOARDING);
@@ -30,8 +23,8 @@ export default function OnboardingWizard({ user }: { user: User }) {
 
   const patch = (p: Partial<OnboardingState>) => setState((s) => ({ ...s, ...p }));
   const go = (step: OnboardingStepKey) => patch({ step });
-  const next = () => go(ORDER[Math.min(ORDER.length - 1, ORDER.indexOf(state.step) + 1)]);
-  const back = () => go(ORDER[Math.max(0, ORDER.indexOf(state.step) - 1)]);
+  const next = () => go(STEP_ORDER[Math.min(STEP_ORDER.length - 1, STEP_ORDER.indexOf(state.step) + 1)]);
+  const back = () => go(STEP_ORDER[Math.max(0, STEP_ORDER.indexOf(state.step) - 1)]);
 
   // Avoid hydration flash: render nothing until sessionStorage is read.
   if (!hydrated) return null;
@@ -53,13 +46,9 @@ export default function OnboardingWizard({ user }: { user: User }) {
             exit="exit"
             className={styles.stageInner}
           >
-            {state.step === 'welcome'    && <WelcomeStep {...stepProps} />}
-            {state.step === 'goal'       && <GoalStep {...stepProps} />}
-            {state.step === 'upload'     && <UploadStep {...stepProps} />}
-            {state.step === 'job'        && <JobStep {...stepProps} />}
-            {state.step === 'evaluation' && <EvaluationStep {...stepProps} />}
-            {state.step === 'variant'    && <VariantStep {...stepProps} />}
-            {state.step === 'share'      && <ShareStep {...stepProps} />}
+            {state.step === 'upload' && <UploadStep {...stepProps} />}
+            {state.step === 'score'  && <ScoreStep {...stepProps} />}
+            {state.step === 'share'  && <ShareStep {...stepProps} />}
           </motion.div>
         </AnimatePresence>
       </div>

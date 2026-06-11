@@ -2,8 +2,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, Check, X, CheckCircle2, AlertCircle } from 'lucide-react';
-import { analyzeResumeAction } from '@/app/actions/ai';
+import { ArrowLeft, AlertCircle, Activity, Layout, Sparkles, Phone } from 'lucide-react';
+import { generalScanResumeAction } from '@/app/actions/ai';
 import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
 import { AiReport, scoreColor, scoreVerdict, scoreHeadroom } from '@/lib/onboarding';
 import { useLoadingPhases } from '@/lib/useLoadingPhases';
@@ -14,29 +14,15 @@ import { StepProps } from './types';
 const PHASES = [
   { delay: 0, text: 'Downloading your resume PDF…' },
   { delay: 2500, text: 'Parsing layout natively using advanced AI…' },
-  { delay: 5500, text: 'Extracting skills and running ATS keyword checks…' },
-  { delay: 9000, text: 'Structuring your match report…' },
+  { delay: 5500, text: 'Running ATS parsability and formatting checks…' },
+  { delay: 9000, text: 'Structuring your score report…' },
 ];
 
-/* ─────────────────────────────────────────────────────────
- * ANIMATION STORYBOARD — score reveal (ms after report lands)
- *
- *   60ms   score shelf scales in (0.96 → 1); number counts up
- *  420ms   verdict + summary fade up
- *  720ms   skill groups rise; pills stagger (40ms each)
- * 1000ms   CTA fades up
- * ───────────────────────────────────────────────────────── */
-const TIMING = {
-  shelf: 60,    // tinted score shelf scales in
-  verdict: 420, // verdict + summary fade up
-  skills: 720,  // skill groups + staggered pills
-  cta: 1000,    // primary CTA fades up
-};
-
+/* Staged reveal once the report lands (ms after report is present). */
+const TIMING = { shelf: 60, verdict: 420, metrics: 720, cta: 1000 };
 const SHELF = { initialScale: 0.96, spring: springs.smooth };
-const PILLS = { stagger: 0.04, spring: springs.micro };
 
-export default function EvaluationStep({ state, patch, next, back }: StepProps) {
+export default function ScoreStep({ state, patch, next, back }: StepProps) {
   const report = state.report;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,14 +31,14 @@ export default function EvaluationStep({ state, patch, next, back }: StepProps) 
   const phase = useLoadingPhases(PHASES, loading);
 
   const run = useCallback(async () => {
-    if (!state.resumeId || !state.jd.trim()) {
-      setError('Missing resume or job description. Please go back a step.');
+    if (!state.resumeId) {
+      setError('Missing resume. Please go back and upload your CV.');
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const result = await analyzeResumeAction(state.resumeId, state.jd);
+      const result = await generalScanResumeAction(state.resumeId);
       if (result?.error) {
         setError(result.error);
       } else {
@@ -64,9 +50,9 @@ export default function EvaluationStep({ state, patch, next, back }: StepProps) 
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.resumeId, state.jd]);
+  }, [state.resumeId]);
 
-  // Kick off analysis once on mount if we don't already have a cached report.
+  // Kick off the scan once on mount unless we already have a cached report.
   useEffect(() => {
     if (report || startedRef.current) return;
     startedRef.current = true;
@@ -80,7 +66,7 @@ export default function EvaluationStep({ state, patch, next, back }: StepProps) 
     const timers = [
       setTimeout(() => setStage(1), TIMING.shelf),
       setTimeout(() => setStage(2), TIMING.verdict),
-      setTimeout(() => setStage(3), TIMING.skills),
+      setTimeout(() => setStage(3), TIMING.metrics),
       setTimeout(() => setStage(4), TIMING.cta),
     ];
     return () => timers.forEach(clearTimeout);
@@ -91,7 +77,7 @@ export default function EvaluationStep({ state, patch, next, back }: StepProps) 
       <div className={styles.evalCard}>
         <div className={styles.loading}>
           <div className={styles.spinner} />
-          <h3 className={styles.loadingTitle}>Analyzing your resume</h3>
+          <h3 className={styles.loadingTitle}>Scoring your resume</h3>
           <p className={styles.loadingSubtitle}>{phase}</p>
         </div>
       </div>
@@ -121,10 +107,16 @@ export default function EvaluationStep({ state, patch, next, back }: StepProps) 
   if (!report) return null;
 
   const color = scoreColor(report.score);
+  const metrics = [
+    { icon: Activity, title: 'Parsability', value: report.parsability },
+    { icon: Layout, title: 'Section formatting', value: report.formatting },
+    { icon: Sparkles, title: 'Action verbs', value: report.actionVerbs },
+    { icon: Phone, title: 'Contact information', value: report.missingContactInfo },
+  ];
 
   return (
     <div className={styles.evalCard}>
-      {/* Score + verdict — flat row, divided from the skills below. */}
+      {/* Score + verdict */}
       <motion.div
         className={styles.scoreRow}
         initial={{ opacity: 0, scale: SHELF.initialScale, y: 8 }}
@@ -148,62 +140,22 @@ export default function EvaluationStep({ state, patch, next, back }: StepProps) 
         </motion.div>
       </motion.div>
 
+      {/* General-scan metric cards */}
       <motion.div
         className={styles.skillsGrid}
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: stage >= 3 ? 1 : 0, y: stage >= 3 ? 0 : 12 }}
         transition={transitions.base}
       >
-        <div className={styles.skillsCol}>
-          <h4 className={`${styles.skillsTitle} ${styles.matchingTitle}`}>
-            <CheckCircle2 size={16} />
-            Matching skills ({report.matchingSkills.length})
-          </h4>
-          <div className={styles.pills}>
-            {report.matchingSkills.map((skill, i) => (
-              <motion.span
-                key={i}
-                className={`${styles.pill} ${styles.matchingPill}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: stage >= 3 ? 1 : 0, scale: stage >= 3 ? 1 : 0.9 }}
-                transition={{ ...PILLS.spring, delay: i * PILLS.stagger }}
-              >
-                <Check size={11} strokeWidth={3} />
-                {skill}
-              </motion.span>
-            ))}
-            {report.matchingSkills.length === 0 && (
-              <p className={styles.emptyPills}>No exact skill matches detected yet.</p>
-            )}
+        {metrics.map(({ icon: Icon, title, value }) => (
+          <div key={title} className={styles.skillsCol}>
+            <h4 className={`${styles.skillsTitle} ${styles.matchingTitle}`}>
+              <Icon size={16} />
+              {title}
+            </h4>
+            <p className={styles.scoreBody}>{value || 'No issues detected.'}</p>
           </div>
-        </div>
-
-        <div className={styles.skillsCol}>
-          <h4 className={`${styles.skillsTitle} ${styles.missingTitle}`}>
-            <AlertCircle size={16} />
-            Missing keywords ({report.missingSkills.length})
-          </h4>
-          <div className={styles.pills}>
-            {report.missingSkills.map((skill, i) => (
-              <motion.span
-                key={i}
-                className={`${styles.pill} ${styles.missingPill}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: stage >= 3 ? 1 : 0, scale: stage >= 3 ? 1 : 0.9 }}
-                transition={{ ...PILLS.spring, delay: i * PILLS.stagger }}
-              >
-                <X size={11} strokeWidth={3} />
-                {skill}
-              </motion.span>
-            ))}
-            {report.missingSkills.length === 0 && (
-              <p className={styles.emptyPills}>Awesome — no major missing keywords.</p>
-            )}
-          </div>
-          {report.missingSkills.length > 0 && (
-            <p className={styles.skillHint}>Weave these into your resume to lift your score.</p>
-          )}
-        </div>
+        ))}
       </motion.div>
 
       <motion.div
@@ -214,10 +166,10 @@ export default function EvaluationStep({ state, patch, next, back }: StepProps) 
       >
         <button type="button" className={styles.secondaryBtn} onClick={back}>
           <ArrowLeft size={16} />
-          Edit job
+          Back
         </button>
         <button type="button" className={styles.primaryBtn} onClick={next}>
-          Build my resume
+          Get my link
         </button>
       </motion.div>
     </div>

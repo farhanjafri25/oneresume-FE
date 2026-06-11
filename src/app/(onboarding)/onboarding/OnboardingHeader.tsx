@@ -10,7 +10,7 @@ import styles from './Onboarding.module.css';
 
 interface OnboardingHeaderProps {
   user: User;
-  /** Index into RAIL_STEPS of the current step (-1 on the welcome screen). */
+  /** Index into RAIL_STEPS of the current step. */
   railIndex: number;
 }
 

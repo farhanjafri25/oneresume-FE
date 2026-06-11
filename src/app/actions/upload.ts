@@ -25,6 +25,8 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
     // Check if we passed resumeId and variantId (if uploading a new version to an existing variant)
     let resumeId = formData.get('resumeId') as string;
     let variantId = formData.get('variantId') as string;
+    // Public slug of the resume — only set when we create a new container below.
+    let createdSlug: string | undefined;
 
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -55,6 +57,7 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
         .replace(/^-+|-+$/g, '');
       
       const finalSlug = slug || `resume-${Date.now()}`;
+      createdSlug = finalSlug;
 
       const resumeRes = await fetch(`${API_URL}/resumes`, {
         method: 'POST',
@@ -95,7 +98,9 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
     }
 
     revalidatePath('/dashboard');
-    return { success: true, resumeId };
+    // `slug` is only set when we created the resume container above; version
+    // re-uploads leave it undefined (the onboarding flow always creates).
+    return { success: true, resumeId, slug: createdSlug };
 
   } catch (err) {
     console.error('Upload Error:', err);
