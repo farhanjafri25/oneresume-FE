@@ -105,7 +105,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .title {
@@ -134,7 +134,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .tag {
@@ -415,8 +415,8 @@
 .actionsBar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  margin-top: 12px;
-  margin-bottom: 4px;
+  margin-top: 0;
+  margin-bottom: 0;
   padding: 4px;
   background: rgba(28, 25, 23, 0.03);
   border: 1px solid var(--border);

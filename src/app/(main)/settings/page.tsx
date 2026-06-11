@@ -29,11 +29,6 @@ export default async function SettingsPage() {
 
   return (
     <PageTransition className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Account Settings</h1>
-        <p className={styles.subtitle}>View your account details and manage settings.</p>
-      </header>
-
       <div className={styles.card}>
         <div className={styles.profileSection}>
           <div className={styles.avatarContainer}>
