@@ -2,12 +2,18 @@
   display: inline-flex;
 }
 
-.tooltip {
+/* Anchored at the trigger's top-center; offsets the bubble so its
+   bottom-center sits at that point. Owns the transform so the inner
+   motion element is free to animate its own. */
+.anchor {
   position: fixed;
-  /* `top`/`left` anchor the bottom-center of the bubble to the trigger top. */
   transform: translate(-50%, -100%);
   z-index: 1100;
   pointer-events: none;
+}
+
+.tooltip {
+  display: block;
   white-space: nowrap;
   max-width: min(260px, calc(100vw - 16px));
   padding: 6px 10px;

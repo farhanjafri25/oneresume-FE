@@ -67,17 +67,23 @@ export default function Tooltip({ label, children, disabled = false }: TooltipPr
         createPortal(
           <AnimatePresence>
             {visible && (
-              <motion.span
-                id={tooltipId}
-                role="tooltip"
-                className={styles.tooltip}
+              // Outer span owns the centering offset so motion's inline
+              // transform (used for the entrance animation) can't override it.
+              <span
+                className={styles.anchor}
                 style={{ left: coords.left, top: coords.top }}
-                initial={{ opacity: 0, y: 4, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1, transition: springs.micro }}
-                exit={{ opacity: 0, y: 4, scale: 0.96, transition: springs.micro }}
               >
-                {label}
-              </motion.span>
+                <motion.span
+                  id={tooltipId}
+                  role="tooltip"
+                  className={styles.tooltip}
+                  initial={{ opacity: 0, y: 4, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1, transition: springs.micro }}
+                  exit={{ opacity: 0, y: 4, scale: 0.96, transition: springs.micro }}
+                >
+                  {label}
+                </motion.span>
+              </span>
             )}
           </AnimatePresence>,
           document.body,
