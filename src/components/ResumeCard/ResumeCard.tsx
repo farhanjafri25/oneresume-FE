@@ -15,6 +15,8 @@ interface ResumeCardProps {
   title: string;
   timeAgo: string;
   tags: string[];
+  /** Version label (e.g. "v1") shown as a badge over the preview's bottom-left. */
+  versionLabel?: string;
   pdfUrl?: string;
   publicUrl?: string;
   /** Position in the grid — drives the staggered entrance delay. */
@@ -28,6 +30,7 @@ export default function ResumeCard({
   title,
   timeAgo,
   tags,
+  versionLabel,
   pdfUrl,
   publicUrl,
   index = 0,
@@ -260,6 +263,8 @@ export default function ResumeCard({
               <span className={styles.placeholderSubtext}>Click to upload your masterpiece</span>
             </div>
           )}
+
+          {versionLabel && <span className={styles.versionBadge}>{versionLabel}</span>}
         </div>
 
         <div className={styles.content}>
@@ -268,13 +273,15 @@ export default function ResumeCard({
             <span className={styles.time}>{timeAgo}</span>
           </div>
 
-          <div className={styles.tags}>
-            {tags.map((tag) => (
-              <span key={tag} className={styles.tag}>
-                {tag}
-              </span>
-            ))}
-          </div>
+          {tags.length > 0 && (
+            <div className={styles.tags}>
+              {tags.map((tag) => (
+                <span key={tag} className={styles.tag}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           <div className={styles.actionsBar}>
             {actionButtons.map(({ icon: Icon, ariaLabel, label, disabled, onClick }) => (
