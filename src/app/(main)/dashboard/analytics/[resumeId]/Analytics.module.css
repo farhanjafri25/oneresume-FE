@@ -161,6 +161,29 @@
   }
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .cardValue {
+    font-size: 30px;
+  }
+
+  .chartCard {
+    padding: 20px 12px 16px;
+  }
+
+  .statsGrid,
+  .detailGrid {
+    gap: 16px;
+  }
+}
+
 /* Tables & Lists */
 .sourceList {
   display: flex;

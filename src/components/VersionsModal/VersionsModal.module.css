@@ -10,6 +10,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 16px;
   /* enter/exit handled by motion Modal (overlayFade) */
 }
 
@@ -254,7 +255,9 @@
 @media (max-width: 640px) {
   .modalContent {
     padding: 24px 16px;
-    width: 95%;
+    width: 100%; /* overlay padding owns the gutter */
+    max-height: 85vh;
+    max-height: 90dvh;
   }
   
   .closeBtn {

@@ -51,6 +51,24 @@
   }
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .panel {
+    padding: 20px;
+  }
+}
+
 /* Glassmorphism Card Panels */
 .panel {
   background: var(--surface);

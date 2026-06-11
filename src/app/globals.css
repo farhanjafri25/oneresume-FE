@@ -60,15 +60,32 @@ button {
   cursor: pointer;
   font: inherit;
   color: inherit;
+  touch-action: manipulation; /* no 300ms double-tap-zoom delay on touch */
 }
 
 input, textarea {
   font: inherit;
 }
 
+/*
+ * Responsive breakpoint scale (desktop-first, max-width):
+ * 1024px — two-panel workspaces collapse
+ *  768px — primary mobile breakpoint (nav, page padding, headings)
+ *  640px — modals, dense grids
+ *  480px — small-phone refinements
+ */
+
+/* iOS Safari zooms the page when a focused field is <16px. Touch only. */
+@media (hover: none) and (pointer: coarse) {
+  input, textarea, select {
+    font-size: max(16px, 1em);
+  }
+}
+
 .btn-primary {
   background: var(--primary);
   color: white;
+  touch-action: manipulation;
   padding: 10px 24px;
   border-radius: var(--radius-full);
   font-weight: 500;

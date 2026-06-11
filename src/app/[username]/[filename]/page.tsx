@@ -50,8 +50,8 @@ export default async function PublicResumePage({
           <div className={styles.left}>
             <span className={styles.logo}>OneCV</span>
             <span className={styles.divider}></span>
-            <span className={styles.name}>{username}</span>
-            <span className={styles.variantBadge}>{filename}</span>
+            <span className={styles.name} title={username}>{username}</span>
+            <span className={styles.variantBadge} title={filename}>{filename}</span>
           </div>
           {fileUrl && (
             <a href={`${API_URL}/${username}/${filename}/download${forQuery}`} target="_blank" rel="noopener noreferrer" className={`btn-primary ${styles.downloadBtn}`}>

@@ -211,6 +211,25 @@
   color: #f87171;
 }
 
+/* Touch devices: expand the 28px avatar's hit area to 44px without changing
+   its visual size. Clipping moves to the img so the ::after stays tappable. */
+@media (hover: none) {
+  .avatar {
+    position: relative;
+    overflow: visible;
+  }
+
+  .avatar img {
+    border-radius: 50%;
+  }
+
+  .avatar::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+}
+
 /* Responsive styles: two-row header — logo + profile on row 1, full-width tabs on row 2. */
 @media (max-width: 768px) {
   .container {
@@ -231,5 +250,10 @@
   /* Keep the clip overlay centered in step with the base list. */
   .center .clipContainer {
     justify-content: center;
+  }
+
+  /* Taller tab pills — fill the 40px pill so the whole height is tappable. */
+  .list .link {
+    padding: 10px 16px;
   }
 }
