@@ -45,6 +45,36 @@
   justify-content: center;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding-top: 56px;
+  }
+
+  .hero {
+    margin-bottom: 48px;
+  }
+
+  .title {
+    font-size: 44px;
+    letter-spacing: -1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 36px;
+  }
+
+  .subtitle {
+    font-size: 17px;
+    margin-bottom: 36px;
+  }
+
+  .ctaContainer {
+    flex-wrap: wrap;
+  }
+}
+
 .btnSecondary {
   background: transparent;
   color: var(--text-primary);
@@ -88,8 +118,27 @@
 }
 
 @media (max-width: 768px) {
+  .featuresSection {
+    padding: 48px 20px;
+  }
+
+  .featuresTitle {
+    font-size: 32px;
+    margin-bottom: 36px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .featuresTitle {
+    font-size: 28px;
+  }
+
+  .card {
+    padding: 24px;
   }
 }
 
@@ -102,10 +151,12 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--border-hover);
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-hover);
+  }
 }
 
 .iconWrapper {
@@ -137,14 +188,17 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  /* body is a height-constrained flex column; without this, the section's
+     overflow:hidden lets it shrink to nothing and the mockup disappears */
+  flex-shrink: 0;
   padding-top: 40px;
   margin-bottom: 80px;
 }
 
 .mockupContainer {
   position: relative;
-  width: 900px;
-  height: 500px;
+  width: min(900px, calc(100% - 32px));
+  height: min(500px, 55vw); /* keeps the 900x500 shape as it shrinks */
   display: flex;
   justify-content: center;
   background: var(--surface);
@@ -188,4 +242,83 @@
   object-fit: cover;
   margin-top: 40px;
   opacity: 0.9;
+}
+
+/* Skeleton layout inside the mockup chrome (top padding clears the 40px bar) */
+.mockupBody {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 20px;
+  padding: 60px;
+  background: var(--background);
+}
+
+.mockupMain {
+  flex: 1;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+.mockupSide {
+  width: 300px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+}
+
+@media (max-width: 640px) {
+  .mockupBody {
+    padding: 52px 16px 0;
+    gap: 12px;
+  }
+
+  .mockupSide {
+    display: none;
+  }
+}
+
+.ctaSection {
+  width: 100%;
+  padding: 100px 24px;
+  text-align: center;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.ctaTitle {
+  font-size: 48px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.ctaSubtitle {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+}
+
+.ctaBtn {
+  padding: 16px 32px;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .ctaSection {
+    padding: 64px 20px;
+  }
+
+  .ctaTitle {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ctaTitle {
+    font-size: 28px;
+  }
 }

@@ -93,14 +93,14 @@ export default function Hero({ replayTrigger = 0 }: { replayTrigger?: number }) 
       <motion.section className={styles.mockupSection} {...rise(4, MOCKUP)}>
         <div className={styles.mockupContainer}>
           {/* We will just put a styled div as a placeholder for the mockup image */}
-          <div style={{ padding: '60px', width: '100%', height: '100%', display: 'flex', gap: '20px', background: 'var(--background)' }}>
-            <div style={{ flex: 1, background: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', padding: '20px' }}>
+          <div className={styles.mockupBody}>
+            <div className={styles.mockupMain}>
               <div style={{ width: '60%', height: '24px', background: 'var(--surface)', borderRadius: '4px', marginBottom: '20px' }}></div>
               <div style={{ width: '100%', height: '12px', background: 'var(--surface)', borderRadius: '4px', marginBottom: '8px' }}></div>
               <div style={{ width: '80%', height: '12px', background: 'var(--surface)', borderRadius: '4px', marginBottom: '8px' }}></div>
               <div style={{ width: '90%', height: '12px', background: 'var(--surface)', borderRadius: '4px', marginBottom: '8px' }}></div>
             </div>
-            <div style={{ width: '300px', background: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', padding: '20px' }}>
+            <div className={styles.mockupSide}>
               <div style={{ width: '100%', height: '40px', background: 'var(--surface)', borderRadius: '4px', marginBottom: '20px' }}></div>
               <div style={{ width: '100%', height: '40px', background: 'var(--surface)', borderRadius: '4px', marginBottom: '20px' }}></div>
               <div style={{ width: '100%', height: '40px', background: 'var(--surface)', borderRadius: '4px', marginBottom: '20px' }}></div>

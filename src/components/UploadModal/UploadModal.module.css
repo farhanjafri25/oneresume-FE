@@ -184,3 +184,26 @@
   cursor: not-allowed;
   box-shadow: none;
 }
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 16px;
+  }
+
+  .modal {
+    padding: 24px 20px;
+  }
+
+  .header {
+    margin-bottom: 24px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .dropzone {
+    padding: 32px 16px;
+    margin-bottom: 24px;
+  }
+}
