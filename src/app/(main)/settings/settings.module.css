@@ -5,47 +5,17 @@
   padding: 40px 24px;
 }
 
-.header {
-  margin-bottom: 36px;
-}
-
-.title {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  font-size: 16px;
-  color: var(--text-secondary);
-}
-
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--primary);
+  display: flex;
+  flex-direction: column;
 }
 
 .profileSection {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24px;
+  text-align: center;
+  gap: 16px;
   padding-bottom: 32px;
   border-bottom: 1px solid var(--border);
   margin-bottom: 32px;

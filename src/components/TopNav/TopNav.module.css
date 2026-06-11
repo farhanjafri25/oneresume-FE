@@ -15,7 +15,7 @@
 .rightPublic {
   display: flex;
   align-items: center;
-  height: 44px;
+  height: 40px;
   background: rgba(251, 248, 241, 0.85); /* Light surface with opacity */
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
