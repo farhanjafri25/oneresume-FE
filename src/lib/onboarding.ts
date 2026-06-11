@@ -1,41 +1,41 @@
 export const ONBOARDED_COOKIE = 'onecv_onboarded';
 export const ONBOARDING_SESSION_KEY = 'onecv_onboarding';
 
-export type OnboardingStepKey =
-  | 'welcome' | 'goal' | 'upload' | 'job' | 'evaluation' | 'variant' | 'share';
+export type OnboardingStepKey = 'upload' | 'score' | 'share';
 
-/** Rail steps in order (welcome is intentionally excluded — it has no rail). */
 export const RAIL_STEPS: { key: OnboardingStepKey; label: string }[] = [
-  { key: 'goal',       label: 'Your goal' },
-  { key: 'upload',     label: 'Upload CV' },
-  { key: 'job',        label: 'Target job' },
-  { key: 'evaluation', label: 'Evaluation' },
-  { key: 'variant',    label: 'Tailored resume' },
-  { key: 'share',      label: 'Share' },
+  { key: 'upload', label: 'Upload CV' },
+  { key: 'score',  label: 'ATS Score' },
+  { key: 'share',  label: 'Your link' },
 ];
+
+/** Linear step sequence — single source for both navigation and the progress rail. */
+export const STEP_ORDER: OnboardingStepKey[] = RAIL_STEPS.map((s) => s.key);
 
 export interface AiReport {
   score: number;
   summary: string;
-  matchingSkills: string[];
-  missingSkills: string[];
-  recommendations: string[];
+  // Targeted-review fields (unused in onboarding, kept for shared typing).
+  matchingSkills?: string[];
+  missingSkills?: string[];
+  recommendations?: string[];
+  // General ATS scan fields.
+  parsability?: string;
+  formatting?: string;
+  actionVerbs?: string;
+  missingContactInfo?: string;
 }
 
 export interface OnboardingState {
   step: OnboardingStepKey;
-  targetRole: string;
-  experience: string;
   resumeId: string | null;
-  jd: string;
+  /** Public slug of the uploaded resume — used to build the shareable link. */
+  slug: string | null;
   report: AiReport | null;
-  variantSlug: string | null;
-  variantFileUrl: string | null;
 }
 
 export const INITIAL_ONBOARDING: OnboardingState = {
-  step: 'welcome', targetRole: '', experience: '', resumeId: null,
-  jd: '', report: null, variantSlug: null, variantFileUrl: null,
+  step: 'upload', resumeId: null, slug: null, report: null,
 };
 
 export function loadOnboarding(): OnboardingState {
@@ -56,21 +56,10 @@ export function clearOnboarding(): void {
   try { sessionStorage.removeItem(ONBOARDING_SESSION_KEY); } catch {}
 }
 
-/** Public tracked link, mirroring ResumeCard.submitTrackingLink. */
-export function buildTrackedLink(username: string, slug: string, label: string): string {
+/** Public shareable link to the user's resume. */
+export function buildTrackedLink(username: string, slug: string): string {
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const tag = label.trim().replace(/\s+/g, '-');
-  const q = tag ? `?for=${encodeURIComponent(tag)}` : '';
-  return `${origin}/${username}/${slug}${q}`;
-}
-
-/** Slugify a free-text role into a URL-safe slug (mirrors upload.ts slug logic). */
-export function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
+  return `${origin}/${username}/${slug}`;
 }
 
 // Score helpers (single source of truth — AiReviewClient & ScoreGauge both import these).

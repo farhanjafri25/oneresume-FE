@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle, Copy, Download, Link2 } from 'lucide-react';
+import { CheckCircle, Copy } from 'lucide-react';
 import { completeOnboardingAction } from '@/app/actions/onboarding';
 import { buildTrackedLink, clearOnboarding } from '@/lib/onboarding';
 import { slideUp } from '@/lib/motion';
@@ -10,13 +10,10 @@ import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
 export default function ShareStep({ state, user }: StepProps) {
-  const [label, setLabel] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
 
-  const slug = state.variantSlug ?? '';
-  const publicLink = buildTrackedLink(user.username, slug, '');
-  const trackedLink = buildTrackedLink(user.username, slug, label);
+  const publicLink = buildTrackedLink(user.username, state.slug ?? '');
 
   useEffect(() => {
     if (!toast) return;
@@ -24,15 +21,20 @@ export default function ShareStep({ state, user }: StepProps) {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const copy = (text: string, message: string) => {
-    navigator.clipboard.writeText(text).then(() => setToast(message)).catch(() => {});
+  const copy = () => {
+    navigator.clipboard
+      .writeText(publicLink)
+      .then(() => setToast('Link copied to clipboard!'))
+      .catch(() => {});
   };
 
   const finish = () => {
     setFinishing(true);
     clearOnboarding();
-    // Server action sets the onecv_onboarded cookie and redirects to the dashboard.
-    completeOnboardingAction({ redirectTo: '/dashboard' });
+    // Sets the onecv_onboarded cookie and lands the user on their analytics page.
+    completeOnboardingAction({
+      redirectTo: `/dashboard/analytics/${state.resumeId}?welcome=1`,
+    });
   };
 
   return (
@@ -40,57 +42,24 @@ export default function ShareStep({ state, user }: StepProps) {
       <CheckCircle size={56} className={styles.successIcon} />
       <h2 className={styles.title} style={{ textAlign: 'center' }}>Your resume is live 🎉</h2>
       <p className={styles.subtitle} style={{ textAlign: 'center', margin: '0 auto 8px' }}>
-        Share this link and watch views roll into your <strong>Analytics</strong> tab. Add a label to
-        track exactly who you sent it to.
+        Share this link with recruiters &mdash; every view lands in your <strong>Analytics</strong>.
       </p>
 
-      {/* Plain public link */}
+      {/* Pre-generated public link — copy only */}
       <div className={styles.linkTool}>
-        <label className={styles.label}>Your public link</label>
+        <label className={styles.label}>Your shareable link</label>
         <div className={styles.linkRow}>
           <input className={styles.input} readOnly value={publicLink} />
-          <button type="button" className={styles.copyBtn} onClick={() => copy(publicLink, 'Link copied to clipboard!')}>
+          <button type="button" className={styles.copyBtn} onClick={copy}>
             <Copy size={14} />
             Copy
           </button>
         </div>
       </div>
 
-      {/* Tracked link */}
-      <div className={styles.linkTool}>
-        <label className={styles.label}>Create a tracked link</label>
-        <div className={styles.linkRow}>
-          <input
-            className={styles.input}
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            placeholder="e.g. Google-Frontend"
-          />
-          <button
-            type="button"
-            className={styles.copyBtn}
-            onClick={() => copy(trackedLink, `Tracked link${label.trim() ? ` for "${label.trim()}"` : ''} copied!`)}
-          >
-            <Link2 size={14} />
-            Copy
-          </button>
-        </div>
-      </div>
-
       <div className={styles.btnRow} style={{ justifyContent: 'center', marginTop: 28 }}>
-        {state.variantFileUrl && (
-          <a
-            href={state.variantFileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondaryBtn}
-          >
-            <Download size={16} />
-            Download PDF
-          </a>
-        )}
         <button type="button" className={styles.primaryBtn} onClick={finish} disabled={finishing}>
-          {finishing ? 'Opening dashboard…' : 'Go to dashboard'}
+          {finishing ? 'Opening analytics…' : 'See my analytics'}
         </button>
       </div>
 
