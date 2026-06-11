@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles } from 'lucide-react';
+import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles, FileText } from 'lucide-react';
 import { deleteResumeAction } from '@/app/actions/resume';
 import Modal from '@/components/motion/Modal';
+import Tooltip from '@/components/Tooltip/Tooltip';
 import { slideUp, springs, transitions } from '@/lib/motion';
 import { useHoverable } from '@/lib/useHoverable';
 
@@ -14,7 +15,6 @@ interface ResumeCardProps {
   title: string;
   timeAgo: string;
   tags: string[];
-  imageUrl?: string;
   pdfUrl?: string;
   publicUrl?: string;
   /** Position in the grid — drives the staggered entrance delay. */
@@ -28,7 +28,6 @@ export default function ResumeCard({
   title,
   timeAgo,
   tags,
-  imageUrl,
   pdfUrl,
   publicUrl,
   index = 0,
@@ -45,6 +44,16 @@ export default function ResumeCard({
   const [loadedPdfUrl, setLoadedPdfUrl] = useState<string | null>(null);
   const isPdfLoaded = loadedPdfUrl === pdfUrl;
   const hoverable = useHoverable();
+  // Some browsers (notably Android Chrome) can't render a PDF inline in an
+  // iframe — they fall back to a raw-URL/"Open" stub. Detect inline support and
+  // show a branded thumbnail instead. Server snapshot is false so SSR and the
+  // first client render agree, then it upgrades to the live preview where the
+  // browser supports it.
+  const canInlinePdf = useSyncExternalStore(
+    () => () => {},
+    () => navigator.pdfViewerEnabled === true,
+    () => false,
+  );
 
   useEffect(() => {
     if (showToast) {
@@ -146,6 +155,58 @@ export default function ResumeCard({
     }
   };
 
+  const pdfMissing = !pdfUrl || pdfUrl === '#';
+
+  const actionButtons = [
+    {
+      icon: Brain,
+      ariaLabel: 'AI Match Reviewer',
+      label: pdfMissing ? 'Please upload a PDF first to use the AI Reviewer' : 'AI Match Reviewer',
+      disabled: pdfMissing,
+      onClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        window.location.href = `/dashboard/ai-review/${id}`;
+      },
+    },
+    {
+      icon: Sparkles,
+      ariaLabel: 'AI Tailor & Build',
+      label: pdfMissing ? 'Please upload a PDF first to use the AI Builder' : 'AI Tailor & Build',
+      disabled: pdfMissing,
+      onClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        window.location.href = `/dashboard/ai-builder/${id}`;
+      },
+    },
+    {
+      icon: BarChart2,
+      ariaLabel: 'View Page Views & Analytics',
+      label: 'View Page Views & Analytics',
+      disabled: false,
+      onClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        window.location.href = `/dashboard/analytics/${id}`;
+      },
+    },
+    {
+      icon: Link2,
+      ariaLabel: 'Create Personalized Tracking Link',
+      label: 'Create Personalized Tracking Link',
+      disabled: false,
+      onClick: handleCreateTrackingLink,
+    },
+    {
+      icon: History,
+      ariaLabel: 'Version History',
+      label: 'Version History',
+      disabled: false,
+      onClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onVersionsClick?.();
+      },
+    },
+  ];
+
   return (
     <>
       <motion.div
@@ -159,19 +220,28 @@ export default function ResumeCard({
       >
         <div className={styles.imageContainer}>
           {pdfUrl && pdfUrl !== '#' ? (
-            <>
-              <iframe
-                src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                className={styles.pdfPreview}
-                title={title}
-                frameBorder="0"
-                onLoad={() => setLoadedPdfUrl(pdfUrl)}
-              />
-              <div
-                className={`${styles.pdfSkeleton} ${isPdfLoaded ? styles.pdfSkeletonHidden : ''}`}
-                aria-hidden="true"
-              />
-            </>
+            canInlinePdf ? (
+              <>
+                <iframe
+                  src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  className={styles.pdfPreview}
+                  title={title}
+                  frameBorder="0"
+                  onLoad={() => setLoadedPdfUrl(pdfUrl)}
+                />
+                <div
+                  className={`${styles.pdfSkeleton} ${isPdfLoaded ? styles.pdfSkeletonHidden : ''}`}
+                  aria-hidden="true"
+                />
+              </>
+            ) : (
+              <div className={styles.pdfFallback}>
+                <div className={styles.pdfFallbackTile}>
+                  <FileText size={24} className={styles.pdfFallbackIcon} />
+                </div>
+                <span className={styles.pdfFallbackSubtext}>Tap to open</span>
+              </div>
+            )
           ) : (
             <div 
               className={styles.placeholder} 
@@ -202,55 +272,18 @@ export default function ResumeCard({
           </div>
 
           <div className={styles.actionsBar}>
-            <button 
-              className={styles.actionIconBtn} 
-              onClick={(e) => {
-                e.stopPropagation();
-                window.location.href = `/dashboard/ai-review/${id}`;
-              }}
-              disabled={!pdfUrl || pdfUrl === '#'}
-              title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Reviewer' : 'AI Match Reviewer'}
-            >
-              <Brain size={16} />
-            </button>
-            <button 
-              className={styles.actionIconBtn} 
-              onClick={(e) => {
-                e.stopPropagation();
-                window.location.href = `/dashboard/ai-builder/${id}`;
-              }}
-              disabled={!pdfUrl || pdfUrl === '#'}
-              title={!pdfUrl || pdfUrl === '#' ? 'Please upload a PDF first to use the AI Builder' : 'AI Tailor & Build'}
-            >
-              <Sparkles size={16} />
-            </button>
-            <button 
-              className={styles.actionIconBtn} 
-              onClick={(e) => {
-                e.stopPropagation();
-                window.location.href = `/dashboard/analytics/${id}`;
-              }}
-              title="View Page Views & Analytics"
-            >
-              <BarChart2 size={16} />
-            </button>
-            <button 
-              className={styles.actionIconBtn} 
-              onClick={handleCreateTrackingLink}
-              title="Create Personalized Tracking Link"
-            >
-              <Link2 size={16} />
-            </button>
-            <button 
-              className={styles.actionIconBtn} 
-              onClick={(e) => {
-                e.stopPropagation();
-                onVersionsClick?.();
-              }}
-              title="Version History"
-            >
-              <History size={16} />
-            </button>
+            {actionButtons.map(({ icon: Icon, ariaLabel, label, disabled, onClick }) => (
+              <Tooltip key={ariaLabel} label={label}>
+                <button
+                  className={styles.actionIconBtn}
+                  onClick={onClick}
+                  disabled={disabled}
+                  aria-label={ariaLabel}
+                >
+                  <Icon size={16} />
+                </button>
+              </Tooltip>
+            ))}
           </div>
 
           <div className={styles.footer}>
@@ -260,29 +293,33 @@ export default function ResumeCard({
             </button>
 
             <div className={styles.rightActions}>
-              <button
-                className={styles.iconBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onUploadClick?.();
-                }}
-                disabled={isDeleting}
-                title="Upload new version"
-              >
-                <Upload size={16} />
-              </button>
-              
-              <div className={styles.dropdownContainer}>
+              <Tooltip label="Upload new version">
                 <button
                   className={styles.iconBtn}
-                  onClick={handleToggleDropdown}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUploadClick?.();
+                  }}
                   disabled={isDeleting}
-                  aria-label="More options"
-                  aria-haspopup="menu"
-                  aria-expanded={showDropdown}
+                  aria-label="Upload new version"
                 >
-                  <MoreVertical size={16} />
+                  <Upload size={16} />
                 </button>
+              </Tooltip>
+
+              <div className={styles.dropdownContainer}>
+                <Tooltip label="More options" disabled={showDropdown}>
+                  <button
+                    className={styles.iconBtn}
+                    onClick={handleToggleDropdown}
+                    disabled={isDeleting}
+                    aria-label="More options"
+                    aria-haspopup="menu"
+                    aria-expanded={showDropdown}
+                  >
+                    <MoreVertical size={16} />
+                  </button>
+                </Tooltip>
 
                 {showDropdown && (
                   <div className={styles.dropdownMenu} onClick={(e) => e.stopPropagation()}>
@@ -366,7 +403,7 @@ export default function ResumeCard({
       >
         <h3 id="delete-resume-title" className={styles.modalTitle} style={{ color: '#ef4444' }}>Delete Resume</h3>
         <p className={styles.modalDesc}>
-          Are you sure you want to delete <strong>"{title}"</strong>? This will permanently delete all versions and variants. This action cannot be undone.
+          Are you sure you want to delete <strong>&ldquo;{title}&rdquo;</strong>? This will permanently delete all versions and variants. This action cannot be undone.
         </p>
         <div className={styles.modalActions}>
           <button className={styles.modalCancel} onClick={() => setShowDeleteModal(false)}>Cancel</button>

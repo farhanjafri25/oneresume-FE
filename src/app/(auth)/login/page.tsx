@@ -84,6 +84,14 @@ export default function LoginPage() {
           </div>
         )}
 
+        <div
+          ref={googleBtnRef}
+          className={styles.googleBtnWrapper}
+          style={{ pointerEvents: isGooglePending ? 'none' : 'auto', opacity: isGooglePending ? 0.6 : 1 }}
+        />
+
+        <div className={styles.divider}>or</div>
+
         <form className={styles.form} action={formAction}>
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
@@ -101,14 +109,6 @@ export default function LoginPage() {
             {isPending ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
-
-        <div className={styles.divider}>or</div>
-
-        <div 
-          ref={googleBtnRef} 
-          className={styles.googleBtnWrapper}
-          style={{ pointerEvents: isGooglePending ? 'none' : 'auto', opacity: isGooglePending ? 0.6 : 1 }}
-        />
 
         <p className={styles.footer}>
           Don't have an account? <Link href="/signup" className={styles.link}>Sign up</Link>
