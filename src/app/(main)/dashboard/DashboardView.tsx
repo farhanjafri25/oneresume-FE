@@ -65,7 +65,8 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
                 id={resume.id}
                 title={variant.slug === 'default' ? resume.title : `${resume.title} (${variant.slug})`}
                 timeAgo={formatUTCDate(resume.createdAt)}
-                tags={latestVersion ? [`v${latestVersion.versionNumber}`] : ['No PDF']}
+                versionLabel={latestVersion ? `v${latestVersion.versionNumber}` : undefined}
+                tags={latestVersion ? [] : ['No PDF']}
                 pdfUrl={pdfUrl}
                 publicUrl={publicUrl}
                 onUploadClick={() => {
