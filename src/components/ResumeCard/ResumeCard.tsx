@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles, FileText, ExternalLink } from 'lucide-react';
+import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles, FileText, ExternalLink, Target } from 'lucide-react';
 import { deleteResumeAction } from '@/app/actions/resume';
 import Modal from '@/components/motion/Modal';
 import Tooltip from '@/components/Tooltip/Tooltip';
@@ -189,7 +189,7 @@ export default function ResumeCard({
       },
     },
     {
-      icon: Link2,
+      icon: Target,
       ariaLabel: 'Create Personalized Tracking Link',
       label: 'Create Personalized Tracking Link',
       disabled: false,

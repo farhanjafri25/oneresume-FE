@@ -135,7 +135,6 @@
   align-items: center;
   margin-top: auto;
   padding-top: 16px;
-  border-top: 1px solid var(--border);
 }
 
 .actionBtn {
