@@ -1,0 +1,32 @@
+.trigger {
+  display: inline-flex;
+}
+
+.tooltip {
+  position: fixed;
+  /* `top`/`left` anchor the bottom-center of the bubble to the trigger top. */
+  transform: translate(-50%, -100%);
+  z-index: 1100;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: min(260px, calc(100vw - 16px));
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--text-primary);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  box-shadow: var(--shadow-md);
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--text-primary);
+}
