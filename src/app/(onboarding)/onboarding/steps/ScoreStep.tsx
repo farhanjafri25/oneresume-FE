@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, WarningCircle, Pulse, Layout, Sparkle, Phone } from '@phosphor-icons/react/dist/ssr';
+import { WarningCircle, Pulse, Layout, Sparkle, Phone } from '@phosphor-icons/react/dist/ssr';
 import { generalScanResumeAction } from '@/app/actions/ai';
 import Button from '@/components/Button/Button';
 import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
@@ -23,7 +23,7 @@ const PHASES = [
 const TIMING = { shelf: 60, verdict: 420, metrics: 720, cta: 1000 };
 const SHELF = { initialScale: 0.96, spring: springs.smooth };
 
-export default function ScoreStep({ state, patch, next, back }: StepProps) {
+export default function ScoreStep({ state, patch, next }: StepProps) {
   const report = state.report;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export default function ScoreStep({ state, patch, next, back }: StepProps) {
 
   const run = useCallback(async () => {
     if (!state.resumeId) {
-      setError('Missing resume. Please go back and upload your CV.');
+      setError('Missing resume. Please refresh the page and upload your CV.');
       return;
     }
     setLoading(true);
@@ -92,11 +92,7 @@ export default function ScoreStep({ state, patch, next, back }: StepProps) {
           <WarningCircle size={18} />
           <span>{error}</span>
         </div>
-        <div className={styles.btnRow}>
-          <Button variant="secondary" onClick={back}>
-            <ArrowLeft size={16} />
-            Back
-          </Button>
+        <div className={styles.btnRow} style={{ justifyContent: 'flex-end' }}>
           <Button onClick={() => { startedRef.current = true; run(); }}>
             Try again
           </Button>
@@ -164,11 +160,8 @@ export default function ScoreStep({ state, patch, next, back }: StepProps) {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: stage >= 4 ? 1 : 0, y: stage >= 4 ? 0 : 8 }}
         transition={transitions.base}
+        style={{ justifyContent: 'flex-end' }}
       >
-        <Button variant="secondary" onClick={back}>
-          <ArrowLeft size={16} />
-          Back
-        </Button>
         <Button onClick={next}>
           Get my link
         </Button>
