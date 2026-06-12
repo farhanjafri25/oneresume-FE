@@ -26,6 +26,8 @@
 }
 
 .title {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -445,6 +447,8 @@
 }
 
 .successTitle {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 12px;

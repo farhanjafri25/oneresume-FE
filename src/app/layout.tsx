@@ -4,7 +4,7 @@ import Script from "next/script";
 import MotionProvider from "@/components/motion/MotionProvider";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin"] });
+const geist = Geist({ subsets: ["latin"], variable: "--font-body" });
 
 const hubotSans = Hubot_Sans({
   subsets: ["latin"],
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geist.className} ${hubotSans.variable}`}>
+    <html lang="en" className={`${geist.className} ${geist.variable} ${hubotSans.variable}`}>
       <body>
         <MotionProvider>{children}</MotionProvider>
         <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />

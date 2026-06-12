@@ -25,6 +25,8 @@
 }
 
 .title {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 32px;
   font-weight: 500;
   margin-bottom: 8px;
