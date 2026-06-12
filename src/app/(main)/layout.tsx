@@ -25,12 +25,18 @@ export default async function MainLayout({ children }: { children: React.ReactNo
     redirect('/login');
   }
 
-  // Onboarding gate. The cookie is the source of truth; if it's absent we derive
-  // from existing data so brand-new users (0 resumes) are sent to the wizard while
-  // established users are never trapped. Fail open on errors — never lock anyone out.
-  const onboarded = cookieStore.get(ONBOARDED_COOKIE)?.value === '1';
+  // Onboarding gate. The server field (user.onboardedAt) is authoritative and is
+  // already on the `getMe()` payload — no extra request. Until the backend ships
+  // it, the field is `undefined` and we fall back to the legacy cookie + resume-
+  // count heuristic. Fail open on errors — never lock anyone out.
   let needsCookieSync = false;
-  if (!onboarded) {
+  if (user.onboardedAt) {
+    // Server says onboarded — allow through.
+  } else if (user.onboardedAt === null) {
+    // Server explicitly says not onboarded.
+    redirect('/onboarding');
+  } else if (cookieStore.get(ONBOARDED_COOKIE)?.value !== '1') {
+    // Legacy path: backend doesn't expose onboardedAt yet, no cookie set.
     let resumeCount: number | null = null;
     try {
       resumeCount = (await getResumes()).length;

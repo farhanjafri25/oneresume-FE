@@ -54,6 +54,14 @@ export async function getResumes(): Promise<Resume[]> {
   return serverFetch<Resume[]>('/resumes');
 }
 
+/**
+ * Mark the current user onboarded server-side (idempotent on the backend).
+ * Source of truth for the onboarding gate. Returns the updated user.
+ */
+export async function markOnboarded(): Promise<User> {
+  return serverFetch<User>('/auth/onboarded', { method: 'POST' });
+}
+
 export async function getResumeVariants(resumeId: string): Promise<Variant[]> {
   return serverFetch<Variant[]>(`/resumes/${resumeId}/variants`);
 }
