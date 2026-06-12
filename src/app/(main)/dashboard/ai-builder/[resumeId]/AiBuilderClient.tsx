@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkle, ArrowLeft, Briefcase, GraduationCap, CheckCircle, WarningCircle, PaperPlaneTilt, FloppyDisk, DownloadSimple, ArrowSquareOut, CaretRight, User, Wrench, Link, Eye } from '@phosphor-icons/react/dist/ssr';
 import { tailorResumeAction, createVariantAction, getThemesAction, previewResumeAction } from '@/app/actions/ai';
+import Button from '@/components/Button/Button';
 import styles from './AiBuilder.module.css';
 
 interface AiBuilderClientProps {
@@ -261,16 +262,10 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
           </div>
         )}
 
-        <button
-          type="button"
-          className={styles.actionBtn}
-          style={{ width: '100%' }}
-          onClick={handleTailor}
-          disabled={!jd.trim()}
-        >
+        <Button fullWidth onClick={handleTailor} disabled={!jd.trim()}>
           <PaperPlaneTilt size={16} />
-          Tailor Resume Content
-        </button>
+          Tailor resume content
+        </Button>
       </div>
     );
   }
@@ -301,17 +296,16 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
         </p>
 
         <div className={styles.buttonGroup}>
-          <a href={directLink} target="_blank" rel="noopener noreferrer" className={styles.actionBtn}>
+          <Button href={directLink} target="_blank" rel="noopener noreferrer">
             <DownloadSimple size={16} />
             Download tailored PDF
-          </a>
-          <button 
-            type="button" 
-            className={`${styles.actionBtn} ${styles.secondaryBtn}`}
-            onClick={() => window.location.href = '/dashboard/variants'}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => (window.location.href = '/dashboard/variants')}
           >
-            View Tailored Variants
-          </button>
+            View tailored variants
+          </Button>
         </div>
       </div>
     );
@@ -590,15 +584,14 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
               <Eye size={14} style={{ color: 'var(--primary)' }} />
               Live HTML Theme Preview
             </span>
-            <button
-              type="button"
-              className={styles.clearBtn}
-              style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 'bold' }}
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => updatePreviewHtml(selectedThemeId, formData)}
               disabled={previewLoading}
             >
-              {previewLoading ? 'Syncing...' : 'Sync changes'}
-            </button>
+              {previewLoading ? 'Syncing…' : 'Sync changes'}
+            </Button>
           </div>
           <div style={{ 
             width: '100%', 
@@ -686,15 +679,15 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
             </div>
           )}
 
-          <button
-            type="button"
-            className={styles.actionBtn}
+          <Button
+            fullWidth
+            loading={saving}
             onClick={handleSaveVariant}
-            disabled={saving || !variantTitle.trim() || !variantSlug.trim()}
+            disabled={!variantTitle.trim() || !variantSlug.trim()}
           >
-            <FloppyDisk size={16} />
-            {saving ? 'Generating PDF...' : 'Build & Save Variant'}
-          </button>
+            {!saving && <FloppyDisk size={16} />}
+            {saving ? 'Generating PDF…' : 'Build & save variant'}
+          </Button>
         </div>
       </div>
     </div>

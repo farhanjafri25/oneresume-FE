@@ -2,10 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { 
+import {
   Sparkle, PaperPlaneTilt, CheckCircle, WarningCircle, BookOpen, ListChecks, Check, X, FileText, Pulse, Layout, Phone } from '@phosphor-icons/react/dist/ssr';
 import { analyzeResumeAction, generalScanResumeAction } from '@/app/actions/ai';
+import Button from '@/components/Button/Button';
 import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
+import Tabs from '@/components/Tabs/Tabs';
 import { useLoadingPhases } from '@/lib/useLoadingPhases';
 import styles from './AiReview.module.css';
 
@@ -27,6 +29,13 @@ interface AiReport {
   missingContactInfo?: string;
 }
 
+type ScanMode = 'targeted' | 'general';
+
+const SCAN_TABS = [
+  { id: 'targeted', label: 'Targeted Match' },
+  { id: 'general', label: 'General Scan' },
+];
+
 // Dynamic status update messages during AI processing
 const LOADING_PHASES = [
   { delay: 0, text: 'Downloading resume PDF from storage...' },
@@ -37,12 +46,18 @@ const LOADING_PHASES = [
 
 export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
   const router = useRouter();
-  const [scanMode, setScanMode] = useState<'targeted' | 'general'>('targeted');
+  const [scanMode, setScanMode] = useState<ScanMode>('targeted');
   const [jd, setJd] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [report, setReport] = useState<AiReport | null>(null);
   const loadingPhase = useLoadingPhases(LOADING_PHASES, loading);
+
+  const selectScanMode = (mode: string) => {
+    setScanMode(mode as ScanMode);
+    setReport(null);
+    setError(null);
+  };
 
   const handleAnalyze = async () => {
     if (scanMode === 'targeted' && !jd.trim()) return;
@@ -80,20 +95,14 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
       {/* LEFT SIDE: Inputs */}
       <div className={styles.panel}>
         
-        {/* Toggle Mode */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', background: 'var(--bg-secondary)', padding: '4px', borderRadius: '8px' }}>
-          <button 
-            style={{ flex: 1, padding: '8px 0', borderRadius: '6px', fontSize: '14px', fontWeight: 500, background: scanMode === 'targeted' ? 'var(--bg-card)' : 'transparent', color: scanMode === 'targeted' ? 'var(--text-primary)' : 'var(--text-secondary)', boxShadow: scanMode === 'targeted' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
-            onClick={() => { setScanMode('targeted'); setReport(null); setError(null); }}
-          >
-            Targeted Match
-          </button>
-          <button 
-            style={{ flex: 1, padding: '8px 0', borderRadius: '6px', fontSize: '14px', fontWeight: 500, background: scanMode === 'general' ? 'var(--bg-card)' : 'transparent', color: scanMode === 'general' ? 'var(--text-primary)' : 'var(--text-secondary)', boxShadow: scanMode === 'general' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
-            onClick={() => { setScanMode('general'); setReport(null); setError(null); }}
-          >
-            General Scan
-          </button>
+        {/* Scan mode toggle */}
+        <div className={styles.scanToggle}>
+          <Tabs
+            items={SCAN_TABS}
+            activeId={scanMode}
+            onTabClick={selectScanMode}
+            ariaLabel="Scan mode"
+          />
         </div>
 
         {scanMode === 'targeted' ? (
@@ -117,14 +126,14 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
               <div className={styles.textareaCounter}>
                 <span>{wordCount} words | {charCount} chars</span>
                 {jd && (
-                  <button 
-                    type="button" 
-                    className={styles.clearBtn} 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setJd('')}
                     disabled={loading}
                   >
                     Clear text
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
@@ -162,16 +171,16 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
           </div>
         )}
 
-        <button
-          type="button"
-          className={styles.actionBtn}
+        <Button
+          fullWidth
+          loading={loading}
           onClick={handleAnalyze}
-          disabled={loading || (scanMode === 'targeted' && !jd.trim())}
+          disabled={scanMode === 'targeted' && !jd.trim()}
           style={{ marginTop: 'auto' }}
         >
-          <PaperPlaneTilt size={16} />
-          {loading ? 'Analyzing...' : scanMode === 'targeted' ? 'Analyze CV Alignment' : 'Run General ATS Scan'}
-        </button>
+          {!loading && <PaperPlaneTilt size={16} />}
+          {loading ? 'Analyzing…' : scanMode === 'targeted' ? 'Analyze CV alignment' : 'Run general ATS scan'}
+        </Button>
       </div>
 
       {/* RIGHT SIDE: Output Dashboard */}
@@ -307,18 +316,15 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
 
             {scanMode === 'targeted' && (
               <div style={{ marginTop: '32px', textAlign: 'center' }}>
-                <button 
-                  type="button" 
-                  className={styles.actionBtn} 
+                <Button
                   onClick={() => {
                     sessionStorage.setItem('shared_jd', jd);
                     router.push(`/dashboard/ai-builder/${resumeId}`);
                   }}
-                  style={{ display: 'inline-flex', width: 'auto', padding: '12px 24px', fontSize: '15px' }}
                 >
-                  <Sparkle size={18} style={{ marginRight: '8px' }} />
-                  Generate AI Resume from this JD
-                </button>
+                  <Sparkle size={18} />
+                  Generate AI resume from this JD
+                </Button>
               </div>
             )}
           </div>

@@ -6,6 +6,7 @@ import { Link, ArrowSquareOut, CheckCircle, Clock, X, CircleNotch } from '@phosp
 import styles from './VersionsModal.module.css';
 import { Resume } from '@/types';
 import { getResumeVariantsAction } from '@/app/actions/resume';
+import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
 import { slideUp } from '@/lib/motion';
 
@@ -157,24 +158,25 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
                         </div>
 
                         <div className={styles.actions}>
-                          <button
-                            className={`btn-primary ${styles.actionBtn} ${styles.primaryBtn}`}
+                          <Button
+                            size="sm"
                             onClick={() => handleCopyLink(version.versionNumber)}
                           >
                             <Link size={14} />
-                            Copy Share Link
-                          </button>
+                            Copy share link
+                          </Button>
 
                           {version.fileUrl && (
-                            <a
+                            <Button
+                              variant="secondary"
+                              size="sm"
                               href={version.fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className={styles.actionBtn}
                             >
                               <ArrowSquareOut size={14} />
                               View PDF
-                            </a>
+                            </Button>
                           )}
                         </div>
                       </div>

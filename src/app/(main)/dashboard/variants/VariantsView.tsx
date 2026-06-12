@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import styles from '../Dashboard.module.css';
+import Button from '@/components/Button/Button';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import { Plus, Sparkle } from '@phosphor-icons/react/dist/ssr';
@@ -45,8 +46,8 @@ export default function VariantsView({ user, resumes }: VariantsViewProps) {
           <p className={styles.subtitle}>Manage role-specific custom versions of your master documents.</p>
         </div>
         {resumes.length > 0 && (
-          <button 
-            className={`btn-primary ${styles.newBtn}`}
+          <Button
+            className={styles.newBtn}
             onClick={() => {
               setSelectedResumeId(resumes[0].id);
               setSelectedVariantId(undefined);
@@ -55,7 +56,7 @@ export default function VariantsView({ user, resumes }: VariantsViewProps) {
           >
             <Plus size={18} />
             New Variant
-          </button>
+          </Button>
         )}
       </header>
       

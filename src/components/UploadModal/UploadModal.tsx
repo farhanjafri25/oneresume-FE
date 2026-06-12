@@ -4,6 +4,7 @@ import React, { useActionState, useEffect, useRef, useState } from 'react';
 import styles from './UploadModal.module.css';
 import { X, CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
+import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
 
 interface UploadModalProps {
@@ -109,9 +110,9 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
             </h3>
             <p className={styles.dropzoneDesc}>PDF only up to 2MB</p>
 
-            <button
-              type="button"
-              className={styles.browseBtn}
+            <Button
+              variant="secondary"
+              size="sm"
               disabled={isPending}
               onClick={(e) => {
                 if (selectedFileName) {
@@ -120,14 +121,14 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
                 }
               }}
             >
-              {selectedFileName ? 'CHANGE FILE' : 'BROWSE FILES'}
-            </button>
+              {selectedFileName ? 'Change file' : 'Browse files'}
+            </Button>
           </div>
 
           {selectedFileName && (
-            <button type="submit" className={styles.submitBtn} disabled={isPending}>
-              {isPending ? 'UPLOADING...' : 'UPLOAD RESUME'}
-            </button>
+            <Button type="submit" fullWidth className={styles.submitBtn} loading={isPending}>
+              {isPending ? 'Uploading…' : 'Upload resume'}
+            </Button>
           )}
         </form>
 

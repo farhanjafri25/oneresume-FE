@@ -6,6 +6,7 @@ import { CheckCircle, Copy } from '@phosphor-icons/react/dist/ssr';
 import { completeOnboardingAction } from '@/app/actions/onboarding';
 import { buildTrackedLink, clearOnboarding } from '@/lib/onboarding';
 import { slideUp } from '@/lib/motion';
+import Button from '@/components/Button/Button';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
@@ -50,17 +51,17 @@ export default function ShareStep({ state, user }: StepProps) {
         <label className={styles.label}>Your shareable link</label>
         <div className={styles.linkRow}>
           <input className={styles.input} readOnly value={publicLink} />
-          <button type="button" className={styles.copyBtn} onClick={copy}>
+          <Button className={styles.copyBtn} onClick={copy}>
             <Copy size={14} />
             Copy
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className={styles.btnRow} style={{ justifyContent: 'center', marginTop: 28 }}>
-        <button type="button" className={styles.primaryBtn} onClick={finish} disabled={finishing}>
+        <Button onClick={finish} loading={finishing}>
           {finishing ? 'Opening analytics…' : 'See my analytics'}
-        </button>
+        </Button>
       </div>
 
       <AnimatePresence>

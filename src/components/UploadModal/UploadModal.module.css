@@ -101,21 +101,6 @@
   margin-bottom: 24px;
 }
 
-.browseBtn {
-  background: rgba(28, 25, 23, 0.05);
-  color: var(--text-primary);
-  padding: 10px 24px;
-  border-radius: var(--radius-full);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: background 0.2s ease;
-}
-
-.browseBtn:hover {
-  background: rgba(28, 25, 23, 0.1);
-}
-
 .footer {
   display: flex;
   align-items: center;
@@ -141,8 +126,6 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .textInput {
@@ -161,30 +144,9 @@
   box-shadow: 0 0 0 3px rgba(20, 85, 51, 0.15);
 }
 
+/* Layout only — visuals come from the shared Button component. */
 .submitBtn {
-  background: var(--primary);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  width: 100%;
   margin-bottom: 24px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(20, 85, 51, 0.15);
-}
-
-.submitBtn:hover {
-  background: var(--primary-hover);
-  box-shadow: 0 4px 8px rgba(20, 85, 51, 0.25);
-}
-
-.submitBtn:disabled {
-  background: rgba(28, 25, 23, 0.08);
-  color: rgba(28, 25, 23, 0.4);
-  cursor: not-allowed;
-  box-shadow: none;
 }
 
 @media (max-width: 640px) {

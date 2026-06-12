@@ -1,0 +1,123 @@
+/* Default tab control — a sliding clip-path pill over the active tab.
+   Two knobs cover every call site: `data-variant` (track chrome) and
+   `data-fill` (equal-width behavior). */
+
+.tabs {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+
+/* Track chrome ---------------------------------------------------------- */
+.tabs[data-variant='inset'] {
+  background: rgba(28, 25, 23, 0.05); /* faint recessed well on a surface panel */
+}
+
+.tabs[data-variant='frosted'] {
+  background: rgba(251, 248, 241, 0.85); /* matches the header's other pills */
+  backdrop-filter: blur(10px);
+}
+
+/* Tab list -------------------------------------------------------------- */
+.list {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list > li {
+  display: flex;
+}
+
+/* Equal-width tabs. `mobile` only stretches under the 768px breakpoint. */
+.tabs[data-fill='always'] .list > li {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .tabs[data-fill='mobile'] .list > li {
+    flex: 1;
+  }
+}
+
+.tab {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color 0.2s ease;
+}
+
+/* Hover is an enhancement only — never enable it on touch (avoids the
+   sticky-hover false positive on tap). */
+@media (hover: hover) and (pointer: fine) {
+  .tab:hover {
+    color: var(--text-primary);
+  }
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Highlight pill -------------------------------------------------------- */
+.clip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  pointer-events: none;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+  clip-path: inset(0 100% 0 0 round 9999px);
+  transition: clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: clip-path;
+}
+
+.overlay .tab {
+  color: var(--surface);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .overlay .tab:hover {
+    color: var(--surface);
+  }
+}
+
+/* Guarantee a 44px tap target on touch without growing the desktop pill. */
+@media (hover: none) {
+  .tabs {
+    min-height: 44px;
+  }
+}
+
+/* Respect reduced-motion: snap the pill into place instead of sliding. */
+@media (prefers-reduced-motion: reduce) {
+  .clip {
+    transition: none;
+  }
+
+  .tab {
+    transition: none;
+  }
+}

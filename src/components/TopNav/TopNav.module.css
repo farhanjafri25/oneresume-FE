@@ -8,9 +8,9 @@
   width: 100%;
 }
 
-/* Shared pill treatment for all three sections, all the same height. */
+/* Shared pill treatment for the logo/profile sections, all the same height.
+   The tabs get the matching look from the Tabs `frosted` variant instead. */
 .left,
-.center,
 .right,
 .rightPublic {
   display: flex;
@@ -35,10 +35,11 @@
   backdrop-filter: none;
 }
 
-.center {
+/* Position the shared Tabs control in the header grid. Its chrome (background,
+   border, height) comes from the component's `frosted` variant. */
+.tabs {
   grid-area: tabs;
   justify-self: center;
-  padding: 0;
 }
 
 .right,
@@ -58,51 +59,7 @@
   display: block;
 }
 
-/* ---- Clip-path animated tabs ---- */
-.center {
-  position: relative;
-}
-
-.list {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.list .link {
-  display: block;
-  padding: 6px 16px;
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-}
-
-/* Highlight overlay: a green pill revealed via clip-path over the active tab.
-   Matches .center's horizontal padding so the overlay list aligns with the base list. */
-.clipContainer {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  padding: 0;
-  pointer-events: none;
-  background: var(--primary);
-  border-radius: var(--radius-full);
-  clip-path: inset(0 100% 0 0 round 9999px);
-  transition: clip-path 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: clip-path;
-}
-
-.listOverlay .link {
-  color: var(--surface);
-}
-
-.listOverlay .link:hover {
-  color: var(--surface);
-}
-
+/* Plain header link (e.g. "Sign In" for logged-out visitors). */
 .link {
   font-size: 14px;
   color: var(--text-secondary);
@@ -241,26 +198,11 @@
     padding: 16px;
   }
 
-  .center {
+  /* Full-width tab row on mobile. Equal-width tabs come from the Tabs
+     `fill="mobile"` prop. */
+  .tabs {
     justify-self: stretch;
     width: 100%;
-    justify-content: center;
-  }
-
-  /* Stretch the lists so each tab fills an equal share of the row. */
-  .center .list {
-    width: 100%;
-  }
-
-  .center .list > li {
-    flex: 1;
-  }
-
-  /* Taller tab pills — fill the 40px pill so the whole height is tappable.
-     Center text since each link now fills its equal-width tab. */
-  .list .link {
-    padding: 10px 16px;
-    text-align: center;
   }
 
   /* On routes where no tab is active (e.g. AI Match Reviewer), drop the tab row
@@ -269,7 +211,7 @@
     grid-template-areas: 'logo profile';
   }
 
-  .container.noTabs .center {
+  .container.noTabs .tabs {
     display: none;
   }
 }
