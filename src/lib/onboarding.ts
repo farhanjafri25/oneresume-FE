@@ -1,4 +1,3 @@
-export const ONBOARDED_COOKIE = 'onecv_onboarded';
 export const ONBOARDING_SESSION_KEY = 'onecv_onboarding';
 
 export type OnboardingStepKey = 'upload' | 'score' | 'share';

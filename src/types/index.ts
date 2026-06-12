@@ -3,6 +3,12 @@ export interface User {
   username: string;
   email: string;
   createdAt: string;
+  /**
+   * When the user finished onboarding (server source of truth). Survives cookie
+   * clears and DB deletion. `undefined` = backend doesn't expose it yet (frontend
+   * falls back to the cookie gate); `null` = not onboarded; string = onboarded.
+   */
+  onboardedAt?: string | null;
 }
 
 export interface AuthResponse {
