@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Link2, ExternalLink, CheckCircle, Clock, X, Loader2 } from 'lucide-react';
+import { Link, ArrowSquareOut, CheckCircle, Clock, X, CircleNotch } from '@phosphor-icons/react/dist/ssr';
 import styles from './VersionsModal.module.css';
 import { Resume } from '@/types';
 import { getResumeVariantsAction } from '@/app/actions/resume';
@@ -129,7 +129,7 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
             <div className={styles.glassCard}>
               {loading || fetchedResumeId !== resume.id ? (
                 <div className={styles.emptyState}>
-                  <Loader2 size={48} className={`${styles.emptyIcon} spin`} />
+                  <CircleNotch size={48} className={`${styles.emptyIcon} spin`} />
                   <h3 className={styles.emptyTitle}>Loading versions...</h3>
                 </div>
               ) : fetchedVersions.length === 0 ? (
@@ -161,7 +161,7 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
                             className={`btn-primary ${styles.actionBtn} ${styles.primaryBtn}`}
                             onClick={() => handleCopyLink(version.versionNumber)}
                           >
-                            <Link2 size={14} />
+                            <Link size={14} />
                             Copy Share Link
                           </button>
 
@@ -172,7 +172,7 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
                               rel="noopener noreferrer"
                               className={styles.actionBtn}
                             >
-                              <ExternalLink size={14} />
+                              <ArrowSquareOut size={14} />
                               View PDF
                             </a>
                           )}

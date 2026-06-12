@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Brain } from 'lucide-react';
+import { ArrowLeft, Brain } from '@phosphor-icons/react/dist/ssr';
 import { serverFetch } from '@/lib/api';
 import { Resume } from '@/types';
 import AiReviewClient from './AiReviewClient';

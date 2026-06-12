@@ -3,19 +3,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { 
-  Sparkles, 
-  Send, 
-  CheckCircle2, 
-  AlertCircle, 
-  BookOpen, 
-  ListTodo, 
-  Check, 
-  X,
-  FileText,
-  Activity,
-  Layout,
-  Phone
-} from 'lucide-react';
+  Sparkle, PaperPlaneTilt, CheckCircle, WarningCircle, BookOpen, ListChecks, Check, X, FileText, Pulse, Layout, Phone } from '@phosphor-icons/react/dist/ssr';
 import { analyzeResumeAction, generalScanResumeAction } from '@/app/actions/ai';
 import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
 import { useLoadingPhases } from '@/lib/useLoadingPhases';
@@ -111,7 +99,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
         {scanMode === 'targeted' ? (
           <>
             <div className={styles.panelTitle}>
-              <Sparkles size={20} style={{ color: 'var(--primary)' }} />
+              <Sparkle size={20} style={{ color: 'var(--primary)' }} />
               Job Description
             </div>
             <p className={styles.panelSubtitle}>
@@ -144,7 +132,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
         ) : (
           <>
             <div className={styles.panelTitle}>
-              <Activity size={20} style={{ color: 'var(--primary)' }} />
+              <Pulse size={20} style={{ color: 'var(--primary)' }} />
               General ATS Scan
             </div>
             <p className={styles.panelSubtitle}>
@@ -152,15 +140,15 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
             </p>
             <div style={{ padding: '24px', background: 'var(--bg-secondary)', borderRadius: '8px', marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <CheckCircle2 size={18} style={{ color: 'var(--primary)' }} />
+                <CheckCircle size={18} style={{ color: 'var(--primary)' }} />
                 <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Checks Section Formatting</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <CheckCircle2 size={18} style={{ color: 'var(--primary)' }} />
+                <CheckCircle size={18} style={{ color: 'var(--primary)' }} />
                 <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Analyzes Action Verbs Usage</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <CheckCircle2 size={18} style={{ color: 'var(--primary)' }} />
+                <CheckCircle size={18} style={{ color: 'var(--primary)' }} />
                 <span style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Validates Contact Info Detection</span>
               </div>
             </div>
@@ -169,7 +157,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
 
         {error && (
           <div className={styles.errorAlert}>
-            <AlertCircle size={18} />
+            <WarningCircle size={18} />
             <span>{error}</span>
           </div>
         )}
@@ -181,7 +169,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
           disabled={loading || (scanMode === 'targeted' && !jd.trim())}
           style={{ marginTop: 'auto' }}
         >
-          <Send size={16} />
+          <PaperPlaneTilt size={16} />
           {loading ? 'Analyzing...' : scanMode === 'targeted' ? 'Analyze CV Alignment' : 'Run General ATS Scan'}
         </button>
       </div>
@@ -213,13 +201,13 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
                 <div className={styles.skillsGrid}>
                   <div className={styles.skillsColumn}>
                     <h4 className={`${styles.skillsColumnTitle} ${styles.matchingTitle}`}>
-                      <CheckCircle2 size={16} />
+                      <CheckCircle size={16} />
                       Matching Skills ({report.matchingSkills.length})
                     </h4>
                     <div className={styles.pillContainer}>
                       {report.matchingSkills.map((skill, idx) => (
                         <span key={idx} className={`${styles.pill} ${styles.matchingPill}`}>
-                          <Check size={11} strokeWidth={3} />
+                          <Check size={11} weight="bold" />
                           {skill}
                         </span>
                       ))}
@@ -231,13 +219,13 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
 
                   <div className={styles.skillsColumn}>
                     <h4 className={`${styles.skillsColumnTitle} ${styles.missingTitle}`}>
-                      <AlertCircle size={16} />
+                      <WarningCircle size={16} />
                       Missing Keywords ({report.missingSkills!.length})
                     </h4>
                     <div className={styles.pillContainer}>
                       {report.missingSkills!.map((skill, idx) => (
                         <span key={idx} className={`${styles.pill} ${styles.missingPill}`}>
-                          <X size={11} strokeWidth={3} />
+                          <X size={11} weight="bold" />
                           {skill}
                         </span>
                       ))}
@@ -251,7 +239,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
                 {/* Step-by-Step Actionable Recommendations Checklist */}
                 <div className={styles.recommendationsSection}>
                   <h4 className={styles.recommendationsTitle}>
-                    <ListTodo size={18} style={{ color: 'var(--primary)' }} />
+                    <ListChecks size={18} style={{ color: 'var(--primary)' }} />
                     Optimize Your Resume (Action Items)
                   </h4>
                   <div className={styles.checklist}>
@@ -276,7 +264,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
                 <div className={styles.skillsGrid}>
                   <div className={styles.skillsColumn}>
                     <h4 className={`${styles.skillsColumnTitle} ${styles.matchingTitle}`} style={{ color: 'var(--text-primary)' }}>
-                      <Activity size={16} />
+                      <Pulse size={16} />
                       Parsability Status
                     </h4>
                     <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -297,7 +285,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
                 <div className={styles.skillsGrid} style={{ marginTop: '24px' }}>
                   <div className={styles.skillsColumn}>
                     <h4 className={`${styles.skillsColumnTitle} ${styles.matchingTitle}`} style={{ color: 'var(--text-primary)' }}>
-                      <Sparkles size={16} />
+                      <Sparkle size={16} />
                       Action Verbs
                     </h4>
                     <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -328,7 +316,7 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
                   }}
                   style={{ display: 'inline-flex', width: 'auto', padding: '12px 24px', fontSize: '15px' }}
                 >
-                  <Sparkles size={18} style={{ marginRight: '8px' }} />
+                  <Sparkle size={18} style={{ marginRight: '8px' }} />
                   Generate AI Resume from this JD
                 </button>
               </div>

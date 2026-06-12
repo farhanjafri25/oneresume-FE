@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkle } from '@phosphor-icons/react/dist/ssr';
 import { serverFetch } from '@/lib/api';
 import { Resume } from '@/types';
 import AiBuilderClient from './AiBuilderClient';
@@ -32,7 +32,7 @@ export default async function AiBuilderPage({ params }: PageProps) {
 
       <header className={styles.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-          <Sparkles size={32} style={{ color: 'var(--primary)' }} />
+          <Sparkle size={32} style={{ color: 'var(--primary)' }} />
           <h1 className={styles.title} style={{ margin: 0 }}>AI Resume Builder</h1>
         </div>
         <p className={styles.subtitle}>

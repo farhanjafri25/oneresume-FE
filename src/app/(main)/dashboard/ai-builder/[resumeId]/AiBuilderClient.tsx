@@ -1,23 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Sparkles, 
-  ArrowLeft, 
-  Briefcase, 
-  GraduationCap, 
-  CheckCircle, 
-  AlertCircle, 
-  Send,
-  Save, 
-  Download, 
-  ExternalLink,
-  ChevronRight,
-  User,
-  Wrench,
-  Link2,
-  Eye
-} from 'lucide-react';
+import { Sparkle, ArrowLeft, Briefcase, GraduationCap, CheckCircle, WarningCircle, PaperPlaneTilt, FloppyDisk, DownloadSimple, ArrowSquareOut, CaretRight, User, Wrench, Link, Eye } from '@phosphor-icons/react/dist/ssr';
 import { tailorResumeAction, createVariantAction, getThemesAction, previewResumeAction } from '@/app/actions/ai';
 import styles from './AiBuilder.module.css';
 
@@ -250,7 +234,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     return (
       <div className={styles.jdContainer} style={{ maxWidth: '900px' }}>
         <div className={styles.panelTitle}>
-          <Sparkles size={24} style={{ color: 'var(--primary)' }} />
+          <Sparkle size={24} style={{ color: 'var(--primary)' }} />
           Create Tailored Resume Variant
         </div>
         <p className={styles.panelSubtitle} style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto 24px' }}>
@@ -272,7 +256,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
 
         {error && (
           <div className={styles.errorAlert} style={{ width: '100%', marginBottom: '16px' }}>
-            <AlertCircle size={18} />
+            <WarningCircle size={18} />
             <span>{error}</span>
           </div>
         )}
@@ -284,7 +268,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
           onClick={handleTailor}
           disabled={!jd.trim()}
         >
-          <Send size={16} />
+          <PaperPlaneTilt size={16} />
           Tailor Resume Content
         </button>
       </div>
@@ -318,7 +302,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
 
         <div className={styles.buttonGroup}>
           <a href={directLink} target="_blank" rel="noopener noreferrer" className={styles.actionBtn}>
-            <Download size={16} />
+            <DownloadSimple size={16} />
             Download tailored PDF
           </a>
           <button 
@@ -697,7 +681,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
 
           {error && (
             <div className={styles.errorAlert}>
-              <AlertCircle size={18} />
+              <WarningCircle size={18} />
               <span>{error}</span>
             </div>
           )}
@@ -708,7 +692,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
             onClick={handleSaveVariant}
             disabled={saving || !variantTitle.trim() || !variantSlug.trim()}
           >
-            <Save size={16} />
+            <FloppyDisk size={16} />
             {saving ? 'Generating PDF...' : 'Build & Save Variant'}
           </button>
         </div>

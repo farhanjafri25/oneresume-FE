@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styles from '../Dashboard.module.css';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkle } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
 
 interface VariantsViewProps {
@@ -90,7 +90,7 @@ export default function VariantsView({ user, resumes }: VariantsViewProps) {
             style={{ gridColumn: '1 / -1', minHeight: '300px', cursor: 'default' }}
           >
             <div className={styles.newVariantIcon}>
-              <Sparkles size={28} style={{ color: 'var(--primary)' }} />
+              <Sparkle size={28} style={{ color: 'var(--primary)' }} />
             </div>
             <h3 className={styles.newVariantTitle}>No tailored variants yet</h3>
             <p className={styles.newVariantDesc} style={{ maxWidth: '400px', margin: '8px auto 0' }}>

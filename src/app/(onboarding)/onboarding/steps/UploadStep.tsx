@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
-import { UploadCloud, Lock } from 'lucide-react';
+import { CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
@@ -47,7 +47,7 @@ export default function UploadStep({ patch, next, user }: StepProps) {
               if (e.target.files?.length) setSelectedFileName(e.target.files[0].name);
             }}
           />
-          <div className={styles.dropzoneIcon}><UploadCloud size={22} /></div>
+          <div className={styles.dropzoneIcon}><CloudArrowUp size={22} /></div>
           <h3 className={styles.dropzoneTitle}>
             {isPending
               ? 'Uploading…'

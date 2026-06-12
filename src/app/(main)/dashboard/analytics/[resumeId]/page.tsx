@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, BarChart2, Globe, Eye, Download, ShieldAlert, Award } from 'lucide-react';
+import { ArrowLeft, ChartBar, Globe, Eye, DownloadSimple, ShieldWarning, Medal } from '@phosphor-icons/react/dist/ssr';
 import { getResumeAnalyticsAction } from '@/app/actions/resume';
 import styles from './Analytics.module.css';
 import AnalyticsChart from './AnalyticsChart';
@@ -55,7 +55,7 @@ export default async function ResumeAnalyticsPage({
           Back to Dashboard
         </Link>
         <div className={styles.emptyState}>
-          <ShieldAlert size={48} className={styles.emptyStateIcon} />
+          <ShieldWarning size={48} className={styles.emptyStateIcon} />
           <h2 className={styles.emptyStateTitle}>Failed to Load Analytics</h2>
           <p>{analyticsData.error}</p>
         </div>
@@ -110,7 +110,7 @@ export default async function ResumeAnalyticsPage({
             fontSize: '14px',
           }}
         >
-          <Award size={18} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          <Medal size={18} style={{ color: 'var(--primary)', flexShrink: 0 }} />
           <span>
             You&apos;re all set! This is your analytics home. Share your link with recruiters and
             their views will start showing up right here.
@@ -149,7 +149,7 @@ export default async function ResumeAnalyticsPage({
 
       {totalViews === 0 ? (
         <div className={styles.emptyState}>
-          <BarChart2 size={48} className={styles.emptyStateIcon} />
+          <ChartBar size={48} className={styles.emptyStateIcon} />
           <h2 className={styles.emptyStateTitle}>No Traffic Recorded Yet</h2>
           <p>Share your resume link with recruiters to begin capturing visitor intelligence!</p>
         </div>
