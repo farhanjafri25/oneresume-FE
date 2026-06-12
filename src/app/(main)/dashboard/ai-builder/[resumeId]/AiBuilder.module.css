@@ -92,6 +92,8 @@
 }
 
 .panelTitle {
+  font-family: inherit;
+  font-stretch: normal;
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 6px;
@@ -172,6 +174,8 @@
 }
 
 .loadingTitle {
+  font-family: inherit;
+  font-stretch: normal;
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;

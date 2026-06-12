@@ -55,6 +55,8 @@
 }
 
 .profileInfo h2 {
+  font-family: inherit;
+  font-stretch: normal;
   font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
@@ -120,6 +122,8 @@
 }
 
 .alertTitle {
+  font-family: inherit;
+  font-stretch: normal;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);

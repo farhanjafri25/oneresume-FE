@@ -216,6 +216,8 @@
 }
 
 .emptyTitle {
+  font-family: inherit;
+  font-stretch: normal;
   font-size: 1.3rem;
   font-weight: 600;
   margin-bottom: 8px;
