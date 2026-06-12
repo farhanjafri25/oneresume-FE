@@ -7,10 +7,8 @@ export default async function VariantsPage() {
   let user = null;
   let resumes = null;
   try {
-    user = await getMe();
-    if (user) {
-      resumes = await getResumes();
-    }
+    // Parallel rather than sequential; getMe() is deduped from the layout call.
+    [user, resumes] = await Promise.all([getMe(), getResumes()]);
   } catch (err) {
     console.error("VariantsPage error:", err);
   }

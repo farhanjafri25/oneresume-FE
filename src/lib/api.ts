@@ -3,6 +3,11 @@ import { User, Resume, Variant } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
+// Upper bound on how long a single backend request may hang before we give up.
+// The backend can cold-start (~30-60s on its host), so this is deliberately
+// generous — it exists to kill truly dead sockets, not to race a cold boot.
+const REQUEST_TIMEOUT_MS = Number(process.env.API_TIMEOUT_MS) || 60000;
+
 /**
  * Fetch wrapper for Server Components and Server Actions.
  * Automatically attaches the Authorization token from cookies.
@@ -17,10 +22,22 @@ export async function serverFetch<T>(endpoint: string, options: RequestInit = {}
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers,
+      signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+  } catch (err: unknown) {
+    // AbortSignal.timeout rejects with a TimeoutError; surface it clearly so
+    // callers don't confuse a slow/dead backend with an auth failure.
+    const name = err instanceof Error ? err.name : '';
+    if (name === 'TimeoutError' || name === 'AbortError') {
+      throw new Error('The server took too long to respond. Please try again.');
+    }
+    throw err;
+  }
 
   if (!response.ok) {
     let errorMessage = 'An error occurred';
@@ -42,8 +59,8 @@ export async function serverFetch<T>(endpoint: string, options: RequestInit = {}
 export async function getMe(): Promise<User | null> {
   try {
     return await serverFetch<User>('/auth/me');
-  } catch (err: any) {
-    if (err.message === 'Unauthorized') {
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === 'Unauthorized') {
       return null;
     }
     throw err;
