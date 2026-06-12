@@ -14,7 +14,7 @@ const NAV_TABS = [
   { id: 'variants', label: 'Variants', href: '/dashboard/variants' },
 ];
 
-const FEEDBACK_EMAIL = 'hello@onecv.co';
+const FEEDBACK_URL = 'https://dlke0c2pw6g.typeform.com/to/RSXJXaMJ';
 
 export default function TopNav({ user }: { user?: User }) {
   const pathname = usePathname();
@@ -88,7 +88,9 @@ export default function TopNav({ user }: { user?: User }) {
                   Settings
                 </Link>
                 <a
-                  href={`mailto:${FEEDBACK_EMAIL}?subject=OneCV%20Feedback`}
+                  href={FEEDBACK_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={styles.dropdownItem}
                   role="menuitem"
                   onClick={closeMenu}
