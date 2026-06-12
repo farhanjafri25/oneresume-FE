@@ -88,7 +88,7 @@
 
 .dropzoneTitle {
   /* Body font (Geist) — Hubot Sans reads poorly at this small size */
-  font-family: inherit;
+  font-family: var(--font-body);
   font-stretch: normal;
   font-size: 16px;
   font-weight: 600;

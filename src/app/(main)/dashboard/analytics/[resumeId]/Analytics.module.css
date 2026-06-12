@@ -94,7 +94,7 @@
 }
 
 .chartTitle {
-  font-family: inherit;
+  font-family: var(--font-body);
   font-stretch: normal;
   font-size: 18px;
   font-weight: 500;
@@ -289,7 +289,7 @@
 }
 
 .emptyStateTitle {
-  font-family: inherit;
+  font-family: var(--font-body);
   font-stretch: normal;
   font-size: 18px;
   font-weight: 500;
