@@ -247,13 +247,19 @@
     justify-content: center;
   }
 
-  /* Keep the clip overlay centered in step with the base list. */
-  .center .clipContainer {
-    justify-content: center;
+  /* Stretch the lists so each tab fills an equal share of the row. */
+  .center .list {
+    width: 100%;
   }
 
-  /* Taller tab pills — fill the 40px pill so the whole height is tappable. */
+  .center .list > li {
+    flex: 1;
+  }
+
+  /* Taller tab pills — fill the 40px pill so the whole height is tappable.
+     Center text since each link now fills its equal-width tab. */
   .list .link {
     padding: 10px 16px;
+    text-align: center;
   }
 }
