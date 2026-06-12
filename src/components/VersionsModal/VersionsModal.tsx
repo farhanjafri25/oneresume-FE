@@ -78,6 +78,7 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
     try {
       const d = new Date(dateStr);
       return d.toLocaleDateString('en-US', {
+        timeZone: 'Asia/Kolkata',
         year: 'numeric',
         month: 'long',
         day: 'numeric',

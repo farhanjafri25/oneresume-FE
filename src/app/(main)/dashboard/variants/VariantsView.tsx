@@ -16,10 +16,20 @@ interface VariantsViewProps {
 function formatUTCDate(dateInput: string | Date): string {
   const d = new Date(dateInput);
   if (isNaN(d.getTime())) return '';
-  const day = String(d.getUTCDate()).padStart(2, '0');
-  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-  const year = d.getUTCFullYear();
-  return `${day}/${month}/${year}`;
+  try {
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+    return formatter.format(d); // Outputs: DD/MM/YYYY
+  } catch {
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const year = d.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  }
 }
 
 export default function VariantsView({ user, resumes }: VariantsViewProps) {

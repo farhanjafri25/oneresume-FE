@@ -9,6 +9,7 @@ function formatDate(dateInput: string | Date): string {
   const d = new Date(dateInput);
   if (isNaN(d.getTime())) return '';
   return d.toLocaleDateString('en-US', {
+    timeZone: 'Asia/Kolkata',
     day: 'numeric',
     month: 'long',
     year: 'numeric'
