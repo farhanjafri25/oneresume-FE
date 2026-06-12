@@ -31,7 +31,7 @@ export default function ShareStep({ state, user }: StepProps) {
   const finish = () => {
     setFinishing(true);
     clearOnboarding();
-    // Sets the onecv_onboarded cookie and lands the user on their analytics page.
+    // Persists onboarding completion server-side and lands the user on their analytics page.
     completeOnboardingAction({
       redirectTo: `/dashboard/analytics/${state.resumeId}?welcome=1`,
     });
