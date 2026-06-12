@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, MessageSquare, UserRound } from 'lucide-react';
+import { LogOut, MessageSquare, Settings } from 'lucide-react';
 import { logoutUser } from '@/app/actions/auth';
 import { User } from '@/types';
 import styles from './TopNav.module.css';
@@ -11,7 +11,6 @@ import styles from './TopNav.module.css';
 const NAV_TABS = [
   { name: 'Resumes', href: '/dashboard' },
   { name: 'Variants', href: '/dashboard/variants' },
-  { name: 'Settings', href: '/settings' },
 ];
 
 const FEEDBACK_EMAIL = 'hello@onecv.co';
@@ -129,8 +128,8 @@ export default function TopNav({ user }: { user?: User }) {
                   role="menuitem"
                   onClick={closeMenu}
                 >
-                  <UserRound size={16} />
-                  View Profile
+                  <Settings size={16} />
+                  Settings
                 </Link>
                 <a
                   href={`mailto:${FEEDBACK_EMAIL}?subject=OneCV%20Feedback`}
