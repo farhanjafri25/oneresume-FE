@@ -26,6 +26,8 @@
 }
 
 .title {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -92,8 +94,6 @@
 }
 
 .panelTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 6px;
@@ -174,8 +174,6 @@
 }
 
 .loadingTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -449,6 +447,8 @@
 }
 
 .successTitle {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 12px;

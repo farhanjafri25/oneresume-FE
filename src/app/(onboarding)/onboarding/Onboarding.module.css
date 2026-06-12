@@ -248,7 +248,7 @@
   margin-bottom: 4px;
 }
 
-.dropzoneTitle { font-family: var(--font-body); font-stretch: normal; font-size: 15px; font-weight: 500; color: var(--text-primary); }
+.dropzoneTitle { font-size: 15px; font-weight: 500; color: var(--text-primary); }
 .dropzoneDesc { font-size: 13px; color: var(--text-tertiary); }
 
 .lockRow {
@@ -296,7 +296,7 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.loadingTitle { font-family: var(--font-body); font-stretch: normal; font-size: 18px; font-weight: 600; color: var(--text-primary); }
+.loadingTitle { font-size: 18px; font-weight: 600; color: var(--text-primary); }
 .loadingSubtitle { font-size: 14px; color: var(--text-secondary); }
 
 /* ───────────────────────────── Evaluation ───────────────────────────── */
@@ -356,8 +356,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 14px;
   font-weight: 600;
 }

@@ -26,6 +26,8 @@
 }
 
 .title {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -214,8 +216,6 @@
 }
 
 .loadingTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -319,8 +319,6 @@
 }
 
 .summaryHeadline {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
@@ -356,8 +354,6 @@
 }
 
 .skillsColumnTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 14px;
   font-weight: 600;
   display: flex;
@@ -424,8 +420,6 @@
 }
 
 .recommendationsTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 16px;
   font-weight: 600;
   display: flex;
@@ -518,8 +512,6 @@
 }
 
 .emptyTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 18px;
   font-weight: 600;
   color: var(--text-primary);

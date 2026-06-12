@@ -25,6 +25,8 @@
 }
 
 .title {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 32px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -94,8 +96,6 @@
 }
 
 .chartTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 18px;
   font-weight: 500;
 }
@@ -289,8 +289,6 @@
 }
 
 .emptyStateTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 18px;
   font-weight: 500;
   color: var(--text-primary);

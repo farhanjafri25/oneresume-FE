@@ -13,6 +13,8 @@
 }
 
 .title {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
   font-size: 32px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -73,9 +75,6 @@
 }
 
 .newVariantTitle {
-  /* Body font (Geist) — Hubot Sans reads poorly at this small size */
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 12px;

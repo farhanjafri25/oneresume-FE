@@ -109,8 +109,6 @@
 }
 
 .title {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -482,8 +480,6 @@
 }
 
 .modalTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);

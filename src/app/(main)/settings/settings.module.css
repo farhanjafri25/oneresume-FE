@@ -55,8 +55,6 @@
 }
 
 .profileInfo h2 {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
@@ -122,8 +120,6 @@
 }
 
 .alertTitle {
-  font-family: var(--font-body);
-  font-stretch: normal;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
