@@ -84,29 +84,6 @@ input, textarea {
   }
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  touch-action: manipulation;
-  padding: 10px 24px;
-  border-radius: var(--radius-full);
-  font-weight: 500;
-  transition: background 0.2s ease, transform 0.1s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-primary:hover {
-  background: var(--primary-hover);
-}
-
-/* Press feedback — makes the primary action feel responsive on tap (emil). */
-.btn-primary:active {
-  transform: scale(0.97);
-}
-
 /*
  * Global reduced-motion fallback. Motion-driven animations already respect this
  * via MotionConfig reducedMotion="user"; this block stills the remaining

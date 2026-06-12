@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, WarningCircle, Pulse, Layout, Sparkle, Phone } from '@phosphor-icons/react/dist/ssr';
 import { generalScanResumeAction } from '@/app/actions/ai';
+import Button from '@/components/Button/Button';
 import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
 import { AiReport, scoreColor, scoreVerdict, scoreHeadroom } from '@/lib/onboarding';
 import { useLoadingPhases } from '@/lib/useLoadingPhases';
@@ -92,13 +93,13 @@ export default function ScoreStep({ state, patch, next, back }: StepProps) {
           <span>{error}</span>
         </div>
         <div className={styles.btnRow}>
-          <button type="button" className={styles.secondaryBtn} onClick={back}>
+          <Button variant="secondary" onClick={back}>
             <ArrowLeft size={16} />
             Back
-          </button>
-          <button type="button" className={styles.primaryBtn} onClick={() => { startedRef.current = true; run(); }}>
+          </Button>
+          <Button onClick={() => { startedRef.current = true; run(); }}>
             Try again
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -164,13 +165,13 @@ export default function ScoreStep({ state, patch, next, back }: StepProps) {
         animate={{ opacity: stage >= 4 ? 1 : 0, y: stage >= 4 ? 0 : 8 }}
         transition={transitions.base}
       >
-        <button type="button" className={styles.secondaryBtn} onClick={back}>
+        <Button variant="secondary" onClick={back}>
           <ArrowLeft size={16} />
           Back
-        </button>
-        <button type="button" className={styles.primaryBtn} onClick={next}>
+        </Button>
+        <Button onClick={next}>
           Get my link
-        </button>
+        </Button>
       </motion.div>
     </div>
   );

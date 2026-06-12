@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import styles from './Dashboard.module.css';
 import { transitions } from '@/lib/motion';
+import Button from '@/components/Button/Button';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import VersionsModal from '@/components/VersionsModal/VersionsModal';
@@ -37,8 +38,8 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
           <h1 className={styles.title}>Welcome back.</h1>
           <p className={styles.subtitle}>Here are your active uploaded documents.</p>
         </div>
-        <button 
-          className={`btn-primary ${styles.newBtn}`}
+        <Button
+          className={styles.newBtn}
           onClick={() => {
             setSelectedResumeId(undefined);
             setSelectedVariantId(undefined);
@@ -47,7 +48,7 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
         >
           <Plus size={18} />
           Upload Resume
-        </button>
+        </Button>
       </header>
       
       <div className={styles.grid}>

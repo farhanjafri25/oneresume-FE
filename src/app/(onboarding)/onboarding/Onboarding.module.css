@@ -186,40 +186,7 @@
   margin-top: 24px;
 }
 
-.primaryBtn {
-  background: var(--primary);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: var(--radius-full);
-  font-weight: 500;
-  font-size: 15px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;              /* 44px tap target (emil) */
-  transition: background 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
-}
-.primaryBtn:hover { background: var(--primary-hover); }
-.primaryBtn:active { transform: scale(0.97); }
-.primaryBtn:disabled { opacity: 0.45; cursor: not-allowed; }
-
-.secondaryBtn {
-  background: transparent;
-  color: var(--text-secondary);
-  padding: 12px 20px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--border);
-  font-weight: 500;
-  font-size: 15px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  transition: border-color 0.2s ease, color 0.2s ease;
-}
-.secondaryBtn:hover { border-color: var(--border-hover); color: var(--text-primary); }
-.secondaryBtn:disabled { opacity: 0.45; cursor: not-allowed; }
+/* Primary/secondary onboarding CTAs now use the shared Button component. */
 
 /* ───────────────────────────── Dropzone (upload) ───────────────────────────── */
 .dropzone {
@@ -388,22 +355,11 @@
 
 .linkRow .input { flex: 1; }
 
+/* Layout only — visuals come from the shared Button component. */
 .copyBtn {
   flex: 0 0 auto;
-  background: var(--primary);
-  color: #fff;
-  padding: 0 18px;
-  border-radius: var(--radius-md);
-  font-weight: 500;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  transition: background 0.2s ease, transform 0.1s ease;
+  align-self: stretch;
 }
-.copyBtn:hover { background: var(--primary-hover); }
-.copyBtn:active { transform: scale(0.97); }
 
 .toast {
   position: fixed;

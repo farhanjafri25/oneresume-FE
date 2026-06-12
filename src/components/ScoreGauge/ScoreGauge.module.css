@@ -46,8 +46,6 @@
 .label {
   font-size: 10px;
   font-weight: 500;
-  text-transform: uppercase;
   color: var(--text-secondary);
-  letter-spacing: 0.5px;
   margin-top: 2px;
 }

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import styles from './ResumeCard.module.css';
 import { Link, UploadSimple, DotsThreeVertical, CheckCircle, Trash, ClockCounterClockwise, ChartBar, Brain, Sparkle, FileText, ArrowSquareOut, Target } from '@phosphor-icons/react/dist/ssr';
 import { deleteResumeAction } from '@/app/actions/resume';
+import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
 import Tooltip from '@/components/Tooltip/Tooltip';
 import { slideUp, springs, transitions } from '@/lib/motion';
@@ -299,10 +300,10 @@ export default function ResumeCard({
           </div>
 
           <div className={styles.footer}>
-            <button className={styles.actionBtn} onClick={handleCopyLink} disabled={isDeleting}>
+            <Button variant="secondary" size="sm" className={styles.actionBtn} onClick={handleCopyLink} disabled={isDeleting}>
               <Link size={14} />
               Copy Link
-            </button>
+            </Button>
 
             <div className={styles.rightActions}>
               <Tooltip label="Upload new version">
@@ -411,8 +412,8 @@ export default function ResumeCard({
           }}
         />
         <div className={styles.modalActions}>
-          <button className={styles.modalCancel} onClick={() => { setShowLinkModal(false); setLinkLabel(''); }}>Cancel</button>
-          <button className={styles.modalSubmit} onClick={submitTrackingLink}>Copy Link</button>
+          <Button variant="secondary" onClick={() => { setShowLinkModal(false); setLinkLabel(''); }}>Cancel</Button>
+          <Button onClick={submitTrackingLink}>Copy Link</Button>
         </div>
       </Modal>
 
@@ -428,14 +429,10 @@ export default function ResumeCard({
           Are you sure you want to delete <strong>&ldquo;{title}&rdquo;</strong>? This will permanently delete all versions and variants. This action cannot be undone.
         </p>
         <div className={styles.modalActions}>
-          <button className={styles.modalCancel} onClick={() => setShowDeleteModal(false)}>Cancel</button>
-          <button
-            className={styles.modalSubmit}
-            style={{ background: '#ef4444', borderColor: '#ef4444' }}
-            onClick={confirmDelete}
-          >
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+          <Button tone="danger" onClick={confirmDelete}>
             Delete
-          </button>
+          </Button>
         </div>
       </Modal>
     </>

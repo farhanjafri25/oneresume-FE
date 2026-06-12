@@ -4,6 +4,7 @@ import React, { useActionState, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { loginUser, loginWithGoogle } from '@/app/actions/auth';
+import Button from '@/components/Button/Button';
 import { transitions } from '@/lib/motion';
 import styles from './page.module.css';
 
@@ -105,9 +106,9 @@ export default function LoginPage() {
             <input type="password" name="password" id="password" placeholder="••••••••" required disabled={isPending || isGooglePending} />
           </div>
 
-          <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={isPending || isGooglePending}>
-            {isPending ? 'Signing in...' : 'Sign In'}
-          </button>
+          <Button type="submit" className={styles.submitBtn} disabled={isPending || isGooglePending}>
+            {isPending ? 'Signing in...' : 'Sign in'}
+          </Button>
         </form>
 
         <p className={styles.footer}>

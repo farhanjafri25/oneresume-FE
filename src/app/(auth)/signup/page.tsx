@@ -4,6 +4,7 @@ import React, { useActionState, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { signupUser, loginWithGoogle, verifyOtpAction, resendOtpAction } from '@/app/actions/auth';
+import Button from '@/components/Button/Button';
 import { transitions } from '@/lib/motion';
 import styles from '../login/page.module.css';
 
@@ -121,19 +122,15 @@ export default function SignupPage() {
               />
             </div>
 
-            <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={isVerifyPending}>
-              {isVerifyPending ? 'Verifying...' : 'Verify Email'}
-            </button>
+            <Button type="submit" className={styles.submitBtn} disabled={isVerifyPending}>
+              {isVerifyPending ? 'Verifying...' : 'Verify email'}
+            </Button>
           </form>
 
           <div style={{ marginTop: '16px', textAlign: 'center' }}>
-            <button 
-              type="button" 
-              onClick={handleResend}
-              style={{ background: 'none', border: 'none', color: '#6366f1', cursor: 'pointer', fontSize: '14px' }}
-            >
-              {resendStatus || 'Resend Code'}
-            </button>
+            <Button variant="ghost" size="sm" onClick={handleResend}>
+              {resendStatus || 'Resend code'}
+            </Button>
           </div>
         </motion.div>
       </div>
@@ -186,9 +183,9 @@ export default function SignupPage() {
             <input type="password" name="password" id="password" placeholder="••••••••" required disabled={isSignupPending || isGooglePending} />
           </div>
 
-          <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={isSignupPending || isGooglePending}>
-            {isSignupPending ? 'Creating Account...' : 'Sign Up'}
-          </button>
+          <Button type="submit" className={styles.submitBtn} disabled={isSignupPending || isGooglePending}>
+            {isSignupPending ? 'Creating account...' : 'Sign up'}
+          </Button>
         </form>
 
         <p className={styles.footer}>

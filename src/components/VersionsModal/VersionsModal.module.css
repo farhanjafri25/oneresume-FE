@@ -154,8 +154,6 @@
   font-size: 0.75rem;
   font-weight: 600;
   border: 1px solid rgba(34, 197, 94, 0.2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .date {
@@ -169,38 +167,6 @@
   gap: 12px;
 }
 
-.actionBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.actionBtn:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-hover);
-}
-
-.primaryBtn {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #ffffff;
-}
-
-.primaryBtn:hover {
-  background: var(--primary-hover);
-  border-color: var(--primary-hover);
-  transform: translateY(-1px);
-}
 
 .emptyState {
   display: flex;
@@ -312,11 +278,6 @@
     gap: 8px;
   }
 
-  .actionBtn {
-    width: 100%;
-    justify-content: center;
-  }
-  
   .toast {
     left: 16px;
     right: 16px;

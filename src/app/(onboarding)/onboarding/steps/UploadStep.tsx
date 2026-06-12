@@ -3,6 +3,7 @@
 import React, { useActionState, useEffect, useRef, useState } from 'react';
 import { CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
+import Button from '@/components/Button/Button';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
@@ -65,13 +66,13 @@ export default function UploadStep({ patch, next, user }: StepProps) {
         )}
 
         <div className={styles.btnRow} style={{ justifyContent: 'flex-end' }}>
-          <button
+          <Button
             type="submit"
-            className={styles.primaryBtn}
-            disabled={isPending || !selectedFileName}
+            loading={isPending}
+            disabled={!selectedFileName}
           >
             {isPending ? 'Uploading…' : 'Continue'}
-          </button>
+          </Button>
         </div>
       </form>
 

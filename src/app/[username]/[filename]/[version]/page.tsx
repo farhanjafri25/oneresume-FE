@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import styles from '../page.module.css';
 import { DownloadSimple } from '@phosphor-icons/react/dist/ssr';
 import { notFound } from 'next/navigation';
+import Button from '@/components/Button/Button';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -56,15 +57,16 @@ export default async function PublicResumeVersionPage({
             </span>
           </div>
           {fileUrl && (
-            <a
+            <Button
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`btn-primary ${styles.downloadBtn}`}
+              size="sm"
+              className={styles.downloadBtn}
             >
               <DownloadSimple size={14} />
               Download PDF
-            </a>
+            </Button>
           )}
         </div>
       </header>
