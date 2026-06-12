@@ -2,7 +2,7 @@
 
 import React, { useActionState, useEffect, useRef, useState } from 'react';
 import styles from './UploadModal.module.css';
-import { X, UploadCloud, Lock } from 'lucide-react';
+import { X, CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
 import Modal from '@/components/motion/Modal';
 
@@ -98,7 +98,7 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
               }}
             />
             <div className={styles.iconContainer}>
-              <UploadCloud size={24} />
+              <CloudArrowUp size={24} />
             </div>
             <h3 className={styles.dropzoneTitle}>
               {isPending

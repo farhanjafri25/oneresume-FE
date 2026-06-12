@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useSyncExternalStore } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import styles from './ResumeCard.module.css';
-import { Link2, Upload, MoreVertical, CheckCircle, Trash2, History, BarChart2, Brain, Sparkles, FileText, ExternalLink, Target } from 'lucide-react';
+import { Link, UploadSimple, DotsThreeVertical, CheckCircle, Trash, ClockCounterClockwise, ChartBar, Brain, Sparkle, FileText, ArrowSquareOut, Target } from '@phosphor-icons/react/dist/ssr';
 import { deleteResumeAction } from '@/app/actions/resume';
 import Modal from '@/components/motion/Modal';
 import Tooltip from '@/components/Tooltip/Tooltip';
@@ -172,7 +172,7 @@ export default function ResumeCard({
       },
     },
     {
-      icon: Sparkles,
+      icon: Sparkle,
       ariaLabel: 'AI Tailor & Build',
       label: pdfMissing ? 'Please upload a PDF first to use the AI Builder' : 'AI Tailor & Build',
       disabled: pdfMissing,
@@ -182,7 +182,7 @@ export default function ResumeCard({
       },
     },
     {
-      icon: BarChart2,
+      icon: ChartBar,
       ariaLabel: 'View Page Views & Analytics',
       label: 'View Page Views & Analytics',
       disabled: false,
@@ -199,7 +199,7 @@ export default function ResumeCard({
       onClick: handleCreateTrackingLink,
     },
     {
-      icon: History,
+      icon: ClockCounterClockwise,
       ariaLabel: 'Version History',
       label: 'Version History',
       disabled: false,
@@ -237,7 +237,7 @@ export default function ResumeCard({
                 />
                 <div className={styles.previewHint} aria-hidden="true">
                   <span className={styles.previewHintPill}>
-                    <ExternalLink size={12} />
+                    <ArrowSquareOut size={12} />
                     Open
                   </span>
                 </div>
@@ -258,7 +258,7 @@ export default function ResumeCard({
                 onUploadClick?.(); 
               }}
             >
-              <Upload size={32} className={styles.placeholderIcon} />
+              <UploadSimple size={32} className={styles.placeholderIcon} />
               <span className={styles.placeholderText}>No PDF Uploaded</span>
               <span className={styles.placeholderSubtext}>Click to upload your masterpiece</span>
             </div>
@@ -300,7 +300,7 @@ export default function ResumeCard({
 
           <div className={styles.footer}>
             <button className={styles.actionBtn} onClick={handleCopyLink} disabled={isDeleting}>
-              <Link2 size={14} />
+              <Link size={14} />
               Copy Link
             </button>
 
@@ -315,7 +315,7 @@ export default function ResumeCard({
                   disabled={isDeleting}
                   aria-label="Upload new version"
                 >
-                  <Upload size={16} />
+                  <UploadSimple size={16} />
                 </button>
               </Tooltip>
 
@@ -329,7 +329,7 @@ export default function ResumeCard({
                     aria-haspopup="menu"
                     aria-expanded={showDropdown}
                   >
-                    <MoreVertical size={16} />
+                    <DotsThreeVertical size={16} />
                   </button>
                 </Tooltip>
 
@@ -352,15 +352,15 @@ export default function ResumeCard({
                           window.location.href = `/dashboard/variants`;
                         }}
                       >
-                        <Sparkles size={14} />
+                        <Sparkle size={14} />
                         View Tailored Variants
                       </button>
                       <button className={styles.dropdownItem} onClick={handleReplace}>
-                        <Upload size={14} />
+                        <UploadSimple size={14} />
                         Replace File
                       </button>
                       <button className={`${styles.dropdownItem} ${styles.deleteItem}`} onClick={handleDelete}>
-                        <Trash2 size={14} />
+                        <Trash size={14} />
                         Delete Resume
                       </button>
                     </motion.div>

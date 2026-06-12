@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, AlertCircle, Activity, Layout, Sparkles, Phone } from 'lucide-react';
+import { ArrowLeft, WarningCircle, Pulse, Layout, Sparkle, Phone } from '@phosphor-icons/react/dist/ssr';
 import { generalScanResumeAction } from '@/app/actions/ai';
 import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
 import { AiReport, scoreColor, scoreVerdict, scoreHeadroom } from '@/lib/onboarding';
@@ -88,7 +88,7 @@ export default function ScoreStep({ state, patch, next, back }: StepProps) {
     return (
       <div className={styles.evalCard}>
         <div className={styles.errorAlert}>
-          <AlertCircle size={18} />
+          <WarningCircle size={18} />
           <span>{error}</span>
         </div>
         <div className={styles.btnRow}>
@@ -108,9 +108,9 @@ export default function ScoreStep({ state, patch, next, back }: StepProps) {
 
   const color = scoreColor(report.score);
   const metrics = [
-    { icon: Activity, title: 'Parsability', value: report.parsability },
+    { icon: Pulse, title: 'Parsability', value: report.parsability },
     { icon: Layout, title: 'Section formatting', value: report.formatting },
-    { icon: Sparkles, title: 'Action verbs', value: report.actionVerbs },
+    { icon: Sparkle, title: 'Action verbs', value: report.actionVerbs },
     { icon: Phone, title: 'Contact information', value: report.missingContactInfo },
   ];
 

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { LogOut } from 'lucide-react';
+import { SignOut } from '@phosphor-icons/react/dist/ssr';
 import { logoutUser } from '@/app/actions/auth';
 import { User } from '@/types';
 import { RAIL_STEPS } from '@/lib/onboarding';
@@ -66,7 +66,7 @@ export default function OnboardingHeader({ user, railIndex }: OnboardingHeaderPr
             <div className={styles.profileDropdown} role="menu">
               <form action={logoutUser} onSubmit={() => setMenuOpen(false)}>
                 <button type="submit" className={`${styles.dropdownItem} ${styles.logoutItem}`} role="menuitem">
-                  <LogOut size={16} />
+                  <SignOut size={16} />
                   Sign out
                 </button>
               </form>

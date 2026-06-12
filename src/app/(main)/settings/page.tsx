@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './settings.module.css';
 import { getMe } from '@/lib/api';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldWarning } from '@phosphor-icons/react/dist/ssr';
 import { redirect } from 'next/navigation';
 import PageTransition from '@/components/motion/PageTransition';
 
@@ -63,7 +63,7 @@ export default async function SettingsPage() {
         </div>
 
         <div className={styles.alert}>
-          <ShieldAlert size={20} className={styles.alertIcon} />
+          <ShieldWarning size={20} className={styles.alertIcon} />
           <div>
             <h3 className={styles.alertTitle}>Profile Editing is Read-Only</h3>
             <p className={styles.alertDesc}>

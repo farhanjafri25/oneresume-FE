@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, MessageSquare, Settings } from 'lucide-react';
+import { SignOut, Chat, Gear } from '@phosphor-icons/react/dist/ssr';
 import { logoutUser } from '@/app/actions/auth';
 import { User } from '@/types';
 import styles from './TopNav.module.css';
@@ -133,7 +133,7 @@ export default function TopNav({ user }: { user?: User }) {
                   role="menuitem"
                   onClick={closeMenu}
                 >
-                  <Settings size={16} />
+                  <Gear size={16} />
                   Settings
                 </Link>
                 <a
@@ -142,7 +142,7 @@ export default function TopNav({ user }: { user?: User }) {
                   role="menuitem"
                   onClick={closeMenu}
                 >
-                  <MessageSquare size={16} />
+                  <Chat size={16} />
                   Give Feedback
                 </a>
                 <div className={styles.dropdownDivider} />
@@ -152,7 +152,7 @@ export default function TopNav({ user }: { user?: User }) {
                     className={`${styles.dropdownItem} ${styles.logoutItem}`}
                     role="menuitem"
                   >
-                    <LogOut size={16} />
+                    <SignOut size={16} />
                     Log out
                   </button>
                 </form>

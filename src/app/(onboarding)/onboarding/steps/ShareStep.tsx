@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle, Copy } from 'lucide-react';
+import { CheckCircle, Copy } from '@phosphor-icons/react/dist/ssr';
 import { completeOnboardingAction } from '@/app/actions/onboarding';
 import { buildTrackedLink, clearOnboarding } from '@/lib/onboarding';
 import { slideUp } from '@/lib/motion';

@@ -7,7 +7,7 @@ import { transitions } from '@/lib/motion';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import VersionsModal from '@/components/VersionsModal/VersionsModal';
-import { Plus } from 'lucide-react';
+import { Plus } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
 
 interface DashboardViewProps {

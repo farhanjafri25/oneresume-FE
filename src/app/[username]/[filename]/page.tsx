@@ -1,7 +1,7 @@
 import React from 'react';
 import { headers } from 'next/headers';
 import styles from './page.module.css';
-import { Download } from 'lucide-react';
+import { DownloadSimple } from '@phosphor-icons/react/dist/ssr';
 import { notFound } from 'next/navigation';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -55,7 +55,7 @@ export default async function PublicResumePage({
           </div>
           {fileUrl && (
             <a href={`${API_URL}/${username}/${filename}/download${forQuery}`} target="_blank" rel="noopener noreferrer" className={`btn-primary ${styles.downloadBtn}`}>
-              <Download size={14} />
+              <DownloadSimple size={14} />
               Download PDF
             </a>
           )}
