@@ -2,6 +2,11 @@ export interface User {
   id: string;
   username: string;
   email: string;
+  /**
+   * Display name from the signup provider (e.g. Google). Optional because
+   * email/password signups don't supply one — fall back to `username`.
+   */
+  name?: string | null;
   createdAt: string;
   /**
    * When the user finished onboarding (server source of truth). Survives cookie

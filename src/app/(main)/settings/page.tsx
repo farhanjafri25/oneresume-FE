@@ -33,12 +33,12 @@ export default async function SettingsPage() {
         <div className={styles.profileSection}>
           <div className={styles.avatarContainer}>
             <div className={styles.avatar}>
-              <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random&size=128`} alt="Avatar" />
+              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=random&size=128`} alt="Avatar" />
             </div>
             <span className={styles.badge}>Pro</span>
           </div>
           <div className={styles.profileInfo}>
-            <h2>{user.username}</h2>
+            <h2>{user.name || user.username}</h2>
             <p>OneCV Creator Account</p>
           </div>
         </div>
