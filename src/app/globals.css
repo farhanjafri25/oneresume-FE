@@ -44,11 +44,9 @@ body {
   margin: 0;
 }
 
-/* Headings default to the body font. Hubot Sans (the condensed display face)
-   is strictly opt-in: add `font-family: var(--font-heading), sans-serif;`
-   plus `font-stretch: 80%;` to a heading class ONLY when it renders at >=24px.
-   This makes it impossible for small text to inherit the display font by
-   accident — the bug we're guarding against. */
+/* Headings default to the body font. Hubot Sans is opt-in: add
+   `font-family: var(--font-heading), sans-serif; font-stretch: 80%;`
+   to a heading class only at >=24px. */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
