@@ -6,10 +6,10 @@ export default async function DashboardPage() {
   let user = null;
   let resumes = null;
   try {
-    user = await getMe();
-    if (user) {
-      resumes = await getResumes();
-    }
+    // Fire both in parallel rather than getMe()-then-getResumes(). getMe() is
+    // already deduped from the layout's call, so this is effectively gated on
+    // the single getResumes() round-trip instead of two sequential ones.
+    [user, resumes] = await Promise.all([getMe(), getResumes()]);
   } catch (err) {
     console.error("DashboardPage error:", err);
   }
