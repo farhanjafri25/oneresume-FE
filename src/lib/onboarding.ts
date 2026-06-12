@@ -23,6 +23,8 @@ export interface AiReport {
   formatting?: string;
   actionVerbs?: string;
   missingContactInfo?: string;
+  keywordReadiness?: string;
+  keyImprovements?: string[];
 }
 
 export interface OnboardingState {

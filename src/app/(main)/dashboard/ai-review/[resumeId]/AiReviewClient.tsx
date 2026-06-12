@@ -27,6 +27,8 @@ interface AiReport {
   formatting?: string;
   actionVerbs?: string;
   missingContactInfo?: string;
+  keywordReadiness?: string;
+  keyImprovements?: string[];
 }
 
 type ScanMode = 'targeted' | 'general';
@@ -311,6 +313,38 @@ export default function AiReviewClient({ resumeId }: AiReviewClientProps) {
                     </p>
                   </div>
                 </div>
+
+                {report.keywordReadiness && (
+                  <div className={styles.skillsGrid} style={{ marginTop: '24px' }}>
+                    <div className={styles.skillsColumn} style={{ gridColumn: 'span 2' }}>
+                      <h4 className={`${styles.skillsColumnTitle} ${styles.matchingTitle}`} style={{ color: 'var(--text-primary)' }}>
+                        <BookOpen size={16} />
+                        Keyword Readiness
+                      </h4>
+                      <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        {report.keywordReadiness}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {report.keyImprovements && report.keyImprovements.length > 0 && (
+                  <div className={styles.recommendationsSection} style={{ marginTop: '32px' }}>
+                    <h4 className={styles.recommendationsTitle}>
+                      <ListChecks size={18} style={{ color: 'var(--primary)' }} />
+                      Key Improvements (Action Items)
+                    </h4>
+                    <div className={styles.checklist}>
+                      {report.keyImprovements.map((improvement, idx) => (
+                        <div key={idx} className={styles.checklistItem}>
+                          <span className={styles.checklistText}>
+                            {improvement}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 

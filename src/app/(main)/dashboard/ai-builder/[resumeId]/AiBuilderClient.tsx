@@ -25,6 +25,8 @@ interface Experience {
   job_bullet_1: string;
   job_bullet_2: string;
   job_bullet_3: string;
+  job_bullet_4?: string;
+  job_bullet_5?: string;
 }
 
 interface Education {
@@ -483,6 +485,28 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                       onChange={(e) => updateExperience(idx, 'job_bullet_3', e.target.value)}
                     />
                   </div>
+                  {exp.job_bullet_4 !== undefined && (
+                    <div className={styles.bulletInputGroup}>
+                      <span className={styles.bulletIndex}>B4</span>
+                      <input 
+                        type="text" 
+                        className={styles.inputField} 
+                        value={exp.job_bullet_4} 
+                        onChange={(e) => updateExperience(idx, 'job_bullet_4', e.target.value)}
+                      />
+                    </div>
+                  )}
+                  {exp.job_bullet_5 !== undefined && (
+                    <div className={styles.bulletInputGroup}>
+                      <span className={styles.bulletIndex}>B5</span>
+                      <input 
+                        type="text" 
+                        className={styles.inputField} 
+                        value={exp.job_bullet_5} 
+                        onChange={(e) => updateExperience(idx, 'job_bullet_5', e.target.value)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
