@@ -1,0 +1,35 @@
+.skeleton {
+  /* Tunable knobs — adjust the loading feel from one place. */
+  --skeleton-duration: 1.5s;
+  --skeleton-highlight: rgba(28, 25, 23, 0.08);
+
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+}
+
+/* Constant-speed highlight sweep. Linear easing (not ease-in-out) keeps a
+   ticker-style sweep even and continuous, with no pulse or snap at reset.
+   Disabled automatically by the global prefers-reduced-motion fallback in
+   globals.css, which leaves a static placeholder block. */
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--skeleton-highlight),
+    transparent
+  );
+  animation: skeleton-shimmer var(--skeleton-duration) linear infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
