@@ -39,6 +39,11 @@ export default function TopNav({ user }: { user?: User }) {
 
   const activeTab = NAV_TABS.find((tab) => tab.href === pathname)?.name;
 
+  // The tabs only mean something on the routes they point to. On deeper pages
+  // (e.g. the AI Match Reviewer) neither tab is active, so on mobile — where the
+  // tabs occupy a prominent full-width row — we hide them entirely.
+  const showTabs = Boolean(activeTab);
+
   useEffect(() => {
     const container = containerRef.current;
     const activeTabElement = activeTabRef.current;
@@ -85,7 +90,7 @@ export default function TopNav({ user }: { user?: User }) {
   );
 
   return (
-    <nav className={styles.container}>
+    <nav className={`${styles.container}${showTabs ? '' : ` ${styles.noTabs}`}`}>
       <div className={`${styles.left} ${styles.flat}`}>
         <Link href="/" className={styles.logo} onClick={closeMenu}>
           <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />

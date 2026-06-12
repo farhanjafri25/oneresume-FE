@@ -262,4 +262,14 @@
     padding: 10px 16px;
     text-align: center;
   }
+
+  /* On routes where no tab is active (e.g. AI Match Reviewer), drop the tab row
+     entirely and collapse the header back to a single logo + profile row. */
+  .container.noTabs {
+    grid-template-areas: 'logo profile';
+  }
+
+  .container.noTabs .center {
+    display: none;
+  }
 }
