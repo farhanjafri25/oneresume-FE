@@ -7,7 +7,6 @@ import { transitions } from '@/lib/motion';
 import Button from '@/components/Button/Button';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
-import VersionsModal from '@/components/VersionsModal/VersionsModal';
 import { Plus } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
 
@@ -29,7 +28,12 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [selectedResumeId, setSelectedResumeId] = useState<string | undefined>(undefined);
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined);
-  const [selectedVersionsResume, setSelectedVersionsResume] = useState<Resume | null>(null);
+
+  const openNewResume = () => {
+    setSelectedResumeId(undefined);
+    setSelectedVariantId(undefined);
+    setIsUploadOpen(true);
+  };
 
   return (
     <div className={styles.container}>
@@ -38,44 +42,37 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
           <h1 className={styles.title}>Welcome back.</h1>
           <p className={styles.subtitle}>Here are your active uploaded documents.</p>
         </div>
-        <Button
-          className={styles.newBtn}
-          onClick={() => {
-            setSelectedResumeId(undefined);
-            setSelectedVariantId(undefined);
-            setIsUploadOpen(true);
-          }}
-        >
+        <Button className={styles.newBtn} onClick={openNewResume}>
           <Plus size={18} />
           Upload Resume
         </Button>
       </header>
-      
+
       <div className={styles.grid}>
         {resumes.map((resume, resumeIndex) => (
-          resume.variants?.filter(variant => variant.slug === 'default').map(variant => {
-            const latestVersion = variant.versions && variant.versions.length > 0
-              ? variant.versions[0]
-              : null;
-            const pdfUrl = latestVersion ? latestVersion.fileUrl : '#';
+          resume.variants?.filter((variant) => variant.slug === 'default').map((variant) => {
+            const latestVersion = variant.versions && variant.versions.length > 0 ? variant.versions[0] : null;
+            const pdfUrl = latestVersion ? latestVersion.fileUrl : undefined;
             const publicUrl = `/${user.username}/${resume.slug}`;
+            const meta = latestVersion
+              ? `v${latestVersion.versionNumber} · ${formatUTCDate(resume.createdAt)}`
+              : formatUTCDate(resume.createdAt);
             return (
               <ResumeCard
                 key={variant.id}
                 index={resumeIndex}
                 id={resume.id}
-                title={variant.slug === 'default' ? resume.title : `${resume.title} (${variant.slug})`}
-                timeAgo={formatUTCDate(resume.createdAt)}
-                versionLabel={latestVersion ? `v${latestVersion.versionNumber}` : undefined}
-                tags={latestVersion ? [] : ['No PDF']}
+                title={resume.title}
+                meta={meta}
+                status={latestVersion ? undefined : { label: 'No PDF', tone: 'warn' }}
                 pdfUrl={pdfUrl}
                 publicUrl={publicUrl}
-                onUploadClick={() => {
+                detailHref={`/dashboard/resume/${resume.id}`}
+                onReplaceClick={() => {
                   setSelectedResumeId(resume.id);
                   setSelectedVariantId(variant.id);
                   setIsUploadOpen(true);
                 }}
-                onVersionsClick={() => setSelectedVersionsResume(resume)}
               />
             );
           })
@@ -84,11 +81,7 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
         {resumes.length === 0 && (
           <motion.div
             className={styles.newVariantCard}
-            onClick={() => {
-              setSelectedResumeId(undefined);
-              setSelectedVariantId(undefined);
-              setIsUploadOpen(true);
-            }}
+            onClick={openNewResume}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={transitions.base}
@@ -97,21 +90,15 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
               <Plus size={24} />
             </div>
             <h3 className={styles.newVariantTitle}>Upload First Resume</h3>
-            <p className={styles.newVariantDesc}>
-              Get started by uploading your master PDF.
-            </p>
+            <p className={styles.newVariantDesc}>Get started by uploading your master PDF.</p>
           </motion.div>
         )}
 
-        {/* New Variant Card (only show if they have a master) */}
+        {/* New resume card (only when they already have at least one master) */}
         {resumes.length > 0 && (
           <motion.div
             className={styles.newVariantCard}
-            onClick={() => {
-              setSelectedResumeId(undefined);
-              setSelectedVariantId(undefined);
-              setIsUploadOpen(true);
-            }}
+            onClick={openNewResume}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...transitions.base, delay: resumes.length * 0.06 }}
@@ -120,29 +107,20 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
               <Plus size={24} />
             </div>
             <h3 className={styles.newVariantTitle}>Upload new resume</h3>
-            <p className={styles.newVariantDesc}>
-              Add a completely separate resume to your dashboard.
-            </p>
+            <p className={styles.newVariantDesc}>Add a completely separate resume to your dashboard.</p>
           </motion.div>
         )}
       </div>
 
-      <UploadModal 
-        isOpen={isUploadOpen} 
+      <UploadModal
+        isOpen={isUploadOpen}
         onClose={() => {
           setIsUploadOpen(false);
           setSelectedResumeId(undefined);
           setSelectedVariantId(undefined);
-        }} 
+        }}
         resumeId={selectedResumeId}
         variantId={selectedVariantId}
-      />
-
-      <VersionsModal
-        isOpen={!!selectedVersionsResume}
-        onClose={() => setSelectedVersionsResume(null)}
-        resume={selectedVersionsResume}
-        username={user.username}
       />
     </div>
   );

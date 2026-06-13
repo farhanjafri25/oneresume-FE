@@ -26,6 +26,7 @@ export async function deleteResumeAction(resumeId: string) {
     }
 
     revalidatePath('/dashboard');
+    revalidatePath(`/dashboard/resume/${resumeId}`);
     return { success: true };
   } catch (err) {
     console.error('Delete Resume Error:', err);

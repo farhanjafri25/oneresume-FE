@@ -11,7 +11,7 @@ import styles from './TopNav.module.css';
 
 const NAV_TABS = [
   { id: 'resumes', label: 'Resumes', href: '/dashboard' },
-  { id: 'variants', label: 'Variants', href: '/dashboard/variants' },
+  { id: 'analytics', label: 'Analytics', href: '/dashboard/analytics' },
 ];
 
 const FEEDBACK_URL = 'https://dlke0c2pw6g.typeform.com/to/RSXJXaMJ';
@@ -35,7 +35,15 @@ export default function TopNav({ user }: { user?: User }) {
     return () => document.removeEventListener('mousedown', handleDocumentClick);
   }, [isProfileOpen]);
 
-  const activeTab = NAV_TABS.find((tab) => tab.href === pathname)?.id;
+  // Analytics owns its index and the per-resume drill-down (/dashboard/analytics/[id]).
+  // Resumes owns exactly /dashboard. Test the analytics prefix first so the
+  // drill-down doesn't fall through to Resumes.
+  const activeTab =
+    pathname === '/dashboard/analytics' || pathname.startsWith('/dashboard/analytics/')
+      ? 'analytics'
+      : pathname === '/dashboard'
+        ? 'resumes'
+        : undefined;
 
   // The tabs only mean something on the routes they point to. On deeper pages
   // (e.g. the AI Match Reviewer) neither tab is active, so on mobile — where the
