@@ -27,6 +27,18 @@ export default function RootLayout({
       <body>
         <MotionProvider>{children}</MotionProvider>
         <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-6Q7ES56TCP"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-6Q7ES56TCP');
+          `}
+        </Script>
       </body>
     </html>
   );
