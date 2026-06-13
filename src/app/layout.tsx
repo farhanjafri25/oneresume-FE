@@ -28,7 +28,7 @@ export default function RootLayout({
         <MotionProvider>{children}</MotionProvider>
         <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-6Q7ES56TCP"
+          src="https://www.googletagmanager.com/gtag/js?id=G-K51N0E3HE1"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -36,7 +36,7 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-6Q7ES56TCP');
+            gtag('config', 'G-K51N0E3HE1');
           `}
         </Script>
       </body>
