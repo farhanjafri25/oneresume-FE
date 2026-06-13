@@ -7,7 +7,7 @@ import Button from '@/components/Button/Button';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
-export default function UploadStep({ patch, next, user }: StepProps) {
+export default function UploadStep({ patch, next }: StepProps) {
   const [formState, formAction, isPending] = useActionState(uploadResumeAction, null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,11 +22,10 @@ export default function UploadStep({ patch, next, user }: StepProps) {
   }, [formState]);
 
   const error = (formState as { error?: string } | null)?.error;
-  const firstName = user.username?.split(/[\s@]/)[0] || 'there';
 
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>Welcome, {firstName} — upload your CV</h2>
+      <h2 className={styles.title}>Welcome — upload your CV</h2>
       <p className={styles.subtitle}>
         In about a minute you&apos;ll get an instant ATS score and a shareable link you can
         track. Start with your most recent CV &mdash; PDF only, up to 2MB.

@@ -361,6 +361,92 @@
   align-self: stretch;
 }
 
+/* ---- "What you can do next" — clickable feature tiles ---- */
+.nextSection {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  text-align: left;            /* override shareCard's centering */
+}
+
+.nextHeading {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  text-align: left;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  /* explicit properties, not `all` (emil) */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* hover-enhanced only on devices that truly hover (emil touch-first) */
+@media (hover: hover) {
+  .featureCard:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+  .featureCard:hover .featureArrow { transform: translateX(2px); }
+}
+
+.featureCard:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(20, 85, 51, 0.12);
+}
+
+.featureCard:disabled { opacity: 0.55; cursor: default; transform: none; }
+
+.featureIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: rgba(20, 85, 51, 0.1);
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featureTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.featureArrow {
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;   /* transform only — no layout shift */
+}
+
+.featureDesc {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
 .toast {
   position: fixed;
   bottom: 24px;
@@ -388,5 +474,6 @@
 @media (max-width: 760px) {
   .scoreRow { flex-direction: column; text-align: center; gap: 16px; }
   .skillsGrid { grid-template-columns: 1fr; }
+  .featureGrid { grid-template-columns: 1fr; }
   .progressBar { width: 20px; }
 }
