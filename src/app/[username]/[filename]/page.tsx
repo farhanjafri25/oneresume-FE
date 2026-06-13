@@ -4,6 +4,7 @@ import styles from './page.module.css';
 import { DownloadSimple } from '@phosphor-icons/react/dist/ssr';
 import { notFound } from 'next/navigation';
 import Button from '@/components/Button/Button';
+import PdfPreview from './PdfPreview';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -65,9 +66,8 @@ export default async function PublicResumePage({
 
       <main className={styles.main}>
         {fileUrl ? (
-          <iframe
-            src={`${fileUrl}#toolbar=0&navpanes=0&view=FitH`}
-            className={styles.pdfPreview}
+          <PdfPreview
+            fileUrl={fileUrl}
             title={`${username}'s Resume - ${filename}`}
           />
         ) : (
