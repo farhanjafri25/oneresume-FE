@@ -2,19 +2,56 @@
 
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { CheckCircle, Copy } from '@phosphor-icons/react/dist/ssr';
+import {
+  ArrowRight,
+  Brain,
+  ChartBar,
+  CheckCircle,
+  Copy,
+  Sparkle,
+  Target,
+} from '@phosphor-icons/react/dist/ssr';
 import { completeOnboardingAction } from '@/app/actions/onboarding';
 import { buildTrackedLink, clearOnboarding } from '@/lib/onboarding';
-import { slideUp } from '@/lib/motion';
+import { fadeUp, slideUp, staggerContainer } from '@/lib/motion';
 import Button from '@/components/Button/Button';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
 export default function ShareStep({ state, user }: StepProps) {
   const [toast, setToast] = useState<string | null>(null);
-  const [finishing, setFinishing] = useState(false);
+  const [navigating, setNavigating] = useState(false);
 
   const publicLink = buildTrackedLink(user.username, state.slug ?? '');
+
+  // The product's core actions, mirroring the resume card's action bar so the
+  // dashboard feels familiar on arrival. Each tile deep-links into its feature.
+  const features = [
+    {
+      icon: Brain,
+      title: 'AI Match Reviewer',
+      description: 'Score your resume against any job description.',
+      href: `/dashboard/ai-review/${state.resumeId}`,
+    },
+    {
+      icon: Sparkle,
+      title: 'AI Tailor & Build',
+      description: 'Auto-tailor your resume to a specific role.',
+      href: `/dashboard/ai-builder/${state.resumeId}`,
+    },
+    {
+      icon: ChartBar,
+      title: 'Track views',
+      description: 'See real-time analytics when recruiters open it.',
+      href: `/dashboard/analytics/${state.resumeId}`,
+    },
+    {
+      icon: Target,
+      title: 'Per-application links',
+      description: 'Create a unique tracking link per application from your dashboard.',
+      href: `/dashboard?welcome=1`,
+    },
+  ];
 
   useEffect(() => {
     if (!toast) return;
@@ -29,13 +66,13 @@ export default function ShareStep({ state, user }: StepProps) {
       .catch(() => {});
   };
 
-  const finish = () => {
-    setFinishing(true);
+  // Persists onboarding completion server-side and then server-redirects. Both
+  // the CTA and the feature tiles route through here so onboarding is always
+  // marked complete (and local state cleared) before leaving this step.
+  const goTo = (redirectTo: string) => {
+    setNavigating(true);
     clearOnboarding();
-    // Persists onboarding completion server-side and lands the user on their analytics page.
-    completeOnboardingAction({
-      redirectTo: `/dashboard/analytics/${state.resumeId}?welcome=1`,
-    });
+    completeOnboardingAction({ redirectTo });
   };
 
   return (
@@ -58,9 +95,42 @@ export default function ShareStep({ state, user }: StepProps) {
         </div>
       </div>
 
+      {state.resumeId && (
+        <div className={styles.nextSection}>
+          <p className={styles.nextHeading}>What you can do next</p>
+          <motion.div
+            className={styles.featureGrid}
+            variants={staggerContainer(0.06)}
+            initial="hidden"
+            animate="visible"
+          >
+            {features.map((f) => (
+              <motion.button
+                key={f.title}
+                type="button"
+                variants={fadeUp}
+                className={styles.featureCard}
+                onClick={() => goTo(f.href)}
+                disabled={navigating}
+                aria-label={`${f.title} — ${f.description}`}
+              >
+                <span className={styles.featureIcon}>
+                  <f.icon size={18} />
+                </span>
+                <span className={styles.featureTitle}>
+                  {f.title}
+                  <ArrowRight size={13} weight="bold" className={styles.featureArrow} />
+                </span>
+                <span className={styles.featureDesc}>{f.description}</span>
+              </motion.button>
+            ))}
+          </motion.div>
+        </div>
+      )}
+
       <div className={styles.btnRow} style={{ justifyContent: 'center', marginTop: 28 }}>
-        <Button onClick={finish} loading={finishing}>
-          {finishing ? 'Opening analytics…' : 'See my analytics'}
+        <Button onClick={() => goTo('/dashboard?welcome=1')} loading={navigating}>
+          {navigating ? 'Opening dashboard…' : 'Go to dashboard'}
         </Button>
       </div>
 
