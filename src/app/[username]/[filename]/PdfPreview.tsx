@@ -11,6 +11,7 @@ interface PdfPreviewProps {
 export default function PdfPreview({ fileUrl, title }: PdfPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [isMobileView, setIsMobileView] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -18,41 +19,49 @@ export default function PdfPreview({ fileUrl, title }: PdfPreviewProps) {
     setMounted(true);
     if (!containerRef.current) return;
 
-    const updateScale = () => {
+    const updateLayout = () => {
       if (!containerRef.current) return;
-      const width = containerRef.current.clientWidth;
-      if (width < 820) {
-        setScale(width / 820);
+      
+      const screenWidth = window.innerWidth;
+      const containerWidth = containerRef.current.clientWidth;
+      
+      // Standard A4 dimensions in points/pixels are 595 x 842
+      if (screenWidth <= 768) {
+        setIsMobileView(true);
+        setScale(containerWidth / 595);
       } else {
+        setIsMobileView(false);
         setScale(1);
       }
     };
 
-    updateScale();
+    updateLayout();
 
-    const observer = new ResizeObserver(() => updateScale());
+    const observer = new ResizeObserver(() => updateLayout());
     observer.observe(containerRef.current);
+    window.addEventListener('resize', updateLayout);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateLayout);
+    };
   }, []);
 
-  const baseHeight = 1160; // Approximate A4 aspect ratio height for 820px width
+  const baseHeight = 842; // Exact A4 aspect ratio height
   const scaledHeight = baseHeight * scale;
-
-  const isDesktop = scale === 1;
 
   return (
     <div 
       ref={containerRef} 
-      className={isDesktop ? styles.desktopContainer : styles.pdfWrapper}
-      style={!isDesktop ? { height: `${scaledHeight}px` } : undefined}
+      className={!isMobileView ? styles.desktopContainer : styles.pdfWrapper}
+      style={isMobileView ? { height: `${scaledHeight}px` } : undefined}
     >
       {mounted && (
         <iframe
           src={`${fileUrl}#toolbar=0&navpanes=0&view=FitH`}
           title={title}
-          className={isDesktop ? styles.pdfPreview : styles.pdfIframe}
-          style={!isDesktop ? { transform: `scale(${scale})` } : undefined}
+          className={!isMobileView ? styles.pdfPreview : styles.pdfIframe}
+          style={isMobileView ? { transform: `scale(${scale})` } : undefined}
         />
       )}
     </div>
