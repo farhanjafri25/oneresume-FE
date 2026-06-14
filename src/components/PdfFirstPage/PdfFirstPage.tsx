@@ -17,8 +17,6 @@ interface PdfFirstPageProps {
   emptySubtext?: string;
 }
 
-type Status = 'idle' | 'loading' | 'ready' | 'error';
-
 /**
  * Renders page 1 of a PDF to an <img>, so it shows identically on every browser
  * (no dependency on a native PDF viewer). Renders lazily on scroll-into-view.
@@ -36,8 +34,10 @@ export default function PdfFirstPage({
 
   const rootRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
-  const [status, setStatus] = useState<Status>('idle');
-  const [image, setImage] = useState<string | null>(null);
+  // Keyed by URL so a stale result/error never shows after pdfUrl changes — and
+  // so we never have to reset state synchronously inside the render effect.
+  const [result, setResult] = useState<{ url: string; dataUrl: string } | null>(null);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
 
   // Reveal-on-scroll: don't touch pdf.js until the card is near the viewport.
   useEffect(() => {
@@ -56,11 +56,12 @@ export default function PdfFirstPage({
     return () => observer.disconnect();
   }, [hasPdf]);
 
-  // Render once in view (or when the URL / renderScale changes).
+  // Render once in view (or when the URL / renderScale changes). State is only
+  // ever set from the async callbacks, never synchronously — the displayed
+  // status is derived below from whether the result/error matches the current url.
   useEffect(() => {
     if (!hasPdf || !inView || !pdfUrl) return;
     const controller = new AbortController();
-    setStatus('loading');
     const cssWidth = rootRef.current?.clientWidth || 320;
     renderFirstPageToDataUrl(pdfUrl, {
       cssWidth,
@@ -68,15 +69,17 @@ export default function PdfFirstPage({
       signal: controller.signal,
     })
       .then(({ dataUrl }) => {
-        if (controller.signal.aborted) return;
-        setImage(dataUrl);
-        setStatus('ready');
+        if (!controller.signal.aborted) setResult({ url: pdfUrl, dataUrl });
       })
       .catch(() => {
-        if (!controller.signal.aborted) setStatus('error');
+        if (!controller.signal.aborted) setFailedUrl(pdfUrl);
       });
     return () => controller.abort();
   }, [hasPdf, inView, pdfUrl, cfg.renderScale]);
+
+  // Only trust a result/error that belongs to the URL we're currently showing.
+  const readyImage = result && result.url === pdfUrl ? result.dataUrl : null;
+  const hasError = failedUrl === pdfUrl;
 
   const activateEmpty = (event: React.MouseEvent | React.KeyboardEvent) => {
     if (!onEmptyClick) return;
@@ -119,9 +122,11 @@ export default function PdfFirstPage({
 
   return (
     <div ref={rootRef} className={styles.box} style={boxStyle}>
-      {status === 'ready' && image ? (
+      {readyImage ? (
+        // A client-rendered canvas data URL can't be optimized by next/image, so a plain <img> is correct.
+        // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={image}
+          src={readyImage}
           alt={title}
           className={styles.image}
           style={{
@@ -130,7 +135,7 @@ export default function PdfFirstPage({
             borderRadius: cfg.cornerRadius,
           }}
         />
-      ) : status === 'error' ? (
+      ) : hasError ? (
         <div className={styles.fallback}>
           <div className={styles.fallbackTile}>
             <FileText size={24} className={styles.fallbackIcon} />
