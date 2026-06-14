@@ -37,5 +37,13 @@ export default async function ResumeDetailPage({
   const analyticsData = await getResumeAnalyticsAction(resumeId);
   const analytics = analyticsData && !analyticsData.error ? analyticsData : null;
 
-  return <ResumeDetailView user={user} resume={resume} analytics={analytics} initialTab={tab} />;
+  return (
+    <ResumeDetailView
+      user={user}
+      resume={resume}
+      resumes={resumes}
+      analytics={analytics}
+      initialTab={tab}
+    />
+  );
 }
