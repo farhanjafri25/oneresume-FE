@@ -10,9 +10,13 @@ import {
   DotsThreeVertical,
   UploadSimple,
   Trash,
+  CheckCircle,
+  X,
+  Copy,
 } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
 import { deleteResumeAction } from '@/app/actions/resume';
+import { celebrate } from '@/lib/confetti';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
 import Tabs from '@/components/Tabs/Tabs';
@@ -48,18 +52,28 @@ const TABS = [
   { id: 'analytics', label: 'Analytics' },
 ];
 
+function stripWelcomeParam() {
+  if (typeof window === 'undefined') return;
+  const url = new URL(window.location.href);
+  url.searchParams.delete('welcome');
+  window.history.replaceState(null, '', url.toString());
+}
+
 interface ResumeDetailViewProps {
   user: User;
   resume: Resume;
   analytics: AnalyticsData | null;
   initialTab?: string;
+  /** True only right after onboarding (?welcome=1) — shows the one-time welcome moment. */
+  welcome?: boolean;
 }
 
-export default function ResumeDetailView({ user, resume, analytics, initialTab }: ResumeDetailViewProps) {
+export default function ResumeDetailView({ user, resume, analytics, initialTab, welcome }: ResumeDetailViewProps) {
   const router = useRouter();
   const validInitialTab = TABS.some((t) => t.id === initialTab) ? (initialTab as string) : 'overview';
 
   const [activeTab, setActiveTab] = useState(validInitialTab);
+  const [showWelcome, setShowWelcome] = useState(Boolean(welcome));
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -80,6 +94,19 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
     document.addEventListener('click', handleDocumentClick);
     return () => document.removeEventListener('click', handleDocumentClick);
   }, [showMenu]);
+
+  // Fire the celebration burst once, only when arriving from onboarding, then
+  // consume ?welcome so reloads or copied browser URLs don't replay it.
+  useEffect(() => {
+    if (!welcome) return;
+    celebrate();
+    stripWelcomeParam();
+  }, [welcome]);
+
+  const dismissWelcome = () => {
+    setShowWelcome(false);
+    stripWelcomeParam();
+  };
 
 
   // Update the URL's ?tab shallowly so sections are deep-linkable / reload-safe,
@@ -122,6 +149,46 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
 
   return (
     <PageTransition className={styles.container}>
+      <AnimatePresence>
+        {showWelcome && (
+          <motion.div
+            className={styles.welcomeBanner}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          >
+            <CheckCircle size={22} weight="fill" className={styles.welcomeIcon} />
+            <div className={styles.welcomeText}>
+              <p className={styles.welcomeTitle}>Your resume is live</p>
+              <p className={styles.welcomeSub}>
+                Share this link with recruiters &mdash; every view lands in your Analytics.
+              </p>
+              <div className={styles.welcomeLinkRow}>
+                <input
+                  className={styles.welcomeLink}
+                  readOnly
+                  suppressHydrationWarning
+                  value={typeof window !== 'undefined' ? `${window.location.origin}${publicUrl}` : publicUrl}
+                />
+                <Button onClick={handleShare}>
+                  <Copy size={15} />
+                  Copy link
+                </Button>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={styles.welcomeDismiss}
+              onClick={dismissWelcome}
+              aria-label="Dismiss"
+            >
+              <X size={16} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <header className={styles.header}>
         <div className={styles.headerLeft}>
           <h1 className={styles.title}>{resume.title}</h1>
