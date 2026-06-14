@@ -88,3 +88,41 @@ export async function getResumeVariantsAction(resumeId: string) {
   }
 }
 
+export async function revertToVersionAction(
+  resumeId: string,
+  variantId: string,
+  versionId: string,
+) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return { error: 'Unauthorized' };
+    }
+
+    const res = await fetch(
+      `${API_URL}/resumes/${resumeId}/variants/${variantId}/revert`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ versionId }),
+        cache: 'no-store',
+      },
+    );
+
+    if (!res.ok) {
+      return { error: 'Failed to revert version' };
+    }
+
+    refreshResumeSurfaces(resumeId);
+    return { success: true };
+  } catch (err) {
+    console.error('Revert Version Error:', err);
+    return { error: 'An unexpected error occurred while reverting the version' };
+  }
+}
+
