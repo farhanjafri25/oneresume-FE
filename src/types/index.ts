@@ -7,6 +7,12 @@ export interface User {
    * email/password signups don't supply one — fall back to `username`.
    */
   name?: string | null;
+  /**
+   * True when the account was created with a password (email/password signup),
+   * so it can be changed. `undefined` = backend doesn't expose it yet → treated
+   * as no password (Change Password hidden until the backend ships the field).
+   */
+  hasPassword?: boolean;
   createdAt: string;
   avatarUrl?: string | null;
   /**

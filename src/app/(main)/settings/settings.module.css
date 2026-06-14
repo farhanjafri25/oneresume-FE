@@ -16,8 +16,6 @@
   align-items: center;
   text-align: center;
   gap: 16px;
-  padding-bottom: 32px;
-  border-bottom: 1px solid var(--border);
   margin-bottom: 32px;
 }
 
@@ -118,31 +116,11 @@
   color: var(--text-secondary);
 }
 
-.alert {
-  background: rgba(20, 85, 51, 0.05);
-  border: 1px solid rgba(20, 85, 51, 0.2);
-  border-radius: var(--radius-md);
-  padding: 20px;
+/* Vertically stacked account actions (Edit profile / Change password / Delete). */
+.actions {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.alertIcon {
-  color: var(--primary);
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.alertTitle {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.alertDesc {
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.5;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
 }
