@@ -108,7 +108,7 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
                 ? `Selected: ${selectedFileName}`
                 : 'Click to browse or drag and drop your resume'}
             </h3>
-            <p className={styles.dropzoneDesc}>PDF only up to 2MB</p>
+            <p className={styles.dropzoneDesc}>PDF only, max file size 6MB</p>
 
             <Button
               variant="secondary"
