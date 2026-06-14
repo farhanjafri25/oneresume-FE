@@ -1,0 +1,91 @@
+.frame {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: none;
+  background: #ffffff;
+  transform-origin: top left;
+  /* Preview only — never intercept clicks/scroll (lets thumbnails be buttons). */
+  pointer-events: none;
+}
+
+.empty,
+.errorState {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  text-align: center;
+  background: var(--surface);
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.errorText {
+  color: var(--text-secondary);
+  font-size: 12.5px;
+}
+
+.retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.retry:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-hover);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(251, 248, 241, 0.55);
+  backdrop-filter: blur(1px);
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(20, 85, 51, 0.18);
+  border-left-color: var(--primary);
+  border-radius: 50%;
+  animation: previewSpin 0.8s linear infinite;
+}
+
+@keyframes previewSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+  .retry {
+    transition: none;
+  }
+}
