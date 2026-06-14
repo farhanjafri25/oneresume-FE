@@ -285,8 +285,6 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
   }
 
   if (step === 'success' && createdVariant) {
-    // Generate shareable link
-    const trackingLink = `/dashboard/variants/${resumeId}`;
     const directLink = createdVariant.fileUrl;
 
     return (
@@ -304,7 +302,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
           </Button>
           <Button
             variant="secondary"
-            onClick={() => (window.location.href = '/dashboard/variants')}
+            onClick={() => (window.location.href = `/dashboard/resume/${resumeId}?tab=variants`)}
           >
             View tailored variants
           </Button>

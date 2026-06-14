@@ -1,21 +1,8 @@
-import React from 'react';
-import VariantsView from './VariantsView';
-import { getMe, getResumes } from '@/lib/api';
 import { redirect } from 'next/navigation';
 
-export default async function VariantsPage() {
-  let user = null;
-  let resumes = null;
-  try {
-    // Parallel rather than sequential; getMe() is deduped from the layout call.
-    [user, resumes] = await Promise.all([getMe(), getResumes()]);
-  } catch (err) {
-    console.error("VariantsPage error:", err);
-  }
-
-  if (!user || !resumes) {
-    redirect('/login');
-  }
-
-  return <VariantsView user={user} resumes={resumes} />;
+// Variants are no longer a top-level destination — they now live as a section
+// inside each resume's detail page (/dashboard/resume/[id]?tab=variants).
+// This redirect keeps any bookmarked/shared /dashboard/variants links working.
+export default function VariantsPage() {
+  redirect('/dashboard');
 }

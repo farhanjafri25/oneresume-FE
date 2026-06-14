@@ -98,6 +98,7 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
     }
 
     revalidatePath('/dashboard');
+    revalidatePath(`/dashboard/resume/${resumeId}`);
     // `slug` is only set when we created the resume container above; version
     // re-uploads leave it undefined (the onboarding flow always creates).
     return { success: true, resumeId, slug: createdSlug };

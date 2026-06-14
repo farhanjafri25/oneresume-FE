@@ -1,4 +1,5 @@
 .card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -7,7 +8,7 @@
   display: flex;
   flex-direction: column;
   /* transform (lift) is handled by motion's whileHover; CSS owns color/shadow */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 @media (hover: hover) {
@@ -17,213 +18,91 @@
   }
 }
 
+.deleting {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .imageContainer {
   height: 240px;
   background: var(--surface-hover);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.previewHint {
+/* Stretched link — the whole card opens the detail page. Above the preview and
+   text (z 1), below the overflow menu (z 3). */
+.stretchedLink {
   position: absolute;
   inset: 0;
-  z-index: 2;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding: 12px;
-  background: linear-gradient(to top, rgba(28, 25, 23, 0.16), transparent 35%);
+  z-index: 1;
+}
+
+/* Floating overflow menu, top-right over the preview. Quiet: revealed on hover
+   (and always shown on touch / while open). */
+.menu {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
   opacity: 0;
-  pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
-.previewHintPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
 @media (hover: hover) {
-  .card:hover .previewHint {
+  .card:hover .menu {
     opacity: 1;
   }
 }
 
-.versionBadge {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  font-size: 12px;
-  line-height: 1.4;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-secondary);
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-}
-
-.card:hover .image {
-  opacity: 1;
-}
-
-.content {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.title {
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: var(--text-primary);
-  min-width: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.time {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-  padding-top: 2px;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.tag {
-  background: rgba(28, 25, 23, 0.05);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  font-size: 12px;
-  line-height: 1.4;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-weight: 500;
-}
-
-.footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 16px;
-}
-
-/* Layout only — visuals come from the shared Button component. */
-.actionBtn {
-  margin: -6px 0;
-  font-size: 13px;
-}
-
-.rightActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.iconBtn {
-  color: var(--text-tertiary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  transition: color 0.2s ease, background-color 0.2s ease;
-}
-
-@media (hover: hover) {
-  .iconBtn:hover {
-    color: var(--text-primary);
-    background: var(--surface-hover);
+@media (hover: none) {
+  .menu {
+    opacity: 1;
   }
 }
 
-.toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--surface);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--primary);
-  padding: 14px 20px;
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
+.menuActive {
+  opacity: 1;
+}
+
+.menuButton {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  /* enter/exit handled by motion (slideUp variant) */
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.toastIcon {
-  color: #10b981; /* Premium green check mark */
+@media (hover: hover) {
+  .menuButton:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+  }
 }
 
-.dropdownContainer {
-  position: relative;
-  display: inline-block;
+.menuButton:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .dropdownMenu {
   position: absolute;
-  bottom: 100%;
+  top: calc(100% + 6px);
   right: 0;
-  margin-bottom: 8px;
   background: var(--surface);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 6px;
-  min-width: 160px;
+  min-width: 184px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   z-index: 50;
   display: flex;
@@ -254,7 +133,7 @@
   }
 }
 
-/* Later in the file than .dropdownItem, so it wins at equal specificity */
+/* Later than .dropdownItem so it wins at equal specificity */
 .deleteItem {
   color: #ef4444;
 }
@@ -266,186 +145,103 @@
   }
 }
 
-.pdfPreview {
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  width: calc(100% + 8px);
-  height: calc(100% + 8px);
-  border: 0;
-  outline: none;
-  pointer-events: none;
-  background: var(--surface);
-}
-
-.pdfSkeleton {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background-image: linear-gradient(
-    100deg,
-    var(--surface-hover) 30%,
-    var(--surface) 50%,
-    var(--surface-hover) 70%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.pdfSkeletonHidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.placeholder {
-  width: 100%;
-  height: 100%;
+.content {
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: linear-gradient(135deg, rgba(20, 85, 51, 0.04) 0%, rgba(20, 85, 51, 0.12) 100%);
-  border: 2px dashed rgba(20, 85, 51, 0.25);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: background 0.3s ease, border-color 0.3s ease;
-}
-
-@media (hover: hover) {
-  .placeholder:hover {
-    background: linear-gradient(135deg, rgba(20, 85, 51, 0.08) 0%, rgba(20, 85, 51, 0.18) 100%);
-    border-color: var(--primary);
-  }
-}
-
-.placeholderIcon {
-  color: var(--primary);
-  margin-bottom: 12px;
-  transition: transform 0.3s ease;
-}
-
-@media (hover: hover) {
-  .placeholder:hover .placeholderIcon {
-    transform: translateY(-2px);
-  }
-}
-
-.placeholderText {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.placeholderSubtext {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  text-align: center;
-}
-
-.pdfFallback {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
   gap: 10px;
-  padding: 20px;
-  background: var(--surface-hover);
+  flex: 1;
 }
 
-.pdfFallbackTile {
+.title {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusPill {
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-md);
-  background: var(--surface);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  font-weight: 500;
+  background: var(--surface-hover);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-}
-
-.pdfFallbackIcon {
   color: var(--text-secondary);
 }
 
-.pdfFallbackSubtext {
-  font-size: 12px;
+.muted {
+  background: var(--surface-hover);
   color: var(--text-tertiary);
 }
 
-.actionsBar {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 4px;
-  background: rgba(28, 25, 23, 0.03);
-  border: 1px solid var(--border);
+.warn {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #b91c1c;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--primary);
+  padding: 14px 20px;
   border-radius: var(--radius-md);
-  width: 100%;
-  justify-items: stretch;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
   align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  /* enter/exit handled by motion (slideUp variant) */
 }
 
-.actionIconBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 36px;
-  border-radius: 8px;
-  color: var(--text-secondary);
-  background: transparent;
-  cursor: pointer;
-  transition: color 0.2s ease, background-color 0.2s ease;
+.toastIcon {
+  color: #10b981;
 }
 
-@media (hover: hover) {
-  .actionIconBtn:hover:not(:disabled) {
-    color: var(--primary);
-    background: rgba(20, 85, 51, 0.08);
-  }
-}
-
-.actionIconBtn:active:not(:disabled) {
-  background: rgba(20, 85, 51, 0.12);
-}
-
-.actionIconBtn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-/* Tracking Link Modal Styles */
+/* Delete confirmation modal */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  /* enter/exit handled by motion Modal (overlayFade) */
+  padding: 16px;
 }
 
 .modalContent {
@@ -455,7 +251,6 @@
   width: 90%;
   max-width: 450px;
   box-shadow: var(--shadow-lg);
-  /* enter/exit handled by motion Modal (scaleIn) */
 }
 
 .modalTitle {
@@ -472,87 +267,16 @@
   margin-bottom: 24px;
 }
 
-.modalInput {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  font-size: 15px;
-  color: var(--text-primary);
-  background: var(--surface);
-  margin-bottom: 24px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.modalInput:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(20, 85, 51, 0.12);
-}
-
 .modalActions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
 
-.modalCancel, .modalSubmit {
-  padding: 10px 20px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: color 0.2s ease, background-color 0.2s ease,
-    border-color 0.2s ease, transform 0.2s ease;
-}
-
-.modalCancel {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-}
-
-.modalSubmit {
-  background: var(--primary);
-  border: 1px solid var(--primary);
-  color: var(--surface);
-}
-
-@media (hover: hover) {
-  .modalCancel:hover {
-    background: var(--surface-hover);
-    color: var(--text-primary);
-  }
-
-  .modalSubmit:hover {
-    background: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: translateY(-1px);
-  }
-}
-
-/* Touch devices never hover — surface the open affordance and grow tap targets. */
 @media (hover: none) {
-  .previewHint {
-    opacity: 1;
-  }
-
-  .actionIconBtn {
-    height: 44px;
-  }
-
-  .iconBtn {
-    width: 44px;
-    height: 44px;
-  }
-
-  .rightActions {
-    gap: 8px;
-  }
-
-  .actionBtn {
-    padding: 11px 16px;
-    margin: 0;
+  .menuButton {
+    width: 40px;
+    height: 40px;
   }
 }
 
@@ -566,27 +290,13 @@
   .imageContainer {
     height: 180px;
   }
-  
+
   .content {
-    padding: 16px;
+    padding: 14px 16px;
   }
-  
+
   .title {
     font-size: 15px;
-  }
-  
-  .time {
-    font-size: 11px;
-  }
-  
-  .tag {
-    font-size: 11px;
-    padding: 3px 6px;
-  }
-  
-  .actionBtn {
-    font-size: 13px;
-    gap: 6px;
   }
 
   .modalContent {
@@ -596,30 +306,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .actionIconBtn,
-  .iconBtn,
-  .placeholderIcon,
-  .modalCancel,
-  .modalSubmit,
-  .placeholder {
+  .menu,
+  .menuButton,
+  .dropdownItem {
     transition: none;
-  }
-
-  .card:hover,
-  .actionIconBtn:hover:not(:disabled),
-  .placeholder:hover .placeholderIcon,
-  .modalSubmit:hover {
-    transform: none;
-  }
-
-  .toast,
-  .modalOverlay,
-  .modalContent {
-    animation: none;
-  }
-
-  .pdfSkeleton {
-    animation: none;
-    background: var(--surface-hover);
   }
 }
