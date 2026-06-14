@@ -5,21 +5,6 @@
   padding: 48px 24px;
 }
 
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-bottom: 24px;
-  transition: color 0.2s ease;
-}
-
-.backLink:hover {
-  color: var(--text-primary);
-}
-
 /* ── Header ───────────────────────────────────────────────── */
 .header {
   display: flex;
@@ -133,8 +118,21 @@
 }
 
 /* ── Tabs + section shell ─────────────────────────────────── */
-.tabs {
+.tabsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 28px;
+}
+
+.tabs {
+  margin-bottom: 0;
+}
+
+/* Wraps the tab bar. Desktop: no effect. Mobile: lets the 4 tabs scroll
+   horizontally instead of overflowing under the page's overflow-x: hidden. */
+.tabsScroll {
+  min-width: 0;
 }
 
 .section {
@@ -306,6 +304,7 @@
   font-weight: 500;
   color: var(--text-primary);
   text-transform: capitalize;
+  overflow-wrap: anywhere; /* long single-token slugs can't overflow the row */
 }
 
 .variantMeta {
@@ -586,9 +585,25 @@
   .title {
     font-size: 25px;
   }
-}
 
-@media (max-width: 640px) {
+  /* Switcher stacks full-width above the tabs; the tab bar scrolls
+     horizontally if all four tabs don't fit. */
+  .tabsRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .tabsScroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+  .tabsScroll::-webkit-scrollbar {
+    display: none; /* WebKit */
+  }
+
   .versionRow {
     flex-wrap: wrap;
   }
@@ -611,10 +626,19 @@
   .variantActions {
     width: 100%;
   }
+
+  .variantActions :global(a),
+  .variantActions :global(button) {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .emptyState {
+    padding: 40px 16px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .backLink,
   .menuButton,
   .toolCard,
   .variantRow,

@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import {
-  ArrowLeft,
   ShareNetwork,
   DownloadSimple,
   DotsThreeVertical,
@@ -18,6 +16,7 @@ import { deleteResumeAction } from '@/app/actions/resume';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
 import Tabs from '@/components/Tabs/Tabs';
+import ResumeSwitcher from '@/components/ResumeSwitcher/ResumeSwitcher';
 import PageTransition from '@/components/motion/PageTransition';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import TrackingLinkModal from '@/components/TrackingLinkModal/TrackingLinkModal';
@@ -54,16 +53,18 @@ const TABS = [
 interface ResumeDetailViewProps {
   user: User;
   resume: Resume;
+  resumes: Resume[];
   analytics: AnalyticsData | null;
   initialTab?: string;
 }
 
-export default function ResumeDetailView({ user, resume, analytics, initialTab }: ResumeDetailViewProps) {
+export default function ResumeDetailView({ user, resume, resumes, analytics, initialTab }: ResumeDetailViewProps) {
   const router = useRouter();
   const validInitialTab = TABS.some((t) => t.id === initialTab) ? (initialTab as string) : 'overview';
 
   const [activeTab, setActiveTab] = useState(validInitialTab);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isNewResumeOpen, setIsNewResumeOpen] = useState(false);
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -136,11 +137,6 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
 
   return (
     <PageTransition className={styles.container}>
-      <Link href="/dashboard" className={styles.backLink}>
-        <ArrowLeft size={16} />
-        Resumes
-      </Link>
-
       <header className={styles.header}>
         <div className={styles.headerLeft}>
           <h1 className={styles.title}>{resume.title}</h1>
@@ -216,15 +212,24 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
         </div>
       </header>
 
-      <Tabs
-        items={TABS}
-        activeId={activeTab}
-        onTabClick={handleTabChange}
-        variant="inset"
-        fill="never"
-        className={styles.tabs}
-        ariaLabel="Resume sections"
-      />
+      <div className={styles.tabsRow}>
+        <ResumeSwitcher
+          resumes={resumes.map((r) => ({ id: r.id, title: r.title }))}
+          currentResumeId={resume.id}
+          onNewResume={() => setIsNewResumeOpen(true)}
+        />
+        <div className={styles.tabsScroll}>
+          <Tabs
+            items={TABS}
+            activeId={activeTab}
+            onTabClick={handleTabChange}
+            variant="inset"
+            fill="never"
+            className={styles.tabs}
+            ariaLabel="Resume sections"
+          />
+        </div>
+      </div>
 
       <div className={styles.section}>
         {activeTab === 'overview' && (
@@ -257,6 +262,16 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
         onClose={() => setIsUploadOpen(false)}
         resumeId={resume.id}
         variantId={defaultVariant?.id}
+      />
+      <UploadModal
+        isOpen={isNewResumeOpen}
+        onClose={() => setIsNewResumeOpen(false)}
+        onSuccess={(result) => {
+          setIsNewResumeOpen(false);
+          if (result?.resumeId) {
+            router.push(`/dashboard/resume/${result.resumeId}`);
+          }
+        }}
       />
       <TrackingLinkModal
         isOpen={isTrackingOpen}
