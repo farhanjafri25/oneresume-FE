@@ -21,7 +21,7 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
     if (!user) {
       return { error: 'Unauthorized' };
     }
-    
+
     // Check if we passed resumeId and variantId (if uploading a new version to an existing variant)
     let resumeId = formData.get('resumeId') as string;
     let variantId = formData.get('variantId') as string;
@@ -55,7 +55,7 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
         .replace(/[^a-z0-9_-]/g, '-')
         .replace(/-+/g, '-')
         .replace(/^-+|-+$/g, '');
-      
+
       const finalSlug = slug || `resume-${Date.now()}`;
       createdSlug = finalSlug;
 
