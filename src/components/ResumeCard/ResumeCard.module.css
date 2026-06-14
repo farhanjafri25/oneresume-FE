@@ -24,7 +24,6 @@
 }
 
 .imageContainer {
-  height: 240px;
   background: var(--surface-hover);
   border-bottom: 1px solid var(--border);
   overflow: hidden;
@@ -280,17 +279,7 @@
   }
 }
 
-@media (max-width: 768px) {
-  .imageContainer {
-    height: 200px;
-  }
-}
-
 @media (max-width: 480px) {
-  .imageContainer {
-    height: 180px;
-  }
-
   .content {
     padding: 14px 16px;
   }

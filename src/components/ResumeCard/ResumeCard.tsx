@@ -19,6 +19,7 @@ import Tooltip from '@/components/Tooltip/Tooltip';
 import ResumePreview from '@/components/ResumePreview/ResumePreview';
 import { slideUp, springs, transitions } from '@/lib/motion';
 import { useHoverable } from '@/lib/useHoverable';
+import type { CardPreviewConfig } from '@/lib/cardPreviewDefaults';
 
 interface ResumeCardProps {
   id: string;
@@ -36,6 +37,8 @@ interface ResumeCardProps {
   index?: number;
   /** Opens the upload/replace modal. */
   onReplaceClick?: () => void;
+  /** Overrides for the preview layout (used by the playground). */
+  previewConfig?: Partial<CardPreviewConfig>;
 }
 
 /**
@@ -54,6 +57,7 @@ export default function ResumeCard({
   detailHref,
   index = 0,
   onReplaceClick,
+  previewConfig,
 }: ResumeCardProps) {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -146,7 +150,7 @@ export default function ResumeCard({
         whileHover={hoverable ? { y: -2, transition: springs.micro } : undefined}
       >
         <div className={styles.imageContainer}>
-          <ResumePreview pdfUrl={pdfUrl} title={title} />
+          <ResumePreview pdfUrl={pdfUrl} title={title} config={previewConfig} />
         </div>
 
         <div className={`${styles.menu} ${showDropdown ? styles.menuActive : ''}`}>
