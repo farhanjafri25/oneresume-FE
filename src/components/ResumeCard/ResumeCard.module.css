@@ -30,6 +30,70 @@
   position: relative;
 }
 
+/* Quick actions — a subtle scrim over the preview, revealed on hover/focus
+   (desktop only; hidden on touch, where the overflow menu takes over). Sits
+   above the stretched link (z 1) so the buttons win their clicks, below the
+   overflow menu (z 3). The scrim itself is pointer-events: none so clicking the
+   bare preview still falls through to the stretched link → detail page. */
+.quickActions {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+@media (hover: hover) {
+  .card:hover .quickActions,
+  .card:focus-within .quickActions {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .quickActions {
+    display: none;
+  }
+}
+
+.quickAction {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary);
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+@media (hover: hover) {
+  .quickAction:hover {
+    background: #ffffff;
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.quickAction:active {
+  transform: scale(0.97);
+}
+
 /* Stretched link — the whole card opens the detail page. Above the preview and
    text (z 1), below the overflow menu (z 3). */
 .stretchedLink {
@@ -273,7 +337,9 @@
   .card,
   .menu,
   .menuButton,
-  .dropdownItem {
+  .dropdownItem,
+  .quickActions,
+  .quickAction {
     transition: none;
   }
 }
