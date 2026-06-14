@@ -615,3 +615,78 @@
     transition: none;
   }
 }
+
+/* ── Welcome moment (post-onboarding) ─────────────────────── */
+.welcomeBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--primary) 7%, var(--surface));
+}
+
+.welcomeIcon {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.welcomeText {
+  flex: 1;
+  min-width: 0;
+}
+
+.welcomeTitle {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.welcomeSub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 4px 0 12px;
+}
+
+.welcomeLinkRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.welcomeLink {
+  flex: 1;
+  min-width: 220px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.welcomeDismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.welcomeDismiss:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}

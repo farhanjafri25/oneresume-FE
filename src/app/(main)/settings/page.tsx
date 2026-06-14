@@ -4,6 +4,7 @@ import { getMe } from '@/lib/api';
 import { redirect } from 'next/navigation';
 import PageTransition from '@/components/motion/PageTransition';
 import AccountActions from './AccountActions';
+import AvatarSelector from '@/components/AvatarSelector/AvatarSelector';
 
 function formatDate(dateInput: string | Date): string {
   const d = new Date(dateInput);
@@ -34,14 +35,12 @@ export default async function SettingsPage() {
     <PageTransition className={styles.container}>
       <div className={styles.card}>
         <div className={styles.profileSection}>
-          <div className={styles.avatarContainer}>
-            <div className={styles.avatar}>
-              <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=random&size=128`} alt="Avatar" />
-            </div>
-            <span className={styles.badge}>Pro</span>
-          </div>
+          <AvatarSelector user={user} />
           <div className={styles.profileInfo}>
-            <h2>{user.name || user.username}</h2>
+            <div className={styles.nameRow}>
+              <h2>{user.name || user.username}</h2>
+              <span className={styles.proBadge}>Pro</span>
+            </div>
             {memberSince && <p>Member since {memberSince}</p>}
           </div>
         </div>

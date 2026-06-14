@@ -10,10 +10,10 @@ export default async function ResumeDetailPage({
   searchParams,
 }: {
   params: Promise<{ resumeId: string }>;
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; welcome?: string }>;
 }) {
   const { resumeId } = await params;
-  const { tab } = await searchParams;
+  const { tab, welcome } = await searchParams;
 
   let user = null;
   let resumes = null;
@@ -46,6 +46,7 @@ export default async function ResumeDetailPage({
         resume={resume}
         analytics={analytics}
         initialTab={tab}
+        welcome={welcome === '1'}
       />
     </>
   );

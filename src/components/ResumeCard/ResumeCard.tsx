@@ -11,6 +11,8 @@ import {
   UploadSimple,
   DotsThreeVertical,
   Trash,
+  ShareNetwork,
+  Sparkle,
 } from '@phosphor-icons/react/dist/ssr';
 import { deleteResumeAction } from '@/app/actions/resume';
 import Button from '@/components/Button/Button';
@@ -130,6 +132,28 @@ export default function ResumeCard({
 
   const toneClass = status?.tone === 'warn' ? styles.warn : status?.tone === 'muted' ? styles.muted : '';
 
+  // Surfaced over the preview on hover (desktop). Unavailable actions are
+  // omitted; an empty list skips the overlay entirely. Mobile relies on the
+  // overflow menu instead — the overlay is hidden on touch via CSS.
+  type QuickAction =
+    | { key: string; label: string; icon: typeof ShareNetwork; href: string }
+    | { key: string; label: string; icon: typeof ShareNetwork; onClick: (e: React.MouseEvent) => void };
+
+  const quickActions: QuickAction[] = [
+    publicUrl && {
+      key: 'share',
+      label: 'Share',
+      icon: ShareNetwork,
+      onClick: handleCopyLink,
+    },
+    pdfUrl && {
+      key: 'tailor',
+      label: 'Tailor with AI',
+      icon: Sparkle,
+      href: `/dashboard/ai-builder/${id}`,
+    },
+  ].filter(Boolean) as QuickAction[];
+
   return (
     <>
       <motion.div
@@ -141,6 +165,30 @@ export default function ResumeCard({
       >
         <div className={styles.imageContainer}>
           <ResumePreview pdfUrl={pdfUrl} title={title} config={previewConfig} />
+
+          {quickActions.length > 0 && (
+            <div className={styles.quickActions}>
+              {quickActions.map((action) => {
+                const Icon = action.icon;
+                return 'href' in action ? (
+                  <NextLink key={action.key} href={action.href} className={styles.quickAction}>
+                    <Icon size={16} weight="bold" />
+                    {action.label}
+                  </NextLink>
+                ) : (
+                  <button
+                    key={action.key}
+                    type="button"
+                    className={styles.quickAction}
+                    onClick={action.onClick}
+                  >
+                    <Icon size={16} weight="bold" />
+                    {action.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className={`${styles.menu} ${showDropdown ? styles.menuActive : ''}`}>

@@ -100,7 +100,7 @@ export default function TopNav({ user, resumes = [] }: { user?: User; resumes?: 
               aria-expanded={isProfileOpen}
               title={user.username}
             >
-              <img src={`https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" />
+              <img src={user.avatarUrl || `https://ui-avatars.com/api/?name=${user.username}&background=random`} alt="User Avatar" />
             </button>
 
             {isProfileOpen && (

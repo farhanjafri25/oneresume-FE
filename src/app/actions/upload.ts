@@ -13,8 +13,8 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
       return { error: 'Please select a file to upload' };
     }
     
-    if (file.size > 6 * 1024 * 1024) {
-      return { error: 'File size must be less than 6MB' };
+    if (file.size > 4 * 1024 * 1024) {
+      return { error: 'File size must be less than 4MB' };
     }
 
     const user = await getMe();

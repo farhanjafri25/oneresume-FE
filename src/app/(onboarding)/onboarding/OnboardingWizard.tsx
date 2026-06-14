@@ -12,7 +12,6 @@ import styles from './Onboarding.module.css';
 import OnboardingHeader from './OnboardingHeader';
 import UploadStep from './steps/UploadStep';
 import ScoreStep from './steps/ScoreStep';
-import ShareStep from './steps/ShareStep';
 
 export default function OnboardingWizard({ user }: { user: User }) {
   const [state, setState] = useState<OnboardingState>(INITIAL_ONBOARDING);
@@ -48,7 +47,6 @@ export default function OnboardingWizard({ user }: { user: User }) {
           >
             {state.step === 'upload' && <UploadStep {...stepProps} />}
             {state.step === 'score'  && <ScoreStep {...stepProps} />}
-            {state.step === 'share'  && <ShareStep {...stepProps} />}
           </motion.div>
         </AnimatePresence>
       </div>
