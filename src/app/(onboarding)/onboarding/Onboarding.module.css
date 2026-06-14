@@ -447,24 +447,6 @@
   color: var(--text-secondary);
 }
 
-.toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--surface);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--primary);
-  padding: 14px 20px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: var(--shadow-md);
-  z-index: 50;
-}
-
 /* ───────────────────────────── Responsive ───────────────────────────── */
 @media (max-width: 900px) {
   .header { padding: 16px 20px; }

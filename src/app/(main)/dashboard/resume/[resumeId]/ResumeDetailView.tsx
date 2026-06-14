@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
 import {
   ArrowLeft,
   ShareNetwork,
@@ -11,7 +12,6 @@ import {
   DotsThreeVertical,
   UploadSimple,
   Trash,
-  CheckCircle,
 } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
 import { deleteResumeAction } from '@/app/actions/resume';
@@ -21,7 +21,6 @@ import Tabs from '@/components/Tabs/Tabs';
 import PageTransition from '@/components/motion/PageTransition';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import TrackingLinkModal from '@/components/TrackingLinkModal/TrackingLinkModal';
-import { slideUp } from '@/lib/motion';
 import styles from './ResumeDetailView.module.css';
 import OverviewSection from './sections/OverviewSection';
 import VariantsSection from './sections/VariantsSection';
@@ -68,8 +67,6 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
 
   const defaultVariant = resume.variants?.find((v) => v.slug === 'default') ?? resume.variants?.[0];
   const latestVersion =
@@ -80,22 +77,12 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
   const tailoredVariants = (resume.variants ?? []).filter((v) => v.slug !== 'default');
 
   useEffect(() => {
-    if (!showToast) return;
-    const timer = setTimeout(() => setShowToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showToast]);
-
-  useEffect(() => {
     if (!showMenu) return;
     const handleDocumentClick = () => setShowMenu(false);
     document.addEventListener('click', handleDocumentClick);
     return () => document.removeEventListener('click', handleDocumentClick);
   }, [showMenu]);
 
-  const notify = (message: string) => {
-    setToastMessage(message);
-    setShowToast(true);
-  };
 
   // Update the URL's ?tab shallowly so sections are deep-linkable / reload-safe,
   // without re-running the server component (no analytics refetch on tab change).
@@ -111,25 +98,25 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
   const handleShare = () => {
     navigator.clipboard
       .writeText(`${window.location.origin}${publicUrl}`)
-      .then(() => notify('Shareable link copied to clipboard!'))
-      .catch((err) => console.error('Failed to copy:', err));
+      .then(() => toast.success('Shareable link copied to clipboard!'))
+      .catch(() => toast.error("Couldn't copy link. Please try again."));
   };
 
   const confirmDelete = async () => {
     setShowDeleteModal(false);
     try {
       setIsDeleting(true);
-      notify('Deleting resume...');
       const result = await deleteResumeAction(resume.id);
       if (result?.error) {
-        notify(result.error);
+        toast.error(result.error);
         setIsDeleting(false);
       } else {
+        toast.success('Resume deleted.');
         router.push('/dashboard');
       }
     } catch (err) {
       console.error('Failed to delete resume:', err);
-      notify('Failed to delete resume.');
+      toast.error('Failed to delete resume. Please try again.');
       setIsDeleting(false);
     }
   };
@@ -238,7 +225,7 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
           />
         )}
         {activeTab === 'variants' && (
-          <VariantsSection resume={resume} username={user.username} variants={tailoredVariants} onCopied={notify} />
+          <VariantsSection resume={resume} username={user.username} variants={tailoredVariants} />
         )}
         {activeTab === 'versions' && (
           <VersionsSection
@@ -246,7 +233,6 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
             username={user.username}
             resumeSlug={resume.slug}
             onUploadClick={() => setIsUploadOpen(true)}
-            onCopied={notify}
           />
         )}
         {activeTab === 'analytics' && <AnalyticsSection analytics={analytics} resumeId={resume.id} />}
@@ -262,7 +248,6 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
         isOpen={isTrackingOpen}
         onClose={() => setIsTrackingOpen(false)}
         publicUrl={publicUrl}
-        onCopied={notify}
       />
 
       <Modal
@@ -281,15 +266,6 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
           <Button tone="danger" onClick={confirmDelete}>Delete</Button>
         </div>
       </Modal>
-
-      <AnimatePresence>
-        {showToast && (
-          <motion.div className={styles.toast} variants={slideUp} initial="hidden" animate="visible" exit="exit">
-            <CheckCircle size={16} className={styles.toastIcon} />
-            {toastMessage}
-          </motion.div>
-        )}
-      </AnimatePresence>
     </PageTransition>
   );
 }

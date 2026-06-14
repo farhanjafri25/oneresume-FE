@@ -206,30 +206,6 @@
   color: #b91c1c;
 }
 
-.toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--surface);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--primary);
-  padding: 14px 20px;
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  /* enter/exit handled by motion (slideUp variant) */
-}
-
-.toastIcon {
-  color: #10b981;
-}
-
 /* Delete confirmation modal */
 .modalOverlay {
   position: fixed;

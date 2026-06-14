@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import Modal from '@/components/motion/Modal';
 import Button from '@/components/Button/Button';
 import styles from './TrackingLinkModal.module.css';
@@ -10,16 +11,14 @@ interface TrackingLinkModalProps {
   onClose: () => void;
   /** Relative public URL of the resume, e.g. `/username/slug`. */
   publicUrl?: string;
-  /** Called after a tracking link is copied, with a user-facing message. */
-  onCopied: (message: string) => void;
 }
 
 /**
  * Builds a per-application tracking link (`?for=Company-Role`) off the resume's
- * public URL and copies it to the clipboard. The parent owns the resulting toast
- * via `onCopied`, so this stays a focused, reusable piece of UI.
+ * public URL and copies it to the clipboard, firing a toast on the result. This
+ * stays a focused, reusable piece of UI.
  */
-export default function TrackingLinkModal({ isOpen, onClose, publicUrl, onCopied }: TrackingLinkModalProps) {
+export default function TrackingLinkModal({ isOpen, onClose, publicUrl }: TrackingLinkModalProps) {
   const [linkLabel, setLinkLabel] = useState('');
 
   const close = () => {
@@ -33,8 +32,8 @@ export default function TrackingLinkModal({ isOpen, onClose, publicUrl, onCopied
       const fullUrl = `${window.location.origin}${publicUrl}?for=${encodeURIComponent(cleanTag)}`;
       navigator.clipboard
         .writeText(fullUrl)
-        .then(() => onCopied(`Tracking link for "${cleanTag}" copied to clipboard!`))
-        .catch((err) => console.error('Failed to copy tracking link:', err));
+        .then(() => toast.success(`Tracking link for "${cleanTag}" copied to clipboard!`))
+        .catch(() => toast.error("Couldn't copy tracking link. Please try again."));
     }
     close();
   };

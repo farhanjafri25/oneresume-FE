@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { Link, ArrowSquareOut, CheckCircle, Clock, X, CircleNotch } from '@phosphor-icons/react/dist/ssr';
+import { toast } from 'sonner';
+import { Link, ArrowSquareOut, Clock, X, CircleNotch } from '@phosphor-icons/react/dist/ssr';
 import styles from './VersionsModal.module.css';
 import { Resume } from '@/types';
 import { getResumeVariantsAction } from '@/app/actions/resume';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
-import { slideUp } from '@/lib/motion';
 
 interface Version {
   id: string;
@@ -26,19 +25,10 @@ interface VersionsModalProps {
 }
 
 export default function VersionsModal({ isOpen, onClose, resume, username }: VersionsModalProps) {
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
   const [fetchedVersions, setFetchedVersions] = useState<Version[]>([]);
   const [fetchedResumeId, setFetchedResumeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const resumeId = resume?.id;
-
-  useEffect(() => {
-    if (showToast) {
-      const timer = setTimeout(() => setShowToast(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showToast]);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,13 +87,8 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
     const fullUrl = `${window.location.origin}${relativeUrl}`;
 
     navigator.clipboard.writeText(fullUrl)
-      .then(() => {
-        setToastMessage(`Copied link for Version ${versionNumber}!`);
-        setShowToast(true);
-      })
-      .catch((err) => {
-        console.error('Failed to copy link:', err);
-      });
+      .then(() => toast.success(`Copied link for Version ${versionNumber}!`))
+      .catch(() => toast.error("Couldn't copy link. Please try again."));
   };
 
   return (
@@ -189,21 +174,6 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
           </>
         )}
       </Modal>
-
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            className={styles.toast}
-            variants={slideUp}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <CheckCircle size={16} className={styles.toastIcon} />
-            <span>{toastMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }

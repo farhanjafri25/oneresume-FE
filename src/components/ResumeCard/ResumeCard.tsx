@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import NextLink from 'next/link';
 import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
 import styles from './ResumeCard.module.css';
 import {
   Link as LinkIcon,
   ArrowSquareOut,
   UploadSimple,
   DotsThreeVertical,
-  CheckCircle,
   Trash,
 } from '@phosphor-icons/react/dist/ssr';
 import { deleteResumeAction } from '@/app/actions/resume';
@@ -17,7 +17,7 @@ import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
 import Tooltip from '@/components/Tooltip/Tooltip';
 import ResumePreview from '@/components/ResumePreview/ResumePreview';
-import { slideUp, springs, transitions } from '@/lib/motion';
+import { springs, transitions } from '@/lib/motion';
 import { useHoverable } from '@/lib/useHoverable';
 import type { CardPreviewConfig } from '@/lib/cardPreviewDefaults';
 
@@ -59,18 +59,10 @@ export default function ResumeCard({
   onReplaceClick,
   previewConfig,
 }: ResumeCardProps) {
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const hoverable = useHoverable();
-
-  useEffect(() => {
-    if (!showToast) return;
-    const timer = setTimeout(() => setShowToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showToast]);
 
   useEffect(() => {
     if (!showDropdown) return;
@@ -78,11 +70,6 @@ export default function ResumeCard({
     document.addEventListener('click', handleDocumentClick);
     return () => document.removeEventListener('click', handleDocumentClick);
   }, [showDropdown]);
-
-  const toast = (message: string) => {
-    setToastMessage(message);
-    setShowToast(true);
-  };
 
   const handleToggleDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -98,8 +85,8 @@ export default function ResumeCard({
     if (!publicUrl) return;
     navigator.clipboard
       .writeText(`${window.location.origin}${publicUrl}`)
-      .then(() => toast('Shareable link copied to clipboard!'))
-      .catch((err) => console.error('Failed to copy:', err));
+      .then(() => toast.success('Shareable link copied to clipboard!'))
+      .catch(() => toast.error("Couldn't copy link. Please try again."));
   };
 
   const handleOpenPublic = (e: React.MouseEvent) => {
@@ -127,12 +114,15 @@ export default function ResumeCard({
     setShowDeleteModal(false);
     try {
       setIsDeleting(true);
-      toast('Deleting resume...');
       const result = await deleteResumeAction(id);
-      toast(result?.error ? result.error : 'Resume deleted successfully.');
+      if (result?.error) {
+        toast.error(result.error);
+      } else {
+        toast.success('Resume deleted.');
+      }
     } catch (err) {
       console.error('Failed to delete resume:', err);
-      toast('Failed to delete resume.');
+      toast.error('Failed to delete resume. Please try again.');
     } finally {
       setIsDeleting(false);
     }
@@ -213,15 +203,6 @@ export default function ResumeCard({
             preview/text but below the overflow menu (which has a higher z-index). */}
         <NextLink href={detailHref} className={styles.stretchedLink} aria-label={`Open ${title}`} />
       </motion.div>
-
-      <AnimatePresence>
-        {showToast && (
-          <motion.div className={styles.toast} variants={slideUp} initial="hidden" animate="visible" exit="exit">
-            <CheckCircle size={16} className={styles.toastIcon} />
-            {toastMessage}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <Modal
         isOpen={showDeleteModal}
