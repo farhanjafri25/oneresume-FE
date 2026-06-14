@@ -1,5 +1,6 @@
 import React from 'react';
 import { headers } from 'next/headers';
+import Link from 'next/link';
 import styles from './page.module.css';
 import { DownloadSimple } from '@phosphor-icons/react/dist/ssr';
 import { notFound } from 'next/navigation';
@@ -50,7 +51,7 @@ export default async function PublicResumePage({
       <header className={styles.topBar}>
         <div className={styles.barContent}>
           <div className={styles.left}>
-            <span className={styles.logo}>OneCV</span>
+            <Link href="https://onecv.co" className={styles.logo}>OneCV</Link>
             <span className={styles.divider}></span>
             <span className={styles.name} title={username}>{username}</span>
             <span className={styles.variantBadge} title={filename}>{filename}</span>

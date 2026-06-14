@@ -50,6 +50,13 @@
   font-weight: 600;
   font-size: 14px;
   letter-spacing: -0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }
 
 .divider {
