@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 import {
   ShareNetwork,
-  DownloadSimple,
+  File,
   DotsThreeVertical,
   UploadSimple,
   Trash,
@@ -192,23 +192,26 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab, 
 
       <header className={styles.header}>
         <div className={styles.headerLeft}>
-          <h1 className={styles.title}>{resume.title}</h1>
-          <p className={styles.headerMeta}>
-            {latestVersion ? `Version ${latestVersion.versionNumber}` : 'No PDF uploaded yet'}
-          </p>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>{resume.title}</h1>
+            {latestVersion && (
+              <span className={styles.versionBadge}>Version {latestVersion.versionNumber}</span>
+            )}
+          </div>
+          {!latestVersion && <p className={styles.headerMeta}>No PDF uploaded yet</p>}
         </div>
 
         <div className={styles.headerActions}>
+          {hasPdf && (
+            <Button variant="secondary" href={pdfUrl as string} target="_blank" rel="noopener noreferrer">
+              <File size={16} />
+              View PDF
+            </Button>
+          )}
           <Button onClick={handleShare} disabled={isDeleting}>
             <ShareNetwork size={16} />
             Share
           </Button>
-          {hasPdf && (
-            <Button variant="secondary" href={pdfUrl as string} target="_blank" rel="noopener noreferrer">
-              <DownloadSimple size={16} />
-              Open PDF
-            </Button>
-          )}
           <div className={styles.menu}>
             <button
               type="button"
@@ -298,6 +301,8 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab, 
             versions={versions}
             username={user.username}
             resumeSlug={resume.slug}
+            resumeId={resume.id}
+            variantId={defaultVariant?.id}
             onUploadClick={() => setIsUploadOpen(true)}
           />
         )}
