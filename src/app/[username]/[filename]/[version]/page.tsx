@@ -5,6 +5,7 @@ import styles from '../page.module.css';
 import { DownloadSimple } from '@phosphor-icons/react/dist/ssr';
 import { notFound } from 'next/navigation';
 import Button from '@/components/Button/Button';
+import PdfPreview from '../PdfPreview';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -17,6 +18,9 @@ export default async function PublicResumeVersionPage({
 }) {
   const { username, filename, version } = await params;
   const { for: forParam } = await searchParams;
+
+  // Display the resume name with hyphens replaced by spaces.
+  const resumeName = filename.replace(/-/g, ' ');
 
   // Capture original browser headers from Next.js request context
   const headersList = await headers();
@@ -62,8 +66,8 @@ export default async function PublicResumeVersionPage({
               <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
             </Link>
             <span className={styles.divider}></span>
-            <span className={styles.variantBadge}>
-              {filename}
+            <span className={styles.resumeName} title={resumeName}>
+              {resumeName}
             </span>
           </div>
           {fileUrl && (
@@ -83,9 +87,8 @@ export default async function PublicResumeVersionPage({
 
       <main className={styles.main}>
         {fileUrl ? (
-          <iframe
-            src={`${fileUrl}#toolbar=0&navpanes=0&view=FitH`}
-            className={styles.pdfPreview}
+          <PdfPreview
+            fileUrl={fileUrl}
             title={`${username}'s Resume - ${filename} (${version})`}
           />
         ) : (

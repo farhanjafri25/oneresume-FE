@@ -18,6 +18,13 @@
   min-width: 0;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .title {
   font-family: var(--font-heading), sans-serif;
   font-stretch: 80%;
@@ -26,6 +33,20 @@
   letter-spacing: -0.5px;
   color: var(--text-primary);
   word-break: break-word;
+}
+
+.versionBadge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .headerMeta {
