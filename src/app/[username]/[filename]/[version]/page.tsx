@@ -45,14 +45,23 @@ export default async function PublicResumeVersionPage({
   const data = await res.json();
   const fileUrl = data.fileUrl; // UploadThing PDF URL
 
+  // Resume owner info — defensively read from the response (nested or flat),
+  // falling back to the URL username and a generated avatar.
+  const owner = data.user ?? data;
+  const ownerName: string = owner.name || owner.username || username;
+  const ownerAvatar: string =
+    owner.avatarUrl ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(ownerName)}&background=random`;
+
   return (
     <div className={styles.container}>
       <header className={styles.topBar}>
         <div className={styles.barContent}>
           <div className={styles.left}>
-            <Link href="https://onecv.co" className={styles.logo}>OneCV</Link>
+            <Link href="https://onecv.co" className={styles.logo}>
+              <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
+            </Link>
             <span className={styles.divider}></span>
-            <span className={styles.name}>{username}</span>
             <span className={styles.variantBadge}>
               {filename}
             </span>
@@ -83,6 +92,16 @@ export default async function PublicResumeVersionPage({
           <div className={styles.errorState}>No PDF preview available</div>
         )}
       </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.footerUser}>
+          <img src={ownerAvatar} alt={ownerName} className={styles.footerAvatar} />
+          <span className={styles.footerName}>{ownerName}</span>
+        </div>
+        <Link href="https://onecv.co" className={styles.footerCta}>
+          Create your resume on OneCV
+        </Link>
+      </footer>
     </div>
   );
 }
