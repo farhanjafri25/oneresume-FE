@@ -6,6 +6,28 @@ import { AuthResponse } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
+export async function checkEmailExists(email: string) {
+  if (!email) return { error: 'Email is required' };
+
+  try {
+    const res = await fetch(`${API_URL}/auth/check-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      return { error: data.message || 'Could not verify email' };
+    }
+
+    const data = await res.json();
+    return { exists: Boolean(data.exists) };
+  } catch {
+    return { error: 'An unexpected error occurred' };
+  }
+}
+
 export async function loginUser(prevState: any, formData: FormData) {
   const email = formData.get('email');
   const password = formData.get('password');
