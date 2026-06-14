@@ -65,16 +65,6 @@
   color: var(--text-primary);
 }
 
-.proBadge {
-  background: var(--primary);
-  color: white;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  line-height: 1.5;
-}
-
 .profileInfo p {
   font-size: 14px;
   color: var(--text-tertiary);

@@ -39,7 +39,6 @@ export default async function SettingsPage() {
           <div className={styles.profileInfo}>
             <div className={styles.nameRow}>
               <h2>{user.name || user.username}</h2>
-              <span className={styles.proBadge}>Pro</span>
             </div>
             {memberSince && <p>Member since {memberSince}</p>}
           </div>
