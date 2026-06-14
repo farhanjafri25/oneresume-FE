@@ -24,66 +24,6 @@ interface PdfPreviewProps {
 }
 
 export default function PdfPreview({ fileUrl, title }: PdfPreviewProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    // Detect mobile device to switch to PDF.js rendering
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    setIsMobileDevice(isMobile);
-
-    if (!containerRef.current || isMobile) return;
-
-    const updateLayout = () => {
-      if (!containerRef.current) return;
-      
-      const screenWidth = window.innerWidth;
-      const containerWidth = containerRef.current.clientWidth;
-      
-      if (screenWidth <= 768) {
-        setScale(containerWidth / 595);
-      } else {
-        setScale(1);
-      }
-    };
-
-    updateLayout();
-    const observer = new ResizeObserver(() => updateLayout());
-    observer.observe(containerRef.current);
-    window.addEventListener('resize', updateLayout);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', updateLayout);
-    };
-  }, []);
-
-  if (!mounted || isMobileDevice === null) return null;
-
-  return (
-    <div 
-      ref={containerRef} 
-      className={!isMobileDevice ? styles.desktopContainer : styles.pdfWrapper}
-      style={!isMobileDevice && window.innerWidth <= 768 ? { height: `${842 * scale}px` } : undefined}
-    >
-      {isMobileDevice ? (
-        <MobilePdfViewer fileUrl={fileUrl} />
-      ) : (
-        <iframe
-          src={`${fileUrl}#toolbar=0&navpanes=0&view=FitH`}
-          title={title}
-          className={window.innerWidth <= 768 ? styles.pdfIframe : styles.pdfPreview}
-          style={window.innerWidth <= 768 ? { transform: `scale(${scale})` } : undefined}
-        />
-      )}
-    </div>
-  );
-}
-
-function MobilePdfViewer({ fileUrl }: { fileUrl: string }) {
   const [numPages, setNumPages] = useState<number>(0);
   const [pdfDoc, setPdfDoc] = useState<PdfjsModule.PDFDocumentProxy | null>(null);
 
@@ -102,11 +42,11 @@ function MobilePdfViewer({ fileUrl }: { fileUrl: string }) {
   }, [fileUrl]);
 
   if (!pdfDoc) {
-    return <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>Loading preview...</div>;
+    return <div className={styles.loadingState}>Loading preview...</div>;
   }
 
   return (
-    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+    <div className={styles.pagesContainer} aria-label={title}>
       {Array.from(new Array(numPages), (_, index) => (
         <PdfPage key={`page_${index + 1}`} pageNumber={index + 1} pdfDoc={pdfDoc} />
       ))}
@@ -120,20 +60,29 @@ function PdfPage({ pageNumber, pdfDoc }: { pageNumber: number; pdfDoc: PdfjsModu
 
   useEffect(() => {
     let active = true;
-    
+    let lastWidth = 0;
+    let renderTask: PdfjsModule.RenderTask | null = null;
+
     const renderPage = async () => {
       if (!pdfDoc || !canvasRef.current || !wrapperRef.current) return;
-      
+
+      const containerWidth = wrapperRef.current.clientWidth;
+      if (containerWidth === 0) return;
+      lastWidth = containerWidth;
+
+      // Cancel any in-flight render before reusing the canvas; PDF.js rejects
+      // concurrent render() calls on the same canvas.
+      renderTask?.cancel();
+
       const page = await pdfDoc.getPage(pageNumber);
       if (!active) return;
 
-      const containerWidth = wrapperRef.current.clientWidth;
       const unscaledViewport = page.getViewport({ scale: 1 });
       const scale = containerWidth / unscaledViewport.width;
-      
+
       const dpr = window.devicePixelRatio || 1;
       const viewport = page.getViewport({ scale: scale * dpr });
-      
+
       const canvas = canvasRef.current;
       canvas.width = viewport.width;
       canvas.height = viewport.height;
@@ -143,22 +92,38 @@ function PdfPage({ pageNumber, pdfDoc }: { pageNumber: number; pdfDoc: PdfjsModu
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      const renderContext = {
-        canvasContext: ctx,
-        viewport: viewport,
-      };
-      
-      await page.render(renderContext).promise;
+      renderTask = page.render({ canvasContext: ctx, viewport });
+      try {
+        await renderTask.promise;
+      } catch (err) {
+        // A cancelled render rejects with RenderingCancelledException; ignore it.
+        if ((err as { name?: string })?.name !== 'RenderingCancelledException') {
+          console.error(err);
+        }
+      }
     };
 
     renderPage();
 
-    return () => { active = false; };
+    // Re-render when the container width changes (e.g. window resize or
+    // mobile orientation change) so the page scales with its container.
+    const observer = new ResizeObserver(() => {
+      if (wrapperRef.current && wrapperRef.current.clientWidth !== lastWidth) {
+        renderPage();
+      }
+    });
+    if (wrapperRef.current) observer.observe(wrapperRef.current);
+
+    return () => {
+      active = false;
+      renderTask?.cancel();
+      observer.disconnect();
+    };
   }, [pdfDoc, pageNumber]);
 
   return (
-    <div ref={wrapperRef} style={{ width: '100%', maxWidth: '800px', backgroundColor: 'white', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}>
-      <canvas ref={canvasRef} style={{ display: 'block', width: '100%' }} />
+    <div ref={wrapperRef} className={styles.pdfPage}>
+      <canvas ref={canvasRef} className={styles.pdfCanvas} />
     </div>
   );
 }

@@ -69,15 +69,14 @@
   background: var(--border);
 }
 
-.variantBadge {
-  background: rgba(20, 85, 51, 0.08);
-  color: var(--text-tertiary);
-  border: 1px solid rgba(20, 85, 51, 0.15);
-  font-size: 12px;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  text-transform: capitalize;
+.resumeName {
+  color: var(--text-primary);
+  font-size: 13px;
   font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .downloadBtn {
@@ -93,64 +92,35 @@
   justify-content: center;
 }
 
-.desktopContainer {
+.pagesContainer {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
-.pdfPreview {
+.pdfPage {
   width: 100%;
-  height: 85vh;
-  height: 85dvh;
+  background: #ffffff;
   border: 1px solid rgba(28, 25, 23, 0.08);
   border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 
-    0 20px 40px rgba(28, 25, 23, 0.08), 
-    0 1px 3px rgba(28, 25, 23, 0.02);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (hover: hover) {
-  .pdfPreview:hover {
-    transform: translateY(-4px);
-    box-shadow:
-      0 30px 60px rgba(28, 25, 23, 0.12),
-      0 3px 8px rgba(28, 25, 23, 0.04);
-  }
-}
-
-.pdfWrapper {
-  width: 100%;
-  margin: 0 auto;
-  border: 1px solid rgba(28, 25, 23, 0.08);
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 
-    0 20px 40px rgba(28, 25, 23, 0.08), 
-    0 1px 3px rgba(28, 25, 23, 0.02);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
   overflow: hidden;
+  box-shadow:
+    0 20px 40px rgba(28, 25, 23, 0.08),
+    0 1px 3px rgba(28, 25, 23, 0.02);
 }
 
-.pdfIframe {
-  width: 595px;
-  height: 842px;
-  border: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: top left;
-  background: #ffffff;
+.pdfCanvas {
+  display: block;
+  width: 100%;
 }
 
-@media (hover: hover) {
-  .pdfWrapper:hover {
-    transform: translateY(-4px);
-    box-shadow:
-      0 30px 60px rgba(28, 25, 23, 0.12),
-      0 3px 8px rgba(28, 25, 23, 0.04);
-  }
+.loadingState {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .errorState {
@@ -216,7 +186,7 @@
     gap: 16px;
   }
   
-  .variantBadge {
+  .resumeName {
     display: none;
   }
   

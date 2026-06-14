@@ -19,6 +19,9 @@ export default async function PublicResumePage({
   const { username, filename } = await params;
   const { for: forParam } = await searchParams;
 
+  // Display the resume name with hyphens replaced by spaces (e.g. "senior-engineer" -> "senior engineer")
+  const resumeName = filename.replace(/-/g, ' ');
+
   // Capture original browser headers from Next.js request context
   const headersList = await headers();
   const userAgent = headersList.get('user-agent') || '';
@@ -63,7 +66,7 @@ export default async function PublicResumePage({
               <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
             </Link>
             <span className={styles.divider}></span>
-            <span className={styles.variantBadge} title={filename}>{filename}</span>
+            <span className={styles.resumeName} title={resumeName}>{resumeName}</span>
           </div>
           {fileUrl && (
             <Button href={`${API_URL}/${username}/${filename}/download${forQuery}`} target="_blank" rel="noopener noreferrer" size="sm" className={styles.downloadBtn}>
