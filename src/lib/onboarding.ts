@@ -69,7 +69,7 @@ export const scoreLabel = (s: number) => (s >= 80 ? 'High Fit' : s >= 50 ? 'Medi
 
 /** Human verdict shown as the score-card headline. */
 export const scoreVerdict = (s: number) =>
-  s >= 80 ? 'Strong match' : s >= 50 ? "You're a solid fit" : 'Some gaps to close';
+  s >= 80 ? 'Strong match' : s >= 50 ? "You're a medium fit" : 'Some gaps to close';
 
 /** Headroom subline — frames the gap as the lever the next step closes. */
 export const scoreHeadroom = (s: number) =>

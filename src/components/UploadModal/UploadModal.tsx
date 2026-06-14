@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useActionState, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './UploadModal.module.css';
 import { X, CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
@@ -20,29 +20,46 @@ interface UploadModalProps {
 }
 
 export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSuccess }: UploadModalProps) {
-  const [state, formAction, isPending] = useActionState(uploadResumeAction, null);
+  const [isPending, setIsPending] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [clientError, setClientError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const processedSuccessRef = useRef<UploadActionState>(null);
-
-  useEffect(() => {
-    if (!shouldProcessUploadSuccess(state, processedSuccessRef.current)) {
-      return;
-    }
-
-    processedSuccessRef.current = state;
-    setSelectedFileName(null);
-    if (onSuccess) {
-      onSuccess({ resumeId: state.resumeId, slug: state.slug });
-    } else {
-      onClose();
-    }
-  }, [state, onClose, onSuccess]);
 
   const handleClose = () => {
     setSelectedFileName(null);
+    setClientError(null);
     onClose();
   };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (clientError || isPending || !selectedFileName) return;
+
+    setIsPending(true);
+    setClientError(null);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const res = await uploadResumeAction(null, formData);
+
+      if (res?.error) {
+        setClientError(res.error);
+      } else if (res?.success && res?.resumeId) {
+        setSelectedFileName(null);
+        if (onSuccess) {
+          onSuccess({ resumeId: res.resumeId, slug: res.slug });
+        } else {
+          onClose();
+        }
+      }
+    } catch (err: any) {
+      console.error('Action failed:', err);
+      setClientError('File upload failed. The file might be too large max file size is 6mb.');
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const error = clientError;
 
   return (
     <Modal
@@ -66,13 +83,13 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSu
           </button>
         </div>
 
-        {state?.error && (
+        {error && (
           <div style={{ color: '#991b1b', marginBottom: '16px', fontSize: '14px' }}>
-            {state.error}
+            {error}
           </div>
         )}
 
-        <form action={formAction}>
+        <form onSubmit={handleSubmit}>
           <input type="hidden" name="resumeId" value={resumeId || ''} />
           <input type="hidden" name="variantId" value={variantId || ''} />
 
@@ -106,8 +123,16 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSu
               style={{ display: 'none' }}
               accept="application/pdf"
               onChange={(e) => {
-                if (e.target.files?.length) {
-                  setSelectedFileName(e.target.files[0].name);
+                const file = e.target.files?.[0];
+                if (file) {
+                  if (file.size > 6 * 1024 * 1024) {
+                    setClientError('File size must be less than 6MB');
+                    setSelectedFileName(null);
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                  } else {
+                    setClientError(null);
+                    setSelectedFileName(file.name);
+                  }
                 }
               }}
             />

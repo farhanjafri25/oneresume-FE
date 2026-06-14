@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useActionState, useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
 import Button from '@/components/Button/Button';
@@ -8,20 +8,36 @@ import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
 export default function UploadStep({ patch, next }: StepProps) {
-  const [formState, formAction, isPending] = useActionState(uploadResumeAction, null);
+  const [isPending, setIsPending] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const s = formState as { success?: boolean; resumeId?: string; slug?: string } | null;
-    if (s?.success && s.resumeId) {
-      patch({ resumeId: s.resumeId, slug: s.slug ?? null });
-      next();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState]);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (clientError || isPending || !selectedFileName) return;
 
-  const error = (formState as { error?: string } | null)?.error;
+    setIsPending(true);
+    setClientError(null);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const res = await uploadResumeAction(null, formData);
+
+      if (res?.error) {
+        setClientError(res.error);
+      } else if (res?.success && res?.resumeId) {
+        patch({ resumeId: res.resumeId, slug: res.slug ?? null });
+        next();
+      }
+    } catch (err: any) {
+      console.error('Action failed:', err);
+      setClientError('File upload failed. The file might be too large, Max file size is 6mb.');
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const error = clientError;
 
   return (
     <div className={styles.card}>
@@ -31,7 +47,7 @@ export default function UploadStep({ patch, next }: StepProps) {
         track. Start with your most recent CV &mdash; PDF only, max file size 6MB.
       </p>
 
-      <form action={formAction}>
+      <form onSubmit={handleSubmit}>
         <div
           className={styles.dropzone}
           onClick={() => !isPending && fileInputRef.current?.click()}
@@ -44,7 +60,17 @@ export default function UploadStep({ patch, next }: StepProps) {
             style={{ display: 'none' }}
             accept="application/pdf"
             onChange={(e) => {
-              if (e.target.files?.length) setSelectedFileName(e.target.files[0].name);
+              const file = e.target.files?.[0];
+              if (file) {
+                if (file.size > 6 * 1024 * 1024) {
+                  setClientError('File size must be less than 6MB');
+                  setSelectedFileName(null);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
+                } else {
+                  setClientError(null);
+                  setSelectedFileName(file.name);
+                }
+              }
             }}
           />
           <div className={styles.dropzoneIcon}><CloudArrowUp size={22} /></div>

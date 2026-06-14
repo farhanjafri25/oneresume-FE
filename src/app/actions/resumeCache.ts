@@ -1,4 +1,4 @@
-import { refresh, revalidatePath } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 
 export function refreshResumeSurfaces(resumeId?: string) {
   revalidatePath('/dashboard', 'layout');
@@ -6,5 +6,4 @@ export function refreshResumeSurfaces(resumeId?: string) {
   if (resumeId) {
     revalidatePath(`/dashboard/resume/${resumeId}`);
   }
-  refresh();
 }

@@ -69,7 +69,13 @@ export default function ShareStep({ state, user }: StepProps) {
     setNavigating(true);
     clearOnboarding();
     try {
-      await completeOnboardingAction({ redirectTo });
+      const res = await completeOnboardingAction();
+      if (res.error) {
+        throw new Error(res.error);
+      }
+      // Use window.location for hard redirect to clear onboarding state completely, or Next.js router.
+      // Since we don't have router imported, we can just use window.location.assign.
+      window.location.assign(redirectTo);
     } catch (err) {
       console.error('Failed to complete onboarding:', err);
       toast.error("Couldn't open your dashboard. Please try again.");
