@@ -140,16 +140,18 @@ export async function resendOtpAction(email: string) {
   }
 }
 
-export async function loginWithGoogle(googleToken: string, isSignUp = false) {
+export async function loginWithGoogle(googleToken: string) {
   if (!googleToken) {
     return { error: 'Google token is required' };
   }
 
   try {
+    // Google auth always upserts: signs the user in if they exist, or creates
+    // an account if they don't. No sign-in vs sign-up distinction.
     const res = await fetch(`${API_URL}/auth/google`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ googleToken, isSignUp }),
+      body: JSON.stringify({ googleToken }),
     });
 
     if (!res.ok) {
