@@ -28,7 +28,7 @@ export default function UploadStep({ patch, next }: StepProps) {
       <h2 className={styles.title}>Welcome — upload your CV</h2>
       <p className={styles.subtitle}>
         In about a minute you&apos;ll get an instant ATS score and a shareable link you can
-        track. Start with your most recent CV &mdash; PDF only, up to 2MB.
+        track. Start with your most recent CV &mdash; PDF only, max file size 6MB.
       </p>
 
       <form action={formAction}>
@@ -55,7 +55,7 @@ export default function UploadStep({ patch, next }: StepProps) {
               ? `Selected: ${selectedFileName}`
               : 'Click to browse or drag and drop your resume'}
           </h3>
-          <p className={styles.dropzoneDesc}>PDF only up to 2MB</p>
+          <p className={styles.dropzoneDesc}>PDF only, max file size 6MB</p>
         </div>
 
         {error && (
