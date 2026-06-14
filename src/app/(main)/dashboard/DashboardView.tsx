@@ -9,6 +9,7 @@ import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import { Plus } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
+import { getDefaultVariant, getLatestVersion } from '@/lib/versions';
 
 interface DashboardViewProps {
   user: User;
@@ -48,34 +49,34 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
       </header>
 
       <div className={styles.grid}>
-        {resumes.map((resume, resumeIndex) => (
-          resume.variants?.filter((variant) => variant.slug === 'default').map((variant) => {
-            const latestVersion = variant.versions && variant.versions.length > 0 ? variant.versions[0] : null;
-            const pdfUrl = latestVersion ? latestVersion.fileUrl : undefined;
-            const publicUrl = `/${user.username}/${resume.slug}`;
-            const meta = latestVersion
-              ? `v${latestVersion.versionNumber} · ${formatUTCDate(resume.createdAt)}`
-              : formatUTCDate(resume.createdAt);
-            return (
-              <ResumeCard
-                key={variant.id}
-                index={resumeIndex}
-                id={resume.id}
-                title={resume.title}
-                meta={meta}
-                status={latestVersion ? undefined : { label: 'No PDF', tone: 'warn' }}
-                pdfUrl={pdfUrl}
-                publicUrl={publicUrl}
-                detailHref={`/dashboard/resume/${resume.id}`}
-                onReplaceClick={() => {
-                  setSelectedResumeId(resume.id);
-                  setSelectedVariantId(variant.id);
-                  setIsUploadOpen(true);
-                }}
-              />
-            );
-          })
-        ))}
+        {resumes.map((resume, resumeIndex) => {
+          const variant = getDefaultVariant(resume.variants);
+          if (!variant) return null;
+          const latestVersion = getLatestVersion(variant.versions);
+          const pdfUrl = latestVersion ? latestVersion.fileUrl : undefined;
+          const publicUrl = `/${user.username}/${resume.slug}`;
+          const meta = latestVersion
+            ? `v${latestVersion.versionNumber} · ${formatUTCDate(resume.createdAt)}`
+            : formatUTCDate(resume.createdAt);
+          return (
+            <ResumeCard
+              key={variant.id}
+              index={resumeIndex}
+              id={resume.id}
+              title={resume.title}
+              meta={meta}
+              status={latestVersion ? undefined : { label: 'No PDF', tone: 'warn' }}
+              pdfUrl={pdfUrl}
+              publicUrl={publicUrl}
+              detailHref={`/dashboard/resume/${resume.id}`}
+              onReplaceClick={() => {
+                setSelectedResumeId(resume.id);
+                setSelectedVariantId(variant.id);
+                setIsUploadOpen(true);
+              }}
+            />
+          );
+        })}
 
         {resumes.length === 0 && (
           <motion.div

@@ -6,6 +6,7 @@ import { Sparkle, Link as LinkIcon, ArrowSquareOut, Plus } from '@phosphor-icons
 import { toast } from 'sonner';
 import Button from '@/components/Button/Button';
 import { Resume, Variant } from '@/types';
+import { getLatestVersion } from '@/lib/versions';
 import styles from '../ResumeDetailView.module.css';
 
 interface VariantsSectionProps {
@@ -43,7 +44,7 @@ export default function VariantsSection({ resume, username, variants }: Variants
   return (
     <div className={styles.variantList}>
       {variants.map((variant) => {
-        const latest = variant.versions && variant.versions.length > 0 ? variant.versions[0] : null;
+        const latest = getLatestVersion(variant.versions);
         const publicUrl = `/${username}/${resume.slug}/${variant.slug}`;
         return (
           <div key={variant.id} className={styles.variantRow}>

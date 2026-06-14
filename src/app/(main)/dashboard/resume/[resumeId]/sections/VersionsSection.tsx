@@ -5,6 +5,7 @@ import { Link as LinkIcon, ArrowSquareOut, Clock, UploadSimple } from '@phosphor
 import { toast } from 'sonner';
 import Button from '@/components/Button/Button';
 import { Version } from '@/types';
+import { sortVersionsDesc } from '@/lib/versions';
 import styles from '../ResumeDetailView.module.css';
 
 interface VersionsSectionProps {
@@ -35,6 +36,11 @@ export default function VersionsSection({
   resumeSlug,
   onUploadClick,
 }: VersionsSectionProps) {
+  // Sort defensively so the timeline + "Active" badge are correct regardless of
+  // the order the caller/API supplies. Latest = highest versionNumber.
+  const sortedVersions = sortVersionsDesc(versions);
+  const latestVersionNumber = sortedVersions[0]?.versionNumber;
+
   const copyLink = (versionNumber: number) => {
     const url = `${window.location.origin}/${username}/${resumeSlug}/v${versionNumber}`;
     navigator.clipboard
@@ -53,7 +59,7 @@ export default function VersionsSection({
         </Button>
       </div>
 
-      {versions.length === 0 ? (
+      {sortedVersions.length === 0 ? (
         <div className={styles.emptyState}>
           <Clock size={40} className={styles.emptyIcon} />
           <h3 className={styles.emptyTitle}>No versions found</h3>
@@ -61,8 +67,8 @@ export default function VersionsSection({
         </div>
       ) : (
         <div className={styles.timeline}>
-          {versions.map((version, index) => {
-            const isLatest = index === 0;
+          {sortedVersions.map((version) => {
+            const isLatest = version.versionNumber === latestVersionNumber;
             return (
               <div key={version.id} className={styles.versionRow}>
                 <div className={styles.dotContainer}>

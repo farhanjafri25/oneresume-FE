@@ -4,18 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Link, ArrowSquareOut, Clock, X, CircleNotch } from '@phosphor-icons/react/dist/ssr';
 import styles from './VersionsModal.module.css';
-import { Resume } from '@/types';
+import { Resume, Variant } from '@/types';
 import { getResumeVariantsAction } from '@/app/actions/resume';
+import { getDefaultVariant, sortVersionsDesc } from '@/lib/versions';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
-
-interface Version {
-  id: string;
-  versionNumber: number;
-  fileUrl: string;
-  publicId: string;
-  createdAt: string;
-}
+import { Version } from '@/types';
 
 interface VersionsModalProps {
   isOpen: boolean;
@@ -38,11 +32,11 @@ export default function VersionsModal({ isOpen, onClose, resume, username }: Ver
       setLoading(true);
       try {
         const result = await getResumeVariantsAction(resumeId);
-        const variants: { slug: string; versions?: Version[] }[] = Array.isArray(result) ? result : [];
-        const defaultVariant = variants.find((variant) => variant.slug === 'default') || variants[0];
+        const variants: Variant[] = Array.isArray(result) ? result : [];
+        const defaultVariant = getDefaultVariant(variants);
 
         if (!cancelled) {
-          setFetchedVersions(defaultVariant?.versions || []);
+          setFetchedVersions(sortVersionsDesc(defaultVariant?.versions));
           setFetchedResumeId(resumeId);
         }
       } catch (err) {

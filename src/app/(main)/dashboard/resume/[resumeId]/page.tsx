@@ -1,6 +1,6 @@
 import React from 'react';
 import { notFound, redirect } from 'next/navigation';
-import { getMe, getResumes } from '@/lib/api';
+import { getMe, getResumes, getResumeVariants } from '@/lib/api';
 import { getResumeAnalyticsAction } from '@/app/actions/resume';
 import { SetActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import ResumeDetailView from './ResumeDetailView';
@@ -33,17 +33,28 @@ export default async function ResumeDetailPage({
     notFound();
   }
 
-  // Per-resume analytics power the Overview quick-stats and the Analytics tab.
-  // Returns `{ error }` on failure — treat that as "no data" rather than crashing.
-  const analyticsData = await getResumeAnalyticsAction(resumeId);
+  // The `/resumes` list payload only carries the latest version per variant, so
+  // fetch full variant history here (in parallel with analytics) for the Versions
+  // tab. Falls back to the list's truncated variants if the call fails.
+  const [analyticsData, variants] = await Promise.all([
+    // Per-resume analytics power the Overview quick-stats and the Analytics tab.
+    // Returns `{ error }` on failure — treat that as "no data" rather than crashing.
+    getResumeAnalyticsAction(resumeId),
+    getResumeVariants(resumeId).catch((err) => {
+      console.error('Failed to load resume variants:', err);
+      return null;
+    }),
+  ]);
   const analytics = analyticsData && !analyticsData.error ? analyticsData : null;
+  const resumeWithVariants =
+    variants && variants.length > 0 ? { ...resume, variants } : resume;
 
   return (
     <>
       <SetActiveResume id={resume.id} />
       <ResumeDetailView
         user={user}
-        resume={resume}
+        resume={resumeWithVariants}
         analytics={analytics}
         initialTab={tab}
         welcome={welcome === '1'}
