@@ -162,8 +162,9 @@
 
 .statRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
+  width: 100%;
 }
 
 .statCard {
@@ -442,6 +443,10 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
+}
+
+.chartWrap {
+  width: 100%;
 }
 
 /* ── Shared empty state ───────────────────────────────────── */

@@ -3,6 +3,7 @@
 import React from 'react';
 import { ChartBar, ArrowRight } from '@phosphor-icons/react/dist/ssr';
 import Button from '@/components/Button/Button';
+import AnalyticsChart from '../../../analytics/[resumeId]/AnalyticsChart';
 import type { AnalyticsData } from '../ResumeDetailView';
 import styles from '../ResumeDetailView.module.css';
 
@@ -21,6 +22,7 @@ export default function AnalyticsSection({ analytics, resumeId }: AnalyticsSecti
   const tablet = summary?.tablet ?? 0;
   const deviceTotal = desktop + mobile + tablet || 1;
   const desktopPct = Math.round((desktop / deviceTotal) * 100);
+  const timeline = analytics?.timeline ?? [];
 
   if (!analytics || totalViews === 0) {
     return (
@@ -56,6 +58,12 @@ export default function AnalyticsSection({ analytics, resumeId }: AnalyticsSecti
           <span className={styles.statLabel}>Desktop</span>
         </div>
       </div>
+
+      {timeline.length > 0 && (
+        <div className={styles.chartWrap}>
+          <AnalyticsChart timeline={timeline} />
+        </div>
+      )}
 
       <Button href={`/dashboard/analytics/${resumeId}`} variant="secondary">
         View full analytics

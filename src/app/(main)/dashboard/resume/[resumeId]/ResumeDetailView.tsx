@@ -15,6 +15,7 @@ import {
   Copy,
 } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
+import { getDefaultVariant, getLatestVersion, sortVersionsDesc } from '@/lib/versions';
 import { deleteResumeAction } from '@/app/actions/resume';
 import { celebrate } from '@/lib/confetti';
 import Button from '@/components/Button/Button';
@@ -80,13 +81,13 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab, 
   const [isDeleting, setIsDeleting] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  const defaultVariant = resume.variants?.find((v) => v.slug === 'default') ?? resume.variants?.[0];
-  const latestVersion =
-    defaultVariant?.versions && defaultVariant.versions.length > 0 ? defaultVariant.versions[0] : null;
+  const defaultVariant = getDefaultVariant(resume.variants);
+  const versions = sortVersionsDesc(defaultVariant?.versions);
+  const latestVersion = getLatestVersion(defaultVariant?.versions);
   const pdfUrl = latestVersion?.fileUrl;
   const hasPdf = Boolean(pdfUrl && pdfUrl !== '#');
   const publicUrl = `/${user.username}/${resume.slug}`;
-  const tailoredVariants = (resume.variants ?? []).filter((v) => v.slug !== 'default');
+  const tailoredVariants = (resume.variants ?? []).filter((v) => v.id !== defaultVariant?.id);
 
   useEffect(() => {
     if (!showMenu) return;
@@ -294,7 +295,7 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab, 
         )}
         {activeTab === 'versions' && (
           <VersionsSection
-            versions={defaultVariant?.versions ?? []}
+            versions={versions}
             username={user.username}
             resumeSlug={resume.slug}
             onUploadClick={() => setIsUploadOpen(true)}
