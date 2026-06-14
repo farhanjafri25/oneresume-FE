@@ -57,7 +57,7 @@ export default function OnboardingHeader({ user, railIndex }: OnboardingHeaderPr
             title={user.username}
           >
             <img
-              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random`}
+              src={user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random`}
               alt="User avatar"
             />
           </button>

@@ -8,6 +8,7 @@ export interface User {
    */
   name?: string | null;
   createdAt: string;
+  avatarUrl?: string | null;
   /**
    * When the user finished onboarding (server source of truth). Survives cookie
    * clears and DB deletion. `undefined` = backend doesn't expose it yet (frontend

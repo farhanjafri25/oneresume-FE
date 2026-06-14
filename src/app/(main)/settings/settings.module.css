@@ -54,16 +54,33 @@
   border: 2px solid var(--surface);
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .profileInfo h2 {
   font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 4px;
+}
+
+.proBadge {
+  background: var(--primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  line-height: 1.5;
 }
 
 .profileInfo p {
   font-size: 14px;
   color: var(--text-tertiary);
+  margin-top: 4px;
 }
 
 .detailsGrid {
