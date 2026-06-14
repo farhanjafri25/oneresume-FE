@@ -53,7 +53,7 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSu
       }
     } catch (err: any) {
       console.error('Action failed:', err);
-      setClientError('File upload failed. The file might be too large max file size is 6mb.');
+      setClientError('File upload failed. The file might be too large max file size is 4mb.');
     } finally {
       setIsPending(false);
     }
@@ -125,8 +125,8 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSu
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  if (file.size > 6 * 1024 * 1024) {
-                    setClientError('File size must be less than 6MB');
+                  if (file.size > 4 * 1024 * 1024) {
+                    setClientError('File size must be less than 4MB');
                     setSelectedFileName(null);
                     if (fileInputRef.current) fileInputRef.current.value = '';
                   } else {
@@ -146,7 +146,7 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSu
                 ? `Selected: ${selectedFileName}`
                 : 'Click to browse or drag and drop your resume'}
             </h3>
-            <p className={styles.dropzoneDesc}>PDF only, max file size 6MB</p>
+            <p className={styles.dropzoneDesc}>PDF only, max file size 4MB</p>
 
             <Button
               variant="secondary"
