@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Link as LinkIcon, ArrowSquareOut, Clock, UploadSimple } from '@phosphor-icons/react/dist/ssr';
+import { toast } from 'sonner';
 import Button from '@/components/Button/Button';
 import { Version } from '@/types';
 import styles from '../ResumeDetailView.module.css';
@@ -11,7 +12,6 @@ interface VersionsSectionProps {
   username: string;
   resumeSlug: string;
   onUploadClick: () => void;
-  onCopied: (message: string) => void;
 }
 
 function formatDate(dateStr: string | Date) {
@@ -34,14 +34,13 @@ export default function VersionsSection({
   username,
   resumeSlug,
   onUploadClick,
-  onCopied,
 }: VersionsSectionProps) {
   const copyLink = (versionNumber: number) => {
     const url = `${window.location.origin}/${username}/${resumeSlug}/v${versionNumber}`;
     navigator.clipboard
       .writeText(url)
-      .then(() => onCopied(`Copied link for Version ${versionNumber}!`))
-      .catch((err) => console.error('Failed to copy:', err));
+      .then(() => toast.success(`Copied link for Version ${versionNumber}!`))
+      .catch(() => toast.error("Couldn't copy link. Please try again."));
   };
 
   return (

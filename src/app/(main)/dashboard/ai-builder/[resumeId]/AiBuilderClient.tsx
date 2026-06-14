@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Sparkle, ArrowLeft, Briefcase, GraduationCap, CheckCircle, WarningCircle, PaperPlaneTilt, FloppyDisk, DownloadSimple, ArrowSquareOut, CaretRight, User, Wrench, Link, Eye } from '@phosphor-icons/react/dist/ssr';
+import { toast } from 'sonner';
 import { tailorResumeAction, createVariantAction, getThemesAction, previewResumeAction } from '@/app/actions/ai';
 import Button from '@/components/Button/Button';
 import styles from './AiBuilder.module.css';
@@ -76,15 +77,20 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
   const [previewHtml, setPreviewHtml] = useState<string>('');
   const [previewLoading, setPreviewLoading] = useState(false);
 
-  // Load available themes from backend on startup
+  // Load available themes from backend on startup. A failure here shouldn't block
+  // the JD form with a red alert — surface it as a toast and leave the grid empty.
   useEffect(() => {
-    getThemesAction().then((res) => {
-      if (res && res.error) {
-        setError(res.error);
-      } else {
-        setThemes(res);
-      }
-    });
+    getThemesAction()
+      .then((res) => {
+        if (res && res.error) {
+          toast.error("Couldn't load themes. Please refresh and try again.");
+        } else {
+          setThemes(res);
+        }
+      })
+      .catch(() => {
+        toast.error("Couldn't load themes. Please refresh and try again.");
+      });
   }, []);
 
   // Pre-fill JD if navigated from AI Match Reviewer
@@ -103,9 +109,12 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
       const res = await previewResumeAction(themeId, data);
       if (!res.error && res.html) {
         setPreviewHtml(res.html);
+      } else {
+        toast.error("Couldn't generate the layout preview. Please try again.");
       }
     } catch (err) {
       console.error('Failed to update layout preview:', err);
+      toast.error("Couldn't generate the layout preview. Please try again.");
     } finally {
       setPreviewLoading(false);
     }

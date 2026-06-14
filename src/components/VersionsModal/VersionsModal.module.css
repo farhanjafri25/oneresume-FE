@@ -189,28 +189,6 @@
   margin-bottom: 8px;
 }
 
-.toast {
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  background: #22c55e;
-  color: #ffffff;
-  padding: 12px 24px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: var(--shadow-lg);
-  z-index: 1100;
-  /* enter/exit handled by motion (slideUp variant) */
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.toastIcon {
-  flex-shrink: 0;
-}
-
 .spin {
   animation: spin 1s linear infinite;
 }
@@ -276,12 +254,5 @@
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-  }
-
-  .toast {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    justify-content: center;
   }
 }

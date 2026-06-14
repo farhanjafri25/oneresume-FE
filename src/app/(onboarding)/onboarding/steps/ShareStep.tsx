@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { toast } from 'sonner';
 import {
   ArrowRight,
   Brain,
@@ -13,13 +14,12 @@ import {
 } from '@phosphor-icons/react/dist/ssr';
 import { completeOnboardingAction } from '@/app/actions/onboarding';
 import { buildTrackedLink, clearOnboarding } from '@/lib/onboarding';
-import { fadeUp, slideUp, staggerContainer } from '@/lib/motion';
+import { fadeUp, staggerContainer } from '@/lib/motion';
 import Button from '@/components/Button/Button';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
 export default function ShareStep({ state, user }: StepProps) {
-  const [toast, setToast] = useState<string | null>(null);
   const [navigating, setNavigating] = useState(false);
 
   const publicLink = buildTrackedLink(user.username, state.slug ?? '');
@@ -53,26 +53,28 @@ export default function ShareStep({ state, user }: StepProps) {
     },
   ];
 
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(t);
-  }, [toast]);
-
   const copy = () => {
     navigator.clipboard
       .writeText(publicLink)
-      .then(() => setToast('Link copied to clipboard!'))
-      .catch(() => {});
+      .then(() => toast.success('Link copied to clipboard!'))
+      .catch(() => toast.error("Couldn't copy link. Please try again."));
   };
 
   // Persists onboarding completion server-side and then server-redirects. Both
   // the CTA and the feature tiles route through here so onboarding is always
-  // marked complete (and local state cleared) before leaving this step.
-  const goTo = (redirectTo: string) => {
+  // marked complete (and local state cleared) before leaving this step. If the
+  // completion call fails, surface it and let the user retry rather than leaving
+  // them stuck on a spinning button.
+  const goTo = async (redirectTo: string) => {
     setNavigating(true);
     clearOnboarding();
-    completeOnboardingAction({ redirectTo });
+    try {
+      await completeOnboardingAction({ redirectTo });
+    } catch (err) {
+      console.error('Failed to complete onboarding:', err);
+      toast.error("Couldn't open your dashboard. Please try again.");
+      setNavigating(false);
+    }
   };
 
   return (
@@ -133,15 +135,6 @@ export default function ShareStep({ state, user }: StepProps) {
           {navigating ? 'Opening dashboard…' : 'Go to dashboard'}
         </Button>
       </div>
-
-      <AnimatePresence>
-        {toast && (
-          <motion.div className={styles.toast} variants={slideUp} initial="hidden" animate="visible" exit="exit">
-            <CheckCircle size={16} style={{ color: 'var(--primary)' }} />
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

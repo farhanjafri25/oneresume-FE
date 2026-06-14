@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Sparkle, Link as LinkIcon, ArrowSquareOut, Plus } from '@phosphor-icons/react/dist/ssr';
+import { toast } from 'sonner';
 import Button from '@/components/Button/Button';
 import { Resume, Variant } from '@/types';
 import styles from '../ResumeDetailView.module.css';
@@ -11,16 +12,15 @@ interface VariantsSectionProps {
   resume: Resume;
   username: string;
   variants: Variant[];
-  onCopied: (message: string) => void;
 }
 
-export default function VariantsSection({ resume, username, variants, onCopied }: VariantsSectionProps) {
+export default function VariantsSection({ resume, username, variants }: VariantsSectionProps) {
   const copyLink = (variantSlug: string) => {
     const url = `${window.location.origin}/${username}/${resume.slug}/${variantSlug}`;
     navigator.clipboard
       .writeText(url)
-      .then(() => onCopied(`Link for "${variantSlug}" copied to clipboard!`))
-      .catch((err) => console.error('Failed to copy:', err));
+      .then(() => toast.success(`Link for "${variantSlug}" copied to clipboard!`))
+      .catch(() => toast.error("Couldn't copy link. Please try again."));
   };
 
   if (variants.length === 0) {
