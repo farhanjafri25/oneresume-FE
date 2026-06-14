@@ -131,12 +131,12 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab }
         </div>
 
         <div className={styles.headerActions}>
-          <Button variant="secondary" onClick={handleShare} disabled={isDeleting}>
+          <Button onClick={handleShare} disabled={isDeleting}>
             <ShareNetwork size={16} />
             Share
           </Button>
           {hasPdf && (
-            <Button href={pdfUrl as string} target="_blank" rel="noopener noreferrer">
+            <Button variant="secondary" href={pdfUrl as string} target="_blank" rel="noopener noreferrer">
               <DownloadSimple size={16} />
               Open PDF
             </Button>
