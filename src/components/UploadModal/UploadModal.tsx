@@ -12,9 +12,13 @@ interface UploadModalProps {
   onClose: () => void;
   resumeId?: string;
   variantId?: string;
+  /** Called on a successful upload with the action result. When provided, the
+   *  parent owns what happens next (e.g. navigate to a newly created resume);
+   *  otherwise the modal just closes. */
+  onSuccess?: (result: { resumeId?: string; slug?: string }) => void;
 }
 
-export default function UploadModal({ isOpen, onClose, resumeId, variantId }: UploadModalProps) {
+export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSuccess }: UploadModalProps) {
   const [state, formAction, isPending] = useActionState(uploadResumeAction, null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,9 +26,13 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId }: Up
   useEffect(() => {
     if (state?.success) {
       setSelectedFileName(null);
-      onClose();
+      if (onSuccess) {
+        onSuccess({ resumeId: state.resumeId, slug: state.slug });
+      } else {
+        onClose();
+      }
     }
-  }, [state, onClose]);
+  }, [state, onClose, onSuccess]);
 
   const handleClose = () => {
     setSelectedFileName(null);
