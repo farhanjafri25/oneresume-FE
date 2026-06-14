@@ -119,9 +119,6 @@
 
 /* ── Tabs + section shell ─────────────────────────────────── */
 .tabsRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   margin-bottom: 28px;
 }
 
@@ -563,14 +560,7 @@
     font-size: 25px;
   }
 
-  /* Switcher stacks full-width above the tabs; the tab bar scrolls
-     horizontally if all four tabs don't fit. */
-  .tabsRow {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
+  /* The tab bar scrolls horizontally if all four tabs don't fit. */
   .tabsScroll {
     width: 100%;
     overflow-x: auto;

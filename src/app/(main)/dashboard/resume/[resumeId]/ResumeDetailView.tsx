@@ -16,7 +16,6 @@ import { deleteResumeAction } from '@/app/actions/resume';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
 import Tabs from '@/components/Tabs/Tabs';
-import ResumeSwitcher from '@/components/ResumeSwitcher/ResumeSwitcher';
 import PageTransition from '@/components/motion/PageTransition';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import TrackingLinkModal from '@/components/TrackingLinkModal/TrackingLinkModal';
@@ -52,18 +51,16 @@ const TABS = [
 interface ResumeDetailViewProps {
   user: User;
   resume: Resume;
-  resumes: Resume[];
   analytics: AnalyticsData | null;
   initialTab?: string;
 }
 
-export default function ResumeDetailView({ user, resume, resumes, analytics, initialTab }: ResumeDetailViewProps) {
+export default function ResumeDetailView({ user, resume, analytics, initialTab }: ResumeDetailViewProps) {
   const router = useRouter();
   const validInitialTab = TABS.some((t) => t.id === initialTab) ? (initialTab as string) : 'overview';
 
   const [activeTab, setActiveTab] = useState(validInitialTab);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [isNewResumeOpen, setIsNewResumeOpen] = useState(false);
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -114,6 +111,7 @@ export default function ResumeDetailView({ user, resume, resumes, analytics, ini
       } else {
         toast.success('Resume deleted.');
         router.push('/dashboard');
+        router.refresh();
       }
     } catch (err) {
       console.error('Failed to delete resume:', err);
@@ -200,11 +198,6 @@ export default function ResumeDetailView({ user, resume, resumes, analytics, ini
       </header>
 
       <div className={styles.tabsRow}>
-        <ResumeSwitcher
-          resumes={resumes.map((r) => ({ id: r.id, title: r.title }))}
-          currentResumeId={resume.id}
-          onNewResume={() => setIsNewResumeOpen(true)}
-        />
         <div className={styles.tabsScroll}>
           <Tabs
             items={TABS}
@@ -248,16 +241,6 @@ export default function ResumeDetailView({ user, resume, resumes, analytics, ini
         onClose={() => setIsUploadOpen(false)}
         resumeId={resume.id}
         variantId={defaultVariant?.id}
-      />
-      <UploadModal
-        isOpen={isNewResumeOpen}
-        onClose={() => setIsNewResumeOpen(false)}
-        onSuccess={(result) => {
-          setIsNewResumeOpen(false);
-          if (result?.resumeId) {
-            router.push(`/dashboard/resume/${result.resumeId}`);
-          }
-        }}
       />
       <TrackingLinkModal
         isOpen={isTrackingOpen}

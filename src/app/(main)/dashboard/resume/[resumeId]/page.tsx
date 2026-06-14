@@ -2,6 +2,7 @@ import React from 'react';
 import { notFound, redirect } from 'next/navigation';
 import { getMe, getResumes } from '@/lib/api';
 import { getResumeAnalyticsAction } from '@/app/actions/resume';
+import { SetActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import ResumeDetailView from './ResumeDetailView';
 
 export default async function ResumeDetailPage({
@@ -38,12 +39,14 @@ export default async function ResumeDetailPage({
   const analytics = analyticsData && !analyticsData.error ? analyticsData : null;
 
   return (
-    <ResumeDetailView
-      user={user}
-      resume={resume}
-      resumes={resumes}
-      analytics={analytics}
-      initialTab={tab}
-    />
+    <>
+      <SetActiveResume id={resume.id} />
+      <ResumeDetailView
+        user={user}
+        resume={resume}
+        analytics={analytics}
+        initialTab={tab}
+      />
+    </>
   );
 }

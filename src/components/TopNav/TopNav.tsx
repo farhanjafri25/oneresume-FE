@@ -2,23 +2,36 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SignOut, Chat, Gear } from '@phosphor-icons/react/dist/ssr';
 import { logoutUser } from '@/app/actions/auth';
-import { User } from '@/types';
+import { Resume, User } from '@/types';
+import { getMostRecentResume } from '@/lib/resume-utils';
+import { useActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import Tabs from '@/components/Tabs/Tabs';
+import ResumeSwitcher from '@/components/ResumeSwitcher/ResumeSwitcher';
+import UploadModal from '@/components/UploadModal/UploadModal';
 import styles from './TopNav.module.css';
 
-const NAV_TABS = [
-  { id: 'resumes', label: 'Resumes', href: '/dashboard' },
-  { id: 'analytics', label: 'Analytics', href: '/dashboard/analytics' },
+// Top-level header tabs. Each entry owns its own active predicate so adding a
+// future section (beside Analytics) is a one-line change with no special-casing.
+const HEADER_TABS = [
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    href: '/dashboard/analytics',
+    isActive: (p: string) => p === '/dashboard/analytics' || p.startsWith('/dashboard/analytics/'),
+  },
 ];
 
 const FEEDBACK_URL = 'https://dlke0c2pw6g.typeform.com/to/RSXJXaMJ';
 
-export default function TopNav({ user }: { user?: User }) {
+export default function TopNav({ user, resumes = [] }: { user?: User; resumes?: Resume[] }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const activeResumeId = useActiveResume();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNewResumeOpen, setIsNewResumeOpen] = useState(false);
 
   const closeMenu = () => setIsProfileOpen(false);
 
@@ -35,23 +48,21 @@ export default function TopNav({ user }: { user?: User }) {
     return () => document.removeEventListener('mousedown', handleDocumentClick);
   }, [isProfileOpen]);
 
-  // Analytics owns its index and the per-resume drill-down (/dashboard/analytics/[id]).
-  // Resumes owns exactly /dashboard. Test the analytics prefix first so the
-  // drill-down doesn't fall through to Resumes.
-  const activeTab =
-    pathname === '/dashboard/analytics' || pathname.startsWith('/dashboard/analytics/')
-      ? 'analytics'
-      : pathname === '/dashboard'
-        ? 'resumes'
-        : undefined;
+  const activeTab = HEADER_TABS.find((t) => t.isActive(pathname))?.id;
 
-  // The tabs only mean something on the routes they point to. On deeper pages
-  // (e.g. the AI Match Reviewer) neither tab is active, so on mobile — where the
-  // tabs occupy a prominent full-width row — we hide them entirely.
-  const showTabs = Boolean(activeTab);
+  // Which resume the switcher reflects. Prefer the page's own declaration
+  // (context), fall back to any known resume id embedded in the URL — so new
+  // per-resume routes resolve without a hardcoded prefix list — and finally to
+  // the most recently touched resume on pages that have no resume of their own.
+  const currentResumeId =
+    activeResumeId ??
+    resumes.find((r) => pathname.split('/').includes(r.id))?.id ??
+    getMostRecentResume(resumes)?.id;
+
+  const showSwitcher = Boolean(user && resumes.length > 0 && currentResumeId);
 
   return (
-    <nav className={`${styles.container}${showTabs ? '' : ` ${styles.noTabs}`}`}>
+    <nav className={styles.container}>
       <div className={`${styles.left} ${styles.flat}`}>
         <Link href="/" className={styles.logo} onClick={closeMenu}>
           <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
@@ -59,15 +70,23 @@ export default function TopNav({ user }: { user?: User }) {
       </div>
 
       {user && (
-        <Tabs
-          items={NAV_TABS}
-          activeId={activeTab}
-          onTabClick={closeMenu}
-          variant="frosted"
-          fill="mobile"
-          className={styles.tabs}
-          ariaLabel="Primary"
-        />
+        <div className={styles.centerGroup}>
+          {showSwitcher && (
+            <ResumeSwitcher
+              resumes={resumes.map((r) => ({ id: r.id, title: r.title }))}
+              currentResumeId={currentResumeId as string}
+              onNewResume={() => setIsNewResumeOpen(true)}
+            />
+          )}
+          <Tabs
+            items={HEADER_TABS}
+            activeId={activeTab}
+            onTabClick={closeMenu}
+            variant="frosted"
+            fill="never"
+            ariaLabel="Primary"
+          />
+        </div>
       )}
 
       <div className={`${user ? styles.right : styles.rightPublic} ${styles.flat}`}>
@@ -124,6 +143,18 @@ export default function TopNav({ user }: { user?: User }) {
           <Link href="/login" className={styles.link} onClick={closeMenu}>Sign In</Link>
         )}
       </div>
+
+      <UploadModal
+        isOpen={isNewResumeOpen}
+        onClose={() => setIsNewResumeOpen(false)}
+        onSuccess={(result) => {
+          setIsNewResumeOpen(false);
+          if (result?.resumeId) {
+            router.refresh();
+            router.push(`/dashboard/resume/${result.resumeId}`);
+          }
+        }}
+      />
     </nav>
   );
 }

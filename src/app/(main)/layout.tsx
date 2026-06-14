@@ -1,8 +1,10 @@
 import React from 'react';
 import TopNav from '@/components/TopNav/TopNav';
+import { ActiveResumeProvider } from '@/components/ActiveResume/ActiveResumeContext';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getMe } from '@/lib/api';
+import { getMe, getResumes } from '@/lib/api';
+import type { Resume } from '@/types';
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
@@ -29,12 +31,21 @@ export default async function MainLayout({ children }: { children: React.ReactNo
     redirect('/onboarding');
   }
 
+  // Powers the header resume switcher. Request-deduped with the per-page
+  // getResumes() via Next's fetch cache, so this adds no extra round-trip.
+  let resumes: Resume[] = [];
+  try {
+    resumes = await getResumes();
+  } catch (err) {
+    console.error('MainLayout getResumes failed:', err);
+  }
+
   return (
-    <>
-      <TopNav user={user} />
+    <ActiveResumeProvider>
+      <TopNav user={user} resumes={resumes} />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {children}
       </main>
-    </>
+    </ActiveResumeProvider>
   );
 }

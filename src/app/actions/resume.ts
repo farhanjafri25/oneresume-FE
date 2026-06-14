@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { revalidatePath } from 'next/cache';
+import { refreshResumeSurfaces } from './resumeCache';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -25,8 +25,7 @@ export async function deleteResumeAction(resumeId: string) {
       return { error: 'Failed to delete resume' };
     }
 
-    revalidatePath('/dashboard');
-    revalidatePath(`/dashboard/resume/${resumeId}`);
+    refreshResumeSurfaces(resumeId);
     return { success: true };
   } catch (err) {
     console.error('Delete Resume Error:', err);
@@ -88,5 +87,4 @@ export async function getResumeVariantsAction(resumeId: string) {
     return { error: 'An unexpected error occurred while loading variants' };
   }
 }
-
 

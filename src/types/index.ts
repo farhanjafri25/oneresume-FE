@@ -44,5 +44,7 @@ export interface Resume {
   title: string;
   slug: string;
   createdAt: string;
+  /** Set once the backend tracks edits; recency logic prefers it when present. */
+  updatedAt?: string;
   variants?: Variant[];
 }

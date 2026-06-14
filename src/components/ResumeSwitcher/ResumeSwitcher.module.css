@@ -118,10 +118,11 @@
   }
 }
 
-/* Mobile: switcher is its own full-width row above the tabs. */
+/* Mobile: switcher flexes to fill the header row beside the Analytics tab. */
 @media (max-width: 768px) {
   .switcher {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
   }
   .trigger {
     width: 100%;
