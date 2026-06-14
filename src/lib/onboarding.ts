@@ -1,11 +1,10 @@
 export const ONBOARDING_SESSION_KEY = 'onecv_onboarding';
 
-export type OnboardingStepKey = 'upload' | 'score' | 'share';
+export type OnboardingStepKey = 'upload' | 'score';
 
 export const RAIL_STEPS: { key: OnboardingStepKey; label: string }[] = [
   { key: 'upload', label: 'Upload CV' },
   { key: 'score',  label: 'ATS Score' },
-  { key: 'share',  label: 'Your link' },
 ];
 
 /** Linear step sequence — single source for both navigation and the progress rail. */
@@ -30,20 +29,27 @@ export interface AiReport {
 export interface OnboardingState {
   step: OnboardingStepKey;
   resumeId: string | null;
-  /** Public slug of the uploaded resume — used to build the shareable link. */
-  slug: string | null;
   report: AiReport | null;
 }
 
 export const INITIAL_ONBOARDING: OnboardingState = {
-  step: 'upload', resumeId: null, slug: null, report: null,
+  step: 'upload', resumeId: null, report: null,
 };
 
 export function loadOnboarding(): OnboardingState {
   if (typeof window === 'undefined') return INITIAL_ONBOARDING;
   try {
     const raw = sessionStorage.getItem(ONBOARDING_SESSION_KEY);
-    return raw ? { ...INITIAL_ONBOARDING, ...JSON.parse(raw) } : INITIAL_ONBOARDING;
+    if (!raw) return INITIAL_ONBOARDING;
+
+    const parsed = JSON.parse(raw) as Partial<Omit<OnboardingState, 'step'>> & { step?: string };
+    const loaded = { ...INITIAL_ONBOARDING, ...parsed };
+    if (parsed.step === 'share') {
+      return { ...loaded, step: 'score' };
+    }
+    return parsed.step && STEP_ORDER.includes(parsed.step as OnboardingStepKey)
+      ? { ...loaded, step: parsed.step as OnboardingStepKey }
+      : INITIAL_ONBOARDING;
   } catch { return INITIAL_ONBOARDING; }
 }
 
@@ -55,12 +61,6 @@ export function saveOnboarding(state: OnboardingState): void {
 export function clearOnboarding(): void {
   if (typeof window === 'undefined') return;
   try { sessionStorage.removeItem(ONBOARDING_SESSION_KEY); } catch {}
-}
-
-/** Public shareable link to the user's resume. */
-export function buildTrackedLink(username: string, slug: string): string {
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  return `${origin}/${username}/${slug}`;
 }
 
 // Score helpers (single source of truth — AiReviewClient & ScoreGauge both import these).

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ChartBar, Globe, Eye, DownloadSimple, ShieldWarning, Medal } from '@phosphor-icons/react/dist/ssr';
+import { ArrowLeft, ChartBar, Globe, Eye, DownloadSimple, ShieldWarning } from '@phosphor-icons/react/dist/ssr';
 import { getResumeAnalyticsAction } from '@/app/actions/resume';
 import { SetActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import styles from './Analytics.module.css';
@@ -38,13 +38,10 @@ function getFlagEmoji(countryCode: string | null): string {
 
 export default async function ResumeAnalyticsPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ resumeId: string }>;
-  searchParams: Promise<{ welcome?: string }>;
 }) {
   const { resumeId } = await params;
-  const { welcome } = await searchParams;
 
   // Fetch metrics from backend using Server Action
   const analyticsData = await getResumeAnalyticsAction(resumeId);
@@ -98,29 +95,6 @@ export default async function ResumeAnalyticsPage({
         <h1 className={styles.title}>Resume Insights</h1>
         <p className={styles.subtitle}>Track recruiter activity and engagement metrics below.</p>
       </header>
-
-      {welcome && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '14px 18px',
-            marginBottom: '24px',
-            borderRadius: '12px',
-            border: '1px solid var(--primary)',
-            background: 'color-mix(in srgb, var(--primary) 8%, transparent)',
-            color: 'var(--text-primary)',
-            fontSize: '14px',
-          }}
-        >
-          <Medal size={18} style={{ color: 'var(--primary)', flexShrink: 0 }} />
-          <span>
-            You&apos;re all set! This is your analytics home. Share your link with recruiters and
-            their views will start showing up right here.
-          </span>
-        </div>
-      )}
 
       {/* Summary Scorecards */}
       <StaggerContainer className={styles.statsGrid}>

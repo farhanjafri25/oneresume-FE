@@ -26,7 +26,7 @@ export default function UploadStep({ patch, next }: StepProps) {
       if (res?.error) {
         setClientError(res.error);
       } else if (res?.success && res?.resumeId) {
-        patch({ resumeId: res.resumeId, slug: res.slug ?? null });
+        patch({ resumeId: res.resumeId });
         next();
       }
     } catch (err: any) {

@@ -2,11 +2,13 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
+import { toast } from 'sonner';
 import { WarningCircle, Pulse, Layout, Sparkle, Phone } from '@phosphor-icons/react/dist/ssr';
 import { generalScanResumeAction } from '@/app/actions/ai';
+import { completeOnboardingAction } from '@/app/actions/onboarding';
 import Button from '@/components/Button/Button';
 import ScoreGauge from '@/components/ScoreGauge/ScoreGauge';
-import { AiReport, scoreColor, scoreVerdict, scoreHeadroom } from '@/lib/onboarding';
+import { AiReport, clearOnboarding, scoreColor, scoreVerdict, scoreHeadroom } from '@/lib/onboarding';
 import { useLoadingPhases } from '@/lib/useLoadingPhases';
 import { springs, transitions } from '@/lib/motion';
 import styles from '../Onboarding.module.css';
@@ -23,11 +25,12 @@ const PHASES = [
 const TIMING = { shelf: 60, verdict: 420, metrics: 720, cta: 1000 };
 const SHELF = { initialScale: 0.96, spring: springs.smooth };
 
-export default function ScoreStep({ state, patch, next }: StepProps) {
+export default function ScoreStep({ state, patch }: StepProps) {
   const report = state.report;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stage, setStage] = useState(0);
+  const [finishing, setFinishing] = useState(false);
   const startedRef = useRef(false);
   const phase = useLoadingPhases(PHASES, loading);
 
@@ -72,6 +75,27 @@ export default function ScoreStep({ state, patch, next }: StepProps) {
     ];
     return () => timers.forEach(clearTimeout);
   }, [report]);
+
+  // Score is now the final step: mark onboarding complete server-side, clear local
+  // state, then land on the resume detail home with ?welcome=1 so it shows the
+  // one-time celebration (banner + confetti). On failure, surface and let the user
+  // retry rather than leaving them on a spinning button.
+  const finish = async () => {
+    setFinishing(true);
+    clearOnboarding();
+    try {
+      const res = await completeOnboardingAction();
+      if (res.error) throw new Error(res.error);
+      const target = state.resumeId
+        ? `/dashboard/resume/${state.resumeId}?welcome=1`
+        : '/dashboard';
+      window.location.assign(target);
+    } catch (err) {
+      console.error('Failed to complete onboarding:', err);
+      toast.error("Couldn't open your dashboard. Please try again.");
+      setFinishing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -162,8 +186,8 @@ export default function ScoreStep({ state, patch, next }: StepProps) {
         transition={transitions.base}
         style={{ justifyContent: 'flex-end' }}
       >
-        <Button onClick={next}>
-          Get my link
+        <Button onClick={finish} loading={finishing}>
+          {finishing ? 'Opening dashboard…' : 'Go to my dashboard'}
         </Button>
       </motion.div>
     </div>
