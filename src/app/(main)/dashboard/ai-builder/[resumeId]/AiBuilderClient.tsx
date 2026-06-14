@@ -101,6 +101,23 @@ const BULLET_KEYS: (keyof Experience)[] = [
   'job_bullet_5',
 ];
 
+/**
+ * Normalise a backend label to readable Title Case so ALL-CAPS theme names
+ * (e.g. "THE TECH MINIMAL") never reach the UI. Centralised so every label
+ * site stays consistent.
+ */
+function toDisplayCase(value: string): string {
+  return value.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/** Build a URL-safe slug from arbitrary text. */
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 /** Run thunks with bounded concurrency (preview is an AI/render call). */
 async function runWithLimit(thunks: Array<() => Promise<void>>, limit: number) {
   const queue = [...thunks];
@@ -275,12 +292,11 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
         setStep('jd_input');
       } else {
         setFormData(data);
-        const companyMatched = data.experiences?.[0]?.company || 'Target';
-        const cleanedCompany = companyMatched
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, '');
-        setVariantTitle(`${companyMatched} tailored version`);
-        setVariantSlug(`${cleanedCompany}-optimized`);
+        // Name the variant after the role we tailored to (derived from the JD),
+        // not the candidate's past employer.
+        const role = (data.title || '').trim();
+        setVariantTitle(role ? `${role} resume` : 'Tailored resume');
+        setVariantSlug(slugify(role) || 'tailored-resume');
         skipFirstEditRefresh.current = true;
         setStep('editing');
       }
@@ -425,7 +441,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                     <CheckCircle size={16} weight="fill" />
                   </span>
                 ) : state === 'active' ? (
-                  <span className={styles.loadingDot}>
+                  <span className={styles.loadingSpinnerWrap}>
                     <span className={styles.loadingSpinner} />
                   </span>
                 ) : (
@@ -765,7 +781,9 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                       emptyLabel="…"
                       ariaLabel={`${theme.name} layout`}
                     />
-                    <span className={styles.themeThumbLabel}>{theme.name}</span>
+                    <span className={styles.themeThumbLabel}>
+                      {toDisplayCase(theme.name)}
+                    </span>
                   </button>
                 );
               })}

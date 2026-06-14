@@ -148,16 +148,16 @@ export default function VersionsSection({
                   <span className={styles.versionDate}>{formatDate(version.createdAt)}</span>
                 </div>
                 <div className={styles.versionActions}>
-                  <Button size="sm" onClick={() => copyLink(version.versionNumber)}>
-                    <LinkIcon size={14} />
-                    Copy share link
-                  </Button>
                   {version.fileUrl && (
                     <Button variant="secondary" size="sm" href={version.fileUrl} target="_blank" rel="noopener noreferrer">
                       <ArrowSquareOut size={14} />
                       View PDF
                     </Button>
                   )}
+                  <Button size="sm" onClick={() => copyLink(version.versionNumber)}>
+                    <LinkIcon size={14} />
+                    Copy share link
+                  </Button>
                   {showMenu && (
                     <div className={styles.menu}>
                       <Tooltip label="More options" disabled={openMenuId === version.id}>
