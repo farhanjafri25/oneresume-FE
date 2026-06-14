@@ -6,6 +6,7 @@ import { X, CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/motion/Modal';
+import { shouldProcessUploadSuccess, type UploadActionState } from './uploadModalState';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -22,15 +23,19 @@ export default function UploadModal({ isOpen, onClose, resumeId, variantId, onSu
   const [state, formAction, isPending] = useActionState(uploadResumeAction, null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const processedSuccessRef = useRef<UploadActionState>(null);
 
   useEffect(() => {
-    if (state?.success) {
-      setSelectedFileName(null);
-      if (onSuccess) {
-        onSuccess({ resumeId: state.resumeId, slug: state.slug });
-      } else {
-        onClose();
-      }
+    if (!shouldProcessUploadSuccess(state, processedSuccessRef.current)) {
+      return;
+    }
+
+    processedSuccessRef.current = state;
+    setSelectedFileName(null);
+    if (onSuccess) {
+      onSuccess({ resumeId: state.resumeId, slug: state.slug });
+    } else {
+      onClose();
     }
   }, [state, onClose, onSuccess]);
 

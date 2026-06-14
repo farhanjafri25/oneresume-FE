@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, Brain } from '@phosphor-icons/react/dist/ssr';
 import { serverFetch } from '@/lib/api';
 import { Resume } from '@/types';
+import { SetActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import AiReviewClient from './AiReviewClient';
 import PageTransition from '@/components/motion/PageTransition';
 import styles from './AiReview.module.css';
@@ -25,6 +26,7 @@ export default async function AiReviewPage({ params }: PageProps) {
 
   return (
     <PageTransition className={styles.container}>
+      <SetActiveResume id={resumeId} />
       <Link href="/dashboard" className={styles.backBtn}>
         <ArrowLeft size={16} />
         Back to Dashboard

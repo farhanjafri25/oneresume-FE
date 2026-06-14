@@ -1,8 +1,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { revalidatePath } from 'next/cache';
 import { getMe } from '@/lib/api';
+import { refreshResumeSurfaces } from './resumeCache';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -97,8 +97,7 @@ export async function uploadResumeAction(prevState: any, formData: FormData) {
       return { error: errorData.message || 'Failed to upload file' };
     }
 
-    revalidatePath('/dashboard');
-    revalidatePath(`/dashboard/resume/${resumeId}`);
+    refreshResumeSurfaces(resumeId);
     // `slug` is only set when we created the resume container above; version
     // re-uploads leave it undefined (the onboarding flow always creates).
     return { success: true, resumeId, slug: createdSlug };

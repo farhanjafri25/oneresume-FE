@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, Sparkle } from '@phosphor-icons/react/dist/ssr';
 import { serverFetch } from '@/lib/api';
 import { Resume } from '@/types';
+import { SetActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import AiBuilderClient from './AiBuilderClient';
 import PageTransition from '@/components/motion/PageTransition';
 import styles from './AiBuilder.module.css';
@@ -25,6 +26,7 @@ export default async function AiBuilderPage({ params }: PageProps) {
 
   return (
     <PageTransition className={styles.container}>
+      <SetActiveResume id={resumeId} />
       <Link href="/dashboard" className={styles.backBtn}>
         <ArrowLeft size={16} />
         Back to Dashboard

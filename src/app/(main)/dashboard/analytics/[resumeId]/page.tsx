@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ChartBar, Globe, Eye, DownloadSimple, ShieldWarning, Medal } from '@phosphor-icons/react/dist/ssr';
 import { getResumeAnalyticsAction } from '@/app/actions/resume';
+import { SetActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import styles from './Analytics.module.css';
 import AnalyticsChart from './AnalyticsChart';
 import PageTransition from '@/components/motion/PageTransition';
@@ -51,6 +52,7 @@ export default async function ResumeAnalyticsPage({
   if (analyticsData.error) {
     return (
       <PageTransition className={styles.container}>
+        <SetActiveResume id={resumeId} />
         <Link href="/dashboard" className={styles.backBtn}>
           <ArrowLeft size={16} />
           Back to Dashboard
@@ -86,6 +88,7 @@ export default async function ResumeAnalyticsPage({
 
   return (
     <PageTransition className={styles.container}>
+      <SetActiveResume id={resumeId} />
       <Link href="/dashboard" className={styles.backBtn}>
         <ArrowLeft size={16} />
         Back to Dashboard
