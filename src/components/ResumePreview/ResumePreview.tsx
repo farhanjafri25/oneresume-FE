@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useSyncExternalStore } from 'react';
-import { UploadSimple, FileText } from '@phosphor-icons/react/dist/ssr';
-import styles from './ResumePreview.module.css';
+import React from 'react';
+import PdfFirstPage from '@/components/PdfFirstPage/PdfFirstPage';
+import type { CardPreviewConfig } from '@/lib/cardPreviewDefaults';
 
 interface ResumePreviewProps {
   pdfUrl?: string;
   title: string;
+  /** Overrides for the shared card preview defaults. */
+  config?: Partial<CardPreviewConfig>;
   /**
    * Click handler for the empty (no-PDF) placeholder. When omitted the
    * placeholder is non-interactive (e.g. on the dashboard card, where the whole
@@ -18,89 +20,27 @@ interface ResumePreviewProps {
 }
 
 /**
- * The shared PDF thumbnail. Fills its parent (the parent owns size, border, and
- * rounding), so the dashboard card and the resume detail hero can render the
- * same preview at different scales.
- *
- * Some browsers (notably Android Chrome) can't render a PDF inline in an iframe.
- * We detect inline support and show a branded "Tap to open" fallback instead.
- * The server snapshot is false so SSR and the first client render agree, then it
- * upgrades to the live preview where supported.
+ * The shared PDF thumbnail. Renders page 1 to an image via pdf.js, so it shows
+ * identically on every browser — including the Android Chrome / in-app webviews
+ * that can't render a PDF inline in an iframe. The parent owns size, border and
+ * rounding.
  */
 export default function ResumePreview({
   pdfUrl,
   title,
+  config,
   onEmptyClick,
-  emptyTitle = 'No PDF uploaded',
-  emptySubtext = 'Click to upload your masterpiece',
+  emptyTitle,
+  emptySubtext,
 }: ResumePreviewProps) {
-  const [loadedPdfUrl, setLoadedPdfUrl] = useState<string | null>(null);
-  const isPdfLoaded = loadedPdfUrl === pdfUrl;
-
-  const canInlinePdf = useSyncExternalStore(
-    () => () => {},
-    () => navigator.pdfViewerEnabled === true,
-    () => false,
+  return (
+    <PdfFirstPage
+      pdfUrl={pdfUrl}
+      title={title}
+      config={config}
+      onEmptyClick={onEmptyClick}
+      emptyTitle={emptyTitle}
+      emptySubtext={emptySubtext}
+    />
   );
-
-  const hasPdf = Boolean(pdfUrl && pdfUrl !== '#');
-
-  const activateEmpty = (event: React.MouseEvent | React.KeyboardEvent) => {
-    if (!onEmptyClick) return;
-    event.stopPropagation();
-    event.preventDefault();
-    onEmptyClick();
-  };
-
-  let body: React.ReactNode;
-  if (!hasPdf) {
-    body = (
-      <div
-        className={styles.placeholder}
-        role={onEmptyClick ? 'button' : undefined}
-        tabIndex={onEmptyClick ? 0 : undefined}
-        onClick={onEmptyClick ? activateEmpty : undefined}
-        onKeyDown={
-          onEmptyClick
-            ? (event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  activateEmpty(event);
-                }
-              }
-            : undefined
-        }
-        style={{ cursor: onEmptyClick ? 'pointer' : 'default' }}
-      >
-        <UploadSimple size={32} className={styles.placeholderIcon} />
-        <span className={styles.placeholderText}>{emptyTitle}</span>
-        <span className={styles.placeholderSubtext}>{emptySubtext}</span>
-      </div>
-    );
-  } else if (!canInlinePdf) {
-    body = (
-      <div className={styles.fallback}>
-        <div className={styles.fallbackTile}>
-          <FileText size={24} className={styles.fallbackIcon} />
-        </div>
-        <span className={styles.fallbackSubtext}>Tap to open</span>
-      </div>
-    );
-  } else {
-    body = (
-      <>
-        <iframe
-          src={`${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-          className={styles.iframe}
-          title={title}
-          onLoad={() => setLoadedPdfUrl(pdfUrl ?? null)}
-        />
-        <div
-          className={`${styles.skeleton} ${isPdfLoaded ? styles.skeletonHidden : ''}`}
-          aria-hidden="true"
-        />
-      </>
-    );
-  }
-
-  return <div className={styles.preview}>{body}</div>;
 }

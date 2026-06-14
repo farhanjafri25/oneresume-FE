@@ -1,0 +1,110 @@
+.layout {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.extraControls {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+}
+
+.urlRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.urlRow input {
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage {
+  flex: 1;
+  min-width: 0;
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.preview {
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+
+.iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 14px 16px 4px;
+}
+
+.cardMeta {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  margin: 0 16px 16px;
+}
+
+.compareRow {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.compareCell {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compareCell figcaption {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
