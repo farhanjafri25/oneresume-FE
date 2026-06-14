@@ -3,17 +3,27 @@
 import React, { useActionState, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Eye, EyeSlash } from '@phosphor-icons/react/dist/ssr';
 import { loginUser, loginWithGoogle } from '@/app/actions/auth';
 import Button from '@/components/Button/Button';
 import { transitions } from '@/lib/motion';
+import { getAuthErrorState } from '../authErrorState';
+import { getGoogleIdentity } from '../googleIdentity';
 import styles from './page.module.css';
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginUser, null);
   const [googleError, setGoogleError] = useState<string | null>(null);
   const [isGooglePending, setIsGooglePending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
+
+  const { alertError, credentialFieldsInvalid } = getAuthErrorState({
+    formError: state?.error,
+    googleError,
+  });
 
   useEffect(() => {
     let checkInterval: ReturnType<typeof setInterval> | undefined;
@@ -24,13 +34,13 @@ export default function LoginPage() {
         return;
       }
 
-      if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleBtnRef.current) {
-        const google = (window as any).google;
+      const google = getGoogleIdentity();
+      if (google?.accounts?.id && googleBtnRef.current) {
         initializedRef.current = true;
 
         google.accounts.id.initialize({
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
-          callback: async (response: any) => {
+          callback: async (response) => {
             setGoogleError(null);
             setIsGooglePending(true);
             const result = await loginWithGoogle(response.credential);
@@ -42,7 +52,7 @@ export default function LoginPage() {
         });
 
         google.accounts.id.renderButton(googleBtnRef.current, {
-          theme: 'filled_black',
+          theme: 'outline',
           size: 'large',
           width: googleBtnRef.current.clientWidth || 336,
           text: 'signin_with',
@@ -65,6 +75,10 @@ export default function LoginPage() {
 
   return (
     <div className={styles.container}>
+      <Link href="/" className={styles.logo}>
+        <Image src="/logo.svg" alt="OneCV" className={styles.logoImg} width={116} height={30} priority />
+      </Link>
+
       <motion.div
         className={styles.card}
         initial={{ opacity: 0, y: 12 }}
@@ -72,16 +86,12 @@ export default function LoginPage() {
         transition={transitions.base}
       >
         <div className={styles.header}>
-          <Link href="/" className={styles.logo}>
-            <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
-          </Link>
           <h1 className={styles.title}>Welcome back</h1>
-          <p className={styles.subtitle}>Sign in to your account</p>
         </div>
 
-        {(state?.error || googleError) && (
-          <div className={styles.errorAlert}>
-            {state?.error || googleError}
+        {alertError && (
+          <div className={styles.errorAlert} role="alert">
+            {alertError}
           </div>
         )}
 
@@ -96,14 +106,45 @@ export default function LoginPage() {
         <form className={styles.form} action={formAction}>
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
-            <input type="email" name="email" id="email" placeholder="alex@example.com" required disabled={isPending || isGooglePending} />
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="alex@example.com"
+              autoComplete="email"
+              inputMode="email"
+              spellCheck={false}
+              aria-invalid={credentialFieldsInvalid}
+              required
+              disabled={isPending || isGooglePending}
+            />
           </div>
-          
+
           <div className={styles.inputGroup}>
             <div className={styles.passwordHeader}>
               <label htmlFor="password">Password</label>
             </div>
-            <input type="password" name="password" id="password" placeholder="••••••••" required disabled={isPending || isGooglePending} />
+            <div className={styles.passwordWrapper}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                id="password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+                aria-invalid={credentialFieldsInvalid}
+                required
+                disabled={isPending || isGooglePending}
+              />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <Button type="submit" className={styles.submitBtn} disabled={isPending || isGooglePending}>
@@ -112,9 +153,15 @@ export default function LoginPage() {
         </form>
 
         <p className={styles.footer}>
-          Don't have an account? <Link href="/signup" className={styles.link}>Sign up</Link>
+          Don&apos;t have an account? <Link href="/signup" className={styles.link}>Sign up</Link>
         </p>
       </motion.div>
+
+      <div className={styles.legalBar}>
+        By continuing, you agree to our{' '}
+        <Link href="/terms" className={styles.legalLink}>Terms of Service</Link> and{' '}
+        <Link href="/privacy" className={styles.legalLink}>Privacy Policy</Link>.
+      </div>
     </div>
   );
 }
