@@ -15,7 +15,7 @@ export default function SettingsLoading() {
         </div>
 
         <div className={styles.detailsGrid}>
-          {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 2 }).map((_, i) => (
             <div className={styles.detailField} key={i}>
               <Skeleton width={90} height={12} radius={4} style={{ marginBottom: 10 }} />
               <Skeleton width="70%" height={16} radius={6} />
@@ -23,8 +23,10 @@ export default function SettingsLoading() {
           ))}
         </div>
 
-        <div className={styles.alert}>
-          <Skeleton width="100%" height={56} radius={12} />
+        <div className={styles.actions}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} width="100%" height={44} radius={999} />
+          ))}
         </div>
       </div>
     </div>
