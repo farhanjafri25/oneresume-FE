@@ -3,23 +3,42 @@
 import React, { useActionState, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Eye, EyeSlash } from '@phosphor-icons/react/dist/ssr';
 import { signupUser, loginWithGoogle, verifyOtpAction, resendOtpAction } from '@/app/actions/auth';
 import Button from '@/components/Button/Button';
 import { transitions } from '@/lib/motion';
+import { getAuthErrorState } from '../authErrorState';
+import { getGoogleIdentity } from '../googleIdentity';
 import styles from '../login/page.module.css';
+
+function LegalBar() {
+  return (
+    <div className={styles.legalBar}>
+      By continuing, you agree to our{' '}
+      <Link href="/terms" className={styles.legalLink}>Terms of Service</Link> and{' '}
+      <Link href="/privacy" className={styles.legalLink}>Privacy Policy</Link>.
+    </div>
+  );
+}
 
 export default function SignupPage() {
   const [signupState, signupAction, isSignupPending] = useActionState(signupUser, null);
   const [verifyState, verifyAction, isVerifyPending] = useActionState(verifyOtpAction, null);
-  
+
   const [googleError, setGoogleError] = useState<string | null>(null);
   const [isGooglePending, setIsGooglePending] = useState(false);
   const [resendStatus, setResendStatus] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
 
   const requiresOtp = signupState?.requiresOtp;
   const email = signupState?.email;
+  const { alertError, credentialFieldsInvalid } = getAuthErrorState({
+    formError: signupState?.error,
+    googleError,
+  });
 
   useEffect(() => {
     if (requiresOtp) return; // Don't init google signin on OTP screen
@@ -32,13 +51,13 @@ export default function SignupPage() {
         return;
       }
 
-      if (typeof window !== 'undefined' && (window as any).google?.accounts?.id && googleBtnRef.current) {
-        const google = (window as any).google;
+      const google = getGoogleIdentity();
+      if (google?.accounts?.id && googleBtnRef.current) {
         initializedRef.current = true;
 
         google.accounts.id.initialize({
           client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
-          callback: async (response: any) => {
+          callback: async (response) => {
             setGoogleError(null);
             setIsGooglePending(true);
             const result = await loginWithGoogle(response.credential);
@@ -50,7 +69,7 @@ export default function SignupPage() {
         });
 
         google.accounts.id.renderButton(googleBtnRef.current, {
-          theme: 'filled_black',
+          theme: 'outline',
           size: 'large',
           width: googleBtnRef.current.clientWidth || 336,
           text: 'signup_with',
@@ -86,6 +105,10 @@ export default function SignupPage() {
   if (requiresOtp && email) {
     return (
       <div className={styles.container}>
+        <Link href="/" className={styles.logo}>
+          <Image src="/logo.svg" alt="OneCV" className={styles.logoImg} width={116} height={30} priority />
+        </Link>
+
         <motion.div
           className={styles.card}
           initial={{ opacity: 0, y: 12 }}
@@ -93,32 +116,33 @@ export default function SignupPage() {
           transition={transitions.base}
         >
           <div className={styles.header}>
-            <Link href="/" className={styles.logo}>
-              <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
-            </Link>
             <h1 className={styles.title}>Verify your email</h1>
             <p className={styles.subtitle}>We sent a 6-digit code to {email}</p>
           </div>
 
           {verifyState?.error && (
-            <div className={styles.errorAlert}>
+            <div className={styles.errorAlert} role="alert">
               {verifyState.error}
             </div>
           )}
 
           <form className={styles.form} action={verifyAction}>
             <input type="hidden" name="email" value={email} />
-            
+
             <div className={styles.inputGroup}>
               <label htmlFor="code">Verification Code</label>
-              <input 
-                type="text" 
-                name="code" 
-                id="code" 
-                placeholder="123456" 
+              <input
+                type="text"
+                name="code"
+                id="code"
+                placeholder="123456"
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 maxLength={6}
-                required 
-                disabled={isVerifyPending} 
+                aria-invalid={!!verifyState?.error}
+                required
+                disabled={isVerifyPending}
               />
             </div>
 
@@ -133,12 +157,18 @@ export default function SignupPage() {
             </Button>
           </div>
         </motion.div>
+
+        <LegalBar />
       </div>
     );
   }
 
   return (
     <div className={styles.container}>
+      <Link href="/" className={styles.logo}>
+        <Image src="/logo.svg" alt="OneCV" className={styles.logoImg} width={116} height={30} priority />
+      </Link>
+
       <motion.div
         className={styles.card}
         initial={{ opacity: 0, y: 12 }}
@@ -146,16 +176,12 @@ export default function SignupPage() {
         transition={transitions.base}
       >
         <div className={styles.header}>
-          <Link href="/" className={styles.logo}>
-            <img src="/logo.svg" alt="OneCV" className={styles.logoImg} />
-          </Link>
           <h1 className={styles.title}>Create an account</h1>
-          <p className={styles.subtitle}>Get started with OneCV today</p>
         </div>
 
-        {(signupState?.error || googleError) && (
-          <div className={styles.errorAlert}>
-            {signupState?.error || googleError}
+        {alertError && (
+          <div className={styles.errorAlert} role="alert">
+            {alertError}
           </div>
         )}
 
@@ -170,17 +196,58 @@ export default function SignupPage() {
         <form className={styles.form} action={signupAction}>
           <div className={styles.inputGroup}>
             <label htmlFor="username">Username</label>
-            <input type="text" name="username" id="username" placeholder="alexj" required disabled={isSignupPending || isGooglePending} />
+            <input
+              type="text"
+              name="username"
+              id="username"
+              placeholder="alexj"
+              autoComplete="username"
+              spellCheck={false}
+              aria-invalid={credentialFieldsInvalid}
+              required
+              disabled={isSignupPending || isGooglePending}
+            />
           </div>
 
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
-            <input type="email" name="email" id="email" placeholder="alex@example.com" required disabled={isSignupPending || isGooglePending} />
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="alex@example.com"
+              autoComplete="email"
+              inputMode="email"
+              spellCheck={false}
+              aria-invalid={credentialFieldsInvalid}
+              required
+              disabled={isSignupPending || isGooglePending}
+            />
           </div>
-          
+
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input type="password" name="password" id="password" placeholder="••••••••" required disabled={isSignupPending || isGooglePending} />
+            <div className={styles.passwordWrapper}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                id="password"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                aria-invalid={credentialFieldsInvalid}
+                required
+                disabled={isSignupPending || isGooglePending}
+              />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <Button type="submit" className={styles.submitBtn} disabled={isSignupPending || isGooglePending}>
@@ -192,6 +259,8 @@ export default function SignupPage() {
           Already have an account? <Link href="/login" className={styles.link}>Sign in</Link>
         </p>
       </motion.div>
+
+      <LegalBar />
     </div>
   );
 }
