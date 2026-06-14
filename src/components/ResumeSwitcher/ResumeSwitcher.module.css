@@ -1,0 +1,140 @@
+.switcher {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Trigger pill — matches the 40px tab-bar height so the row aligns. */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  max-width: 260px;
+  padding: 0 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-hover);
+  }
+}
+
+.triggerLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.caret {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+}
+.caret[data-open='true'] {
+  transform: rotate(180deg);
+}
+
+/* Dropdown — anchored top-left, mirrors the app's dropdown styling. */
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 240px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menuItem:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.menuItemLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.check {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.divider {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--border);
+}
+
+/* Touch: bigger trigger + roomier rows. */
+@media (hover: none) {
+  .trigger {
+    min-height: 44px;
+  }
+  .menuItem {
+    padding: 12px 10px;
+  }
+}
+
+/* Mobile: switcher is its own full-width row above the tabs. */
+@media (max-width: 768px) {
+  .switcher {
+    width: 100%;
+  }
+  .trigger {
+    width: 100%;
+    max-width: none;
+    justify-content: space-between;
+  }
+  .menu {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    transition: none;
+  }
+}
