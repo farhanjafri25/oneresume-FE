@@ -27,18 +27,21 @@ export default async function AiBuilderPage({ params }: PageProps) {
   return (
     <PageTransition className={styles.container}>
       <SetActiveResume id={resumeId} />
-      <Link href="/dashboard" className={styles.backBtn}>
+      <Link href={`/dashboard/resume/${resumeId}`} className={styles.backBtn}>
         <ArrowLeft size={16} />
-        Back to Dashboard
+        Back to {resume.title}
       </Link>
 
       <header className={styles.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-          <Sparkle size={32} style={{ color: 'var(--primary)' }} />
-          <h1 className={styles.title} style={{ margin: 0 }}>AI Resume Builder</h1>
+        <div className={styles.headerRow}>
+          <span className={styles.iconTile}>
+            <Sparkle size={22} weight="fill" />
+          </span>
+          <h1 className={styles.title}>AI Resume Builder</h1>
         </div>
         <p className={styles.subtitle}>
-          Optimize experiences, summary, and skills for <strong>"{resume.title}"</strong> and compile into an ATS-friendly theme.
+          Tailor your experience, summary, and skills for{' '}
+          <strong>{resume.title}</strong> and compile an ATS-friendly variant.
         </p>
       </header>
 
