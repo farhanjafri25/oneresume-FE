@@ -328,6 +328,25 @@ export default function LoginPage() {
     };
   }, [step]);
 
+  // Step transitions stay on /login (pure client state), so without an extra
+  // history entry the browser Back button would leave the login page entirely
+  // — surfacing as "page not found". Push an entry when advancing past the
+  // email step and restore the matching step on popstate so Back/Forward work.
+  useEffect(() => {
+    const onPopState = (event: PopStateEvent) => {
+      const authStep = (event.state as { authStep?: Step } | null)?.authStep;
+      if (authStep === 'password' || authStep === 'signup') {
+        setStep(authStep);
+        return;
+      }
+      setShowPassword(false);
+      setCheckError(null);
+      setStep('email');
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || isChecking) return;
@@ -343,13 +362,17 @@ export default function LoginPage() {
     }
 
     setShowPassword(false);
-    setStep(result.exists ? 'password' : 'signup');
+    const nextStep: Step = result.exists ? 'password' : 'signup';
+    setStep(nextStep);
+    // Add a history entry so Back returns to the email step instead of leaving
+    // /login. Preserve Next.js's internal router state on the entry.
+    window.history.pushState({ ...window.history.state, authStep: nextStep }, '');
   };
 
   const handleChangeEmail = () => {
-    setShowPassword(false);
-    setCheckError(null);
-    setStep('email');
+    // Pop the entry pushed on email submit so history stays in sync with the UI;
+    // the popstate handler resets the view to the email step.
+    window.history.back();
   };
 
   const { alertError: emailAlert } = getAuthErrorState({
