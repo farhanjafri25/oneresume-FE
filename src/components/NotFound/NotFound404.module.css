@@ -1,0 +1,250 @@
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 48px 20px;
+  background-color: var(--background);
+}
+
+/* Reserve a stable footprint so the crossfade and the CTA never jump as the
+   active style swaps in. min-width:0 lets the sheet shrink below its content's
+   intrinsic width so long lines wrap instead of overflowing on narrow screens. */
+.stage {
+  width: 100%;
+  max-width: 720px;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.frame {
+  width: 100%;
+  min-width: 0;
+}
+
+.cta {
+  flex: 0 0 auto;
+}
+
+/* ---- The résumé "paper" sheet (shared layout) ---------------------------- */
+
+.sheet {
+  width: 100%;
+  max-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  color: var(--text-primary);
+  overflow-wrap: break-word;
+}
+
+.head {
+  padding-bottom: 24px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.name {
+  font-family: var(--font-heading), sans-serif;
+  font-stretch: 80%;
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.title {
+  margin-top: 10px;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+}
+
+.contact {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+}
+
+.dot {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin: 0 8px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  vertical-align: middle;
+}
+
+.section + .section {
+  margin-top: 28px;
+}
+
+.sectionHeading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--primary);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.entries {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.entryTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.role {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.period {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.org {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.detail {
+  margin-top: 6px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.skills {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ---- Style: Minimal (the app default sans + green) ----------------------- */
+/* Closest to the shared base; the explicit body font keeps this class real
+   (so `styles.minimal` resolves) and documents the intent. */
+.minimal .sheet {
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ---- Style: Classic (serif, centered header, traditional) ---------------- */
+
+.classic .sheet {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.classic .head {
+  text-align: center;
+  border-bottom-width: 2px;
+}
+
+.classic .name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-stretch: normal;
+  font-weight: 600;
+}
+
+.classic .title {
+  letter-spacing: 0.08em;
+}
+
+.classic .sectionHeading {
+  color: var(--text-primary);
+  border-bottom-color: var(--text-primary);
+  letter-spacing: 0.1em;
+}
+
+.classic .org {
+  font-style: italic;
+}
+
+.classic .skill {
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Style: Mono (technical monospace) ----------------------------------- */
+
+.mono .sheet {
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.mono .name {
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  font-stretch: normal;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.mono .sectionHeading {
+  text-transform: lowercase;
+  letter-spacing: 0;
+}
+
+.mono .sectionHeading::before {
+  content: '// ';
+  color: var(--primary);
+}
+
+.mono .skills {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mono .skill {
+  border: none;
+  padding: 0;
+}
+
+.mono .skill::before {
+  content: '› ';
+  color: var(--primary);
+}
+
+/* ---- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .page {
+    padding: 32px 16px;
+    gap: 24px;
+  }
+
+  .sheet {
+    padding: 32px 24px;
+  }
+
+  .name {
+    font-size: 44px;
+  }
+}
