@@ -102,7 +102,8 @@ export default async function PublicResumeVersionPage({
           <span className={styles.footerName}>{ownerName}</span>
         </div>
         <Link href="https://onecv.co" className={styles.footerCta}>
-          Create your resume on OneCV
+          Create your personalised link with
+          <img src="/logo.svg" alt="OneCV" className={styles.footerCtaLogo} />
         </Link>
       </footer>
     </div>
