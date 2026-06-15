@@ -275,7 +275,7 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab, 
             activeId={activeTab}
             onTabClick={handleTabChange}
             variant="inset"
-            fill="never"
+            fill="mobile"
             className={styles.tabs}
             ariaLabel="Resume sections"
           />

@@ -45,6 +45,13 @@
   .tabs[data-fill='mobile'] .list > li {
     flex: 1;
   }
+
+  /* Tighten the metrics so equal-width tabs (e.g. the 4 resume sections)
+     fit a phone's width without clipping their labels or overflowing. */
+  .tabs[data-fill='mobile'] .tab {
+    padding: 0 8px;
+    font-size: 13px;
+  }
 }
 
 .tab {
