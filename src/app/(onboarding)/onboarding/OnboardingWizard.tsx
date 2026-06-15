@@ -20,10 +20,30 @@ export default function OnboardingWizard({ user }: { user: User }) {
   useEffect(() => { setState(loadOnboarding()); setHydrated(true); }, []);
   useEffect(() => { if (hydrated) saveOnboarding(state); }, [state, hydrated]);
 
+  // Steps advance via client state on the same /onboarding URL, so without a
+  // history entry the browser Back button would leave the wizard entirely.
+  // Push an entry on each forward step and restore the matching step on
+  // popstate so Back/Forward move between steps instead of off the page.
+  useEffect(() => {
+    const onPopState = (event: PopStateEvent) => {
+      const s = (event.state as { onboardingStep?: OnboardingStepKey } | null)?.onboardingStep;
+      const step = s && STEP_ORDER.includes(s) ? s : STEP_ORDER[0];
+      setState((cur) => ({ ...cur, step }));
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
   const patch = (p: Partial<OnboardingState>) => setState((s) => ({ ...s, ...p }));
   const go = (step: OnboardingStepKey) => patch({ step });
-  const next = () => go(STEP_ORDER[Math.min(STEP_ORDER.length - 1, STEP_ORDER.indexOf(state.step) + 1)]);
-  const back = () => go(STEP_ORDER[Math.max(0, STEP_ORDER.indexOf(state.step) - 1)]);
+  const next = () => {
+    const nextStep = STEP_ORDER[Math.min(STEP_ORDER.length - 1, STEP_ORDER.indexOf(state.step) + 1)];
+    if (nextStep === state.step) return;
+    go(nextStep);
+    window.history.pushState({ ...window.history.state, onboardingStep: nextStep }, '');
+  };
+  // Pop the entry pushed by next() so history stays in sync; popstate sets the step.
+  const back = () => window.history.back();
 
   // Avoid hydration flash: render nothing until sessionStorage is read.
   if (!hydrated) return null;
