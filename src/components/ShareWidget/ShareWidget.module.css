@@ -46,7 +46,7 @@
   right: 0;
   width: 280px;
   padding: 8px;
-  background: var(--surface);
+  background: linear-gradient(to bottom, var(--surface), #fff);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -101,16 +101,6 @@
   color: var(--text-secondary);
 }
 
-.divider {
-  height: 1px;
-  margin: 6px 4px;
-  background: var(--border);
-}
-
-.closeItem {
-  color: var(--text-secondary);
-}
-
 /* Touch: roomier rows. */
 @media (hover: none) {
   .menuItem {
@@ -131,6 +121,23 @@
   .card {
     width: min(280px, calc(100vw - 32px));
   }
+}
+
+/* Icon morph container — both icons overlap here and crossfade/rotate. */
+.fabIconWrap {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fabIconSlot {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
