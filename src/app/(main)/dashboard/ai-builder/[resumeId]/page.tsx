@@ -39,10 +39,6 @@ export default async function AiBuilderPage({ params }: PageProps) {
           </span>
           <h1 className={styles.title}>AI Resume Builder</h1>
         </div>
-        <p className={styles.subtitle}>
-          Tailor your experience, summary, and skills for{' '}
-          <strong>{resume.title}</strong> and compile an ATS-friendly variant.
-        </p>
       </header>
 
       <AiBuilderClient resumeId={resumeId} />

@@ -74,11 +74,10 @@ interface TailoredData {
   education: Education[];
 }
 
-type Step = 'jd_input' | 'loading' | 'editing' | 'success';
+type Step = 'jd_input' | 'editing' | 'success';
 
 const STEPS: StepItem[] = [
   { id: 'jd_input', label: 'Job description' },
-  { id: 'loading', label: 'Tailoring' },
   { id: 'editing', label: 'Edit & layout' },
   { id: 'success', label: 'Done' },
 ];
@@ -161,6 +160,32 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
   );
   const [previewError, setPreviewError] = useState<Record<string, boolean>>({});
 
+  // Edge-fade hints so it's obvious the layout strip scrolls past the cards in
+  // view (users were missing layouts hidden off the right edge).
+  const filmstripRef = useRef<HTMLDivElement>(null);
+  const [filmstripEdges, setFilmstripEdges] = useState({
+    start: false,
+    end: false,
+  });
+
+  const updateFilmstripEdges = useCallback(() => {
+    const el = filmstripRef.current;
+    if (!el) return;
+    const start = el.scrollLeft > 1;
+    const end = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+    setFilmstripEdges((prev) =>
+      prev.start === start && prev.end === end ? prev : { start, end },
+    );
+  }, []);
+
+  // Recompute when the strip mounts/changes width (editing content appears once
+  // formData lands, themes loading) and on window resize.
+  useEffect(() => {
+    updateFilmstripEdges();
+    window.addEventListener('resize', updateFilmstripEdges);
+    return () => window.removeEventListener('resize', updateFilmstripEdges);
+  }, [step, formData, themes, updateFilmstripEdges]);
+
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
   // Refs let fetchPreview read current values without re-creating the callback
@@ -240,19 +265,24 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
   }, []);
 
   // Ensure the selected theme's hero is rendered (on enter + on theme switch).
+  // Flips false→true once tailoring lands the data. Gating previews on this
+  // (not just `step`) matters now that we enter the editing step before
+  // formData exists — the previews fetch when the data arrives.
+  const formDataReady = formData != null;
+
   useEffect(() => {
-    if (step === 'editing') fetchPreview(selectedThemeId);
-  }, [step, selectedThemeId, fetchPreview]);
+    if (step === 'editing' && formDataReady) fetchPreview(selectedThemeId);
+  }, [step, formDataReady, selectedThemeId, fetchPreview]);
 
   // Lazily render the remaining thumbnails with bounded concurrency.
   useEffect(() => {
-    if (step !== 'editing' || themes.length === 0) return;
+    if (step !== 'editing' || !formDataReady || themes.length === 0) return;
     const rest = themes.map((t) => t.id).filter((id) => id !== selectedThemeId);
     runWithLimit(
       rest.map((id) => () => fetchPreview(id)),
       2,
     );
-  }, [step, themes, selectedThemeId, fetchPreview]);
+  }, [step, formDataReady, themes, selectedThemeId, fetchPreview]);
 
   // Debounced refresh of the selected theme after edits (thumbnails stay
   // directional until reselected or synced). Skip the very first run, which is
@@ -272,17 +302,21 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
   // Loading-phase timers. The index is reset to 0 in handleTailor before the
   // step flips, so the effect only schedules the advances.
   useEffect(() => {
-    if (step !== 'loading') return;
+    // Tailoring is in flight while we're on the editing step but formData
+    // hasn't arrived yet.
+    if (!(step === 'editing' && !formData)) return;
     const timers = LOADING_DELAYS.map((d, i) =>
       setTimeout(() => setLoadingPhaseIndex(i + 1), d),
     );
     return () => timers.forEach((t) => clearTimeout(t));
-  }, [step]);
+  }, [step, formData]);
 
   const handleTailor = async () => {
     if (!jd.trim()) return;
     setLoadingPhaseIndex(0);
-    setStep('loading');
+    // Move straight onto the Edit & layout step; the tailoring loader shows
+    // in-place there until formData arrives.
+    setStep('editing');
     setError(null);
 
     try {
@@ -417,9 +451,9 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
         </Button>
       </div>
     );
-  } else if (step === 'loading') {
+  } else if (step === 'editing' && !formData) {
     content = (
-      <div className={styles.loadingCard}>
+      <div className={styles.tailoringLoader}>
         <span className={`${styles.iconTile} ${styles.loadingIcon}`}>
           <Sparkle size={22} weight="fill" />
         </span>
@@ -740,6 +774,9 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
               <span className={styles.previewToolbarLabel}>
                 <Eye size={15} />
                 Choose a layout
+                {themes.length > 0 && (
+                  <span className={styles.layoutCount}>{themes.length}</span>
+                )}
               </span>
               <Button
                 variant="ghost"
@@ -756,7 +793,16 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
               </Button>
             </div>
 
-            <div className={styles.themeFilmstrip}>
+            <div
+              className={styles.filmstripViewport}
+              data-edge-start={filmstripEdges.start ? '' : undefined}
+              data-edge-end={filmstripEdges.end ? '' : undefined}
+            >
+            <div
+              className={styles.themeFilmstrip}
+              ref={filmstripRef}
+              onScroll={updateFilmstripEdges}
+            >
               {themes.map((theme) => {
                 const isSelected = selectedThemeId === theme.id;
                 return (
@@ -788,27 +834,30 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                 );
               })}
             </div>
+            </div>
 
-            <ResumeHtmlPreview
-              className={styles.heroLivePreview}
-              html={previewCache[selectedThemeId] || ''}
-              loading={!!previewLoading[selectedThemeId]}
-              error={!!previewError[selectedThemeId]}
-              onRetry={() => fetchPreview(selectedThemeId, true)}
-              scale={0.5}
-              emptyLabel="Rendering your resume…"
-              ariaLabel="Live resume preview"
-            />
-
-            <div className={styles.previewActions}>
+            <div className={styles.heroPreviewWrap}>
+              <ResumeHtmlPreview
+                className={styles.heroLivePreview}
+                matted
+                html={previewCache[selectedThemeId] || ''}
+                loading={!!previewLoading[selectedThemeId]}
+                error={!!previewError[selectedThemeId]}
+                onRetry={() => fetchPreview(selectedThemeId, true)}
+                scale={0.5}
+                emptyLabel="Rendering your resume…"
+                ariaLabel="Live resume preview"
+              />
               <Button
                 variant="secondary"
                 size="sm"
+                className={styles.heroExpandBtn}
                 onClick={() => setPreviewModalOpen(true)}
                 disabled={!previewCache[selectedThemeId]}
+                aria-label="Open larger preview"
+                title="Open larger"
               >
-                <ArrowsOutSimple size={15} />
-                Open larger
+                <ArrowsOutSimple size={16} />
               </Button>
             </div>
           </div>
@@ -868,6 +917,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
         >
           <ResumeHtmlPreview
             className={styles.modalPreview}
+            matted
             html={previewCache[selectedThemeId] || ''}
             loading={!!previewLoading[selectedThemeId]}
             scale={0.62}
