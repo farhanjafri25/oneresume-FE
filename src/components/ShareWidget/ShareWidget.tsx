@@ -30,6 +30,9 @@ const CHANNEL_ICONS: Record<ShareChannelId, IconComponent> = {
   linkedin: LinkedinLogo,
 };
 
+// ease-out-cubic for micro-interactions (entering/exiting icon)
+const ICON_EASE: [number, number, number, number] = [0.215, 0.61, 0.355, 1];
+
 /**
  * Floating "Share OneCV" referral widget — a bottom-right FAB that expands into a
  * menu for posting about the product on X / Threads / LinkedIn or copying the link.
@@ -68,11 +71,6 @@ export default function ShareWidget() {
     setOpen(false);
   };
 
-  const closeAndFocus = () => {
-    setOpen(false);
-    fabRef.current?.focus();
-  };
-
   return (
     <div className={styles.root}>
       <AnimatePresence>
@@ -84,7 +82,6 @@ export default function ShareWidget() {
             onClick={(e) => e.stopPropagation()}
             initial={reduceMotion ? false : { opacity: 0, scale: 0.96, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 8 }}
             transition={springs.smooth}
             style={{ transformOrigin: 'bottom right' }}
           >
@@ -114,18 +111,6 @@ export default function ShareWidget() {
                 <span>Copy link</span>
               </button>
             </div>
-
-            <div className={styles.divider} />
-
-            <button
-              type="button"
-              className={`${styles.menuItem} ${styles.closeItem}`}
-              role="menuitem"
-              onClick={closeAndFocus}
-            >
-              <CloseIcon size={18} className={styles.menuIcon} />
-              <span>Close</span>
-            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -142,7 +127,33 @@ export default function ShareWidget() {
         aria-expanded={open}
         aria-label={open ? 'Close share menu' : 'Share OneCV'}
       >
-        <ShareNetwork size={22} weight="bold" />
+        <span className={styles.fabIconWrap}>
+          <AnimatePresence initial={false}>
+            {open ? (
+              <motion.span
+                key="close"
+                className={styles.fabIconSlot}
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.6, rotate: -45 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.6, rotate: 45 }}
+                transition={{ duration: 0.15, ease: ICON_EASE }}
+              >
+                <CloseIcon size={22} weight="bold" />
+              </motion.span>
+            ) : (
+              <motion.span
+                key="share"
+                className={styles.fabIconSlot}
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.6, rotate: 45 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.6, rotate: -45 }}
+                transition={{ duration: 0.15, ease: ICON_EASE }}
+              >
+                <ShareNetwork size={22} weight="bold" />
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </span>
       </button>
     </div>
   );
