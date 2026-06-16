@@ -13,6 +13,10 @@ export default function Toaster() {
   return (
     <SonnerToaster
       position="bottom-right"
+      // Lift toasts above the floating ShareWidget FAB (56px + 24px margin) so
+      // the two never overlap in the shared bottom-right corner.
+      offset={{ bottom: 96, right: 24 }}
+      mobileOffset={{ bottom: 84, right: 16 }}
       gap={10}
       toastOptions={{
         style: {

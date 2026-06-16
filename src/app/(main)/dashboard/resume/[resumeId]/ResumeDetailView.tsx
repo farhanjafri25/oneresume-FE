@@ -24,6 +24,7 @@ import Tabs from '@/components/Tabs/Tabs';
 import PageTransition from '@/components/motion/PageTransition';
 import UploadModal from '@/components/UploadModal/UploadModal';
 import TrackingLinkModal from '@/components/TrackingLinkModal/TrackingLinkModal';
+import ShareWidget from '@/components/ShareWidget/ShareWidget';
 import styles from './ResumeDetailView.module.css';
 import OverviewSection from './sections/OverviewSection';
 import VariantsSection from './sections/VariantsSection';
@@ -337,6 +338,8 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab, 
           <Button tone="danger" onClick={confirmDelete}>Delete</Button>
         </div>
       </Modal>
+
+      <ShareWidget />
     </PageTransition>
   );
 }

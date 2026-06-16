@@ -1,0 +1,140 @@
+/* Fixed bottom-right anchor. The card is positioned relative to this, so the FAB
+   and card move as one unit. Sits below modal overlays (1000) and tooltips (1100),
+   above page content and the nav (50). */
+.root {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Round FAB — matches the primary Button's colour (no Button variant is round). */
+.fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fab:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+  }
+}
+
+.fab:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Expanded card — grows upward out of the FAB. */
+.card {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: 280px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 950;
+}
+
+.nudge {
+  margin: 0;
+  padding: 8px 10px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mirrors ResumeSwitcher's menu rows. */
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menuItem:hover {
+    background: var(--surface-hover);
+  }
+}
+
+.menuItem:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.menuIcon {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.divider {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--border);
+}
+
+.closeItem {
+  color: var(--text-secondary);
+}
+
+/* Touch: roomier rows. */
+@media (hover: none) {
+  .menuItem {
+    padding: 12px 10px;
+  }
+}
+
+/* Mobile: tuck into the corner, keep the card within the viewport. */
+@media (max-width: 768px) {
+  .root {
+    bottom: 16px;
+    right: 16px;
+  }
+  .fab {
+    width: 52px;
+    height: 52px;
+  }
+  .card {
+    width: min(280px, calc(100vw - 32px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab {
+    transition: none;
+  }
+}
