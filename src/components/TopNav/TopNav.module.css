@@ -84,8 +84,8 @@
 }
 
 .avatar {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--surface);
@@ -172,6 +172,16 @@
   color: #f87171;
 }
 
+/* Feedback button visible in header on desktop, hidden on mobile */
+.feedbackBtn {
+  display: inline-flex;
+}
+
+/* Feedback dropdown item hidden on desktop, shown only on mobile */
+.dropdownFeedback {
+  display: none;
+}
+
 /* Touch devices: expand the 28px avatar's hit area to 44px without changing
    its visual size. Clipping moves to the img so the ::after stays tappable. */
 @media (hover: none) {
@@ -206,5 +216,13 @@
   .centerGroup {
     justify-self: stretch;
     width: 100%;
+  }
+
+  .feedbackBtn {
+    display: none;
+  }
+
+  .dropdownFeedback {
+    display: flex;
   }
 }

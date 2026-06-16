@@ -11,6 +11,7 @@ import { useActiveResume } from '@/components/ActiveResume/ActiveResumeContext';
 import Tabs from '@/components/Tabs/Tabs';
 import ResumeSwitcher from '@/components/ResumeSwitcher/ResumeSwitcher';
 import UploadModal from '@/components/UploadModal/UploadModal';
+import Button from '@/components/Button/Button';
 import styles from './TopNav.module.css';
 
 // Top-level header tabs. Each entry owns its own active predicate so adding a
@@ -91,6 +92,17 @@ export default function TopNav({ user, resumes = [] }: { user?: User; resumes?: 
 
       <div className={`${user ? styles.right : styles.rightPublic} ${styles.flat}`}>
         {user ? (
+          <>
+          <Button
+            variant="secondary"
+            size="sm"
+            href={FEEDBACK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.feedbackBtn}
+          >
+            Give Feedback
+          </Button>
           <div className={styles.profileMenu} ref={profileMenuRef}>
             <button
               type="button"
@@ -118,7 +130,7 @@ export default function TopNav({ user, resumes = [] }: { user?: User; resumes?: 
                   href={FEEDBACK_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={styles.dropdownItem}
+                  className={`${styles.dropdownItem} ${styles.dropdownFeedback}`}
                   role="menuitem"
                   onClick={closeMenu}
                 >
@@ -139,6 +151,7 @@ export default function TopNav({ user, resumes = [] }: { user?: User; resumes?: 
               </div>
             )}
           </div>
+          </>
         ) : (
           <Link href="/login" className={styles.link} onClick={closeMenu}>Sign In</Link>
         )}
