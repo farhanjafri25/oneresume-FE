@@ -84,8 +84,8 @@
 }
 
 .avatar {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--surface);
