@@ -50,14 +50,17 @@ export default function TopNav({ user, resumes = [] }: { user?: User; resumes?: 
 
   const activeTab = HEADER_TABS.find((t) => t.isActive(pathname))?.id;
 
-  // Which resume the switcher reflects. Prefer the page's own declaration
-  // (context), fall back to any known resume id embedded in the URL — so new
-  // per-resume routes resolve without a hardcoded prefix list — and finally to
-  // the most recently touched resume on pages that have no resume of their own.
-  const currentResumeId =
-    activeResumeId ??
-    resumes.find((r) => pathname.split('/').includes(r.id))?.id ??
-    getMostRecentResume(resumes)?.id;
+  // The resume actually being viewed on this page: the page's own declaration
+  // (context), or any known resume id embedded in the URL — so new per-resume
+  // routes resolve without a hardcoded prefix list. Undefined on pages that
+  // aren't tied to a specific resume (e.g. analytics, the all-resumes grid).
+  const viewedResumeId =
+    activeResumeId ?? resumes.find((r) => pathname.split('/').includes(r.id))?.id;
+
+  // Which resume the switcher's trigger label reflects. Falls back to the most
+  // recently touched resume so the switcher still reads sensibly off-resume —
+  // but that fallback must not be marked as "current" in the menu.
+  const currentResumeId = viewedResumeId ?? getMostRecentResume(resumes)?.id;
 
   const showSwitcher = Boolean(user && resumes.length > 0 && currentResumeId);
 
@@ -75,6 +78,7 @@ export default function TopNav({ user, resumes = [] }: { user?: User; resumes?: 
             <ResumeSwitcher
               resumes={resumes.map((r) => ({ id: r.id, title: r.title }))}
               currentResumeId={currentResumeId as string}
+              viewedResumeId={viewedResumeId}
               onNewResume={() => setIsNewResumeOpen(true)}
             />
           )}
