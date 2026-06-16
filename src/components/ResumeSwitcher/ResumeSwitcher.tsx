@@ -13,12 +13,15 @@ export interface ResumeSwitcherOption {
 
 interface ResumeSwitcherProps {
   resumes: ResumeSwitcherOption[];
+  /** Resume shown in the trigger label (may be a most-recent fallback). */
   currentResumeId: string;
+  /** Resume actually being viewed; only this one gets the checkmark. Undefined off-resume. */
+  viewedResumeId?: string;
   /** Opens the new-resume upload flow (parent owns the modal). */
   onNewResume: () => void;
 }
 
-export default function ResumeSwitcher({ resumes, currentResumeId, onNewResume }: ResumeSwitcherProps) {
+export default function ResumeSwitcher({ resumes, currentResumeId, viewedResumeId, onNewResume }: ResumeSwitcherProps) {
   const [open, setOpen] = useState(false);
   const reduceMotion = useReducedMotion();
   const current = resumes.find((r) => r.id === currentResumeId);
@@ -76,10 +79,10 @@ export default function ResumeSwitcher({ resumes, currentResumeId, onNewResume }
                   className={styles.menuItem}
                   role="menuitem"
                   onClick={() => setOpen(false)}
-                  aria-current={r.id === currentResumeId ? 'true' : undefined}
+                  aria-current={r.id === viewedResumeId ? 'true' : undefined}
                 >
                   <span className={styles.menuItemLabel}>{r.title}</span>
-                  {r.id === currentResumeId && <Check size={15} weight="bold" className={styles.check} />}
+                  {r.id === viewedResumeId && <Check size={15} weight="bold" className={styles.check} />}
                 </Link>
               ))}
             </div>
