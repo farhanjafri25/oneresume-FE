@@ -7,6 +7,7 @@ import { transitions } from '@/lib/motion';
 import Button from '@/components/Button/Button';
 import ResumeCard from '@/components/ResumeCard/ResumeCard';
 import UploadModal from '@/components/UploadModal/UploadModal';
+import ShareWidget from '@/components/ShareWidget/ShareWidget';
 import { Plus } from '@phosphor-icons/react/dist/ssr';
 import { Resume, User } from '@/types';
 import { getDefaultVariant, getLatestVersion } from '@/lib/versions';
@@ -122,6 +123,8 @@ export default function DashboardView({ user, resumes }: DashboardViewProps) {
         resumeId={selectedResumeId}
         variantId={selectedVariantId}
       />
+
+      <ShareWidget />
     </div>
   );
 }
