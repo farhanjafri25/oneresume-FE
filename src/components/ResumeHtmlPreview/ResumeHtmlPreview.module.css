@@ -1,6 +1,25 @@
 .frame {
   position: relative;
+  display: flex;
   overflow: hidden;
+  background: #ffffff;
+}
+
+/* Inner page area. The iframe/overlays position against this, so the frame's
+   own padding (the "mat") insets the page instead of being covered. */
+.viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Matted mode: the frame paints a mat (padding + background via the caller's
+   className) and the page lifts off it with a soft border + shadow. */
+.matted .viewport {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
   background: #ffffff;
 }
 

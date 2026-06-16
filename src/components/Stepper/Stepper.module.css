@@ -3,11 +3,14 @@
 }
 
 /* ── Wide horizontal track ────────────────────────────────── */
+/* Hugs its content and centers, rather than stretching full width. */
 .track {
   display: flex;
   align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
   list-style: none;
-  margin: 0;
   padding: 0;
 }
 
@@ -16,11 +19,6 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-}
-
-/* Every step except the last grows so its trailing connector fills the gap. */
-.step:not(:last-child) {
-  flex: 1;
 }
 
 .node {
@@ -56,9 +54,9 @@
 }
 
 .connector {
-  flex: 1;
+  flex: 0 0 56px;
+  width: 56px;
   height: 2px;
-  min-width: 16px;
   border-radius: var(--radius-full);
   background: var(--border);
   transition: background-color 0.25s ease;

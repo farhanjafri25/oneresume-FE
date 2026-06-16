@@ -22,6 +22,12 @@ interface ResumeHtmlPreviewProps {
   emptyLabel?: string;
   onRetry?: () => void;
   className?: string;
+  /**
+   * Insets the page inside a "mat" so the resume reads as a lifted document
+   * floating within the frame rather than bleeding to the border. The frame's
+   * padding/background (from `className`) becomes the visible mat.
+   */
+  matted?: boolean;
 }
 
 /**
@@ -39,44 +45,52 @@ export default function ResumeHtmlPreview({
   emptyLabel = 'Rendering layout…',
   onRetry,
   className,
+  matted = false,
 }: ResumeHtmlPreviewProps) {
   const sizePct = `${100 / scale}%`;
+  const frameClass = [styles.frame, matted && styles.matted, className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={[styles.frame, className].filter(Boolean).join(' ')}>
-      {html ? (
-        <iframe
-          title={ariaLabel}
-          srcDoc={html}
-          sandbox="allow-scripts"
-          className={styles.iframe}
-          style={{
-            width: sizePct,
-            height: sizePct,
-            transform: `scale(${scale})`,
-          }}
-        />
-      ) : (
-        !error && <div className={styles.empty}>{emptyLabel}</div>
-      )}
+    <div className={frameClass}>
+      <div className={styles.viewport}>
+        {html ? (
+          <iframe
+            title={ariaLabel}
+            srcDoc={html}
+            sandbox="allow-scripts"
+            className={styles.iframe}
+            style={{
+              width: sizePct,
+              height: sizePct,
+              transform: `scale(${scale})`,
+            }}
+          />
+        ) : (
+          !error && <div className={styles.empty}>{emptyLabel}</div>
+        )}
 
-      {error && (
-        <div className={styles.errorState}>
-          <span className={styles.errorText}>Couldn&apos;t render this layout.</span>
-          {onRetry && (
-            <button type="button" className={styles.retry} onClick={onRetry}>
-              <ArrowClockwise size={14} />
-              Retry
-            </button>
-          )}
-        </div>
-      )}
+        {error && (
+          <div className={styles.errorState}>
+            <span className={styles.errorText}>
+              Couldn&apos;t render this layout.
+            </span>
+            {onRetry && (
+              <button type="button" className={styles.retry} onClick={onRetry}>
+                <ArrowClockwise size={14} />
+                Retry
+              </button>
+            )}
+          </div>
+        )}
 
-      {loading && html && (
-        <div className={styles.overlay} aria-hidden="true">
-          <span className={styles.spinner} />
-        </div>
-      )}
+        {loading && html && (
+          <div className={styles.overlay} aria-hidden="true">
+            <span className={styles.spinner} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
