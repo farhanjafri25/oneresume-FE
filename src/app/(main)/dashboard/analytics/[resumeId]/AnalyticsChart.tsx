@@ -59,7 +59,6 @@ export default function AnalyticsChart({ timeline }: AnalyticsChartProps) {
     <div className={styles.chartCard}>
       <div className={styles.chartHeader}>
         <h2 className={styles.chartTitle}>Views Timeline (Last 30 Days)</h2>
-        <span className={styles.chartLiveBadge}>Interactive</span>
       </div>
 
       <div className={styles.chartContainer} style={{ height: '300px' }}>
