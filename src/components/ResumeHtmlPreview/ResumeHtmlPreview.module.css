@@ -14,13 +14,25 @@
   overflow: hidden;
 }
 
-/* Matted mode: the frame paints a mat (padding + background via the caller's
-   className) and the page lifts off it with a soft border + shadow. */
+/* Matted mode: the frame paints a white mat (padding + background via the
+   caller's className) and the page sits flush on it — no shadow. */
 .matted .viewport {
   border-radius: var(--radius-sm);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
   background: #ffffff;
+}
+
+/* Soft bottom fade so the page that overflows the frame dissolves into the
+   white mat instead of being hard-cut at the edge. */
+.matted .viewport::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  pointer-events: none;
+  background: linear-gradient(to top, #ffffff, rgba(255, 255, 255, 0));
 }
 
 .iframe {
@@ -75,33 +87,38 @@
   background: var(--surface-hover);
 }
 
+/* While a fresh render is in flight, sweep a shimmer band across the existing
+   preview (no spinner) so it reads as "updating" without obscuring the page. */
 .overlay {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(251, 248, 241, 0.55);
-  backdrop-filter: blur(1px);
+  overflow: hidden;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.15);
 }
 
-.spinner {
-  width: 22px;
-  height: 22px;
-  border: 2.5px solid rgba(20, 85, 51, 0.18);
-  border-left-color: var(--primary);
-  border-radius: 50%;
-  animation: previewSpin 0.8s linear infinite;
+.overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 70%
+  );
+  animation: previewShimmer 1.4s ease-in-out infinite;
 }
 
-@keyframes previewSpin {
+@keyframes previewShimmer {
   to {
-    transform: rotate(360deg);
+    transform: translateX(100%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spinner {
+  .overlay::after {
     animation: none;
   }
   .retry {
