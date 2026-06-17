@@ -86,9 +86,7 @@ export default function ResumeHtmlPreview({
         )}
 
         {loading && html && (
-          <div className={styles.overlay} aria-hidden="true">
-            <span className={styles.spinner} />
-          </div>
+          <div className={styles.overlay} aria-hidden="true" />
         )}
       </div>
     </div>

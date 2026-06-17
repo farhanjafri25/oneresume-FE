@@ -28,7 +28,7 @@ import Button from '@/components/Button/Button';
 import Stepper, { StepItem } from '@/components/Stepper/Stepper';
 import ResumeHtmlPreview from '@/components/ResumeHtmlPreview/ResumeHtmlPreview';
 import Modal from '@/components/motion/Modal';
-import { keepSelectedPreviewOnly } from './AiBuilderPreviewCache';
+import { hasCurrentPreview } from './AiBuilderPreviewFreshness';
 import styles from './AiBuilder.module.css';
 
 interface AiBuilderClientProps {
@@ -188,12 +188,26 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
 
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
+  // Content version: bumped (debounced) on every edit so previews know when a
+  // cached render has gone stale. Lazy rendering keys off this — a layout only
+  // re-renders if it's on screen and its last render predates the current
+  // version.
+  const [previewVersion, setPreviewVersion] = useState(0);
+
   // Refs let fetchPreview read current values without re-creating the callback
   // or refetching on every keystroke.
   const formDataRef = useRef(formData);
   const previewCacheRef = useRef(previewCache);
   const previewLoadingRef = useRef(previewLoading);
   const previewVersionRef = useRef(0);
+  const selectedThemeIdRef = useRef(selectedThemeId);
+  // Per-layout: the content version its cached render reflects.
+  const renderedVersionRef = useRef<Record<string, number>>({});
+  // Layouts whose thumbnails are currently scrolled into view.
+  const visibleThemesRef = useRef<Set<string>>(new Set());
+  // Indirection so fetchPreview can re-invoke itself (mid-render catch-up)
+  // without referencing its own binding before it's declared.
+  const fetchPreviewRef = useRef<(themeId: string) => void>(() => {});
   const skipFirstEditRefresh = useRef(false);
 
   useEffect(() => {
@@ -205,6 +219,12 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
   useEffect(() => {
     previewLoadingRef.current = previewLoading;
   }, [previewLoading]);
+  useEffect(() => {
+    previewVersionRef.current = previewVersion;
+  }, [previewVersion]);
+  useEffect(() => {
+    selectedThemeIdRef.current = selectedThemeId;
+  }, [selectedThemeId]);
 
   // Load available themes on startup. A failure surfaces as a toast (not a red
   // blocker on the JD form).
@@ -234,13 +254,23 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     }
   }, []);
 
-  const fetchPreview = useCallback(async (themeId: string, force = false) => {
+  // Renders a single layout if it's stale. Idempotent and safe to call from
+  // multiple triggers (visibility, selection, version bump) — it no-ops when
+  // the layout is already current or a render is in flight, so callers don't
+  // coordinate. One render runs per layout at a time; if the content changes
+  // mid-render, the trailing re-check below renders again to catch up.
+  const fetchPreview = useCallback(async (themeId: string) => {
     const data = formDataRef.current;
-    const previewVersion = previewVersionRef.current;
     if (!data || !themeId) return;
+    if (previewLoadingRef.current[themeId]) return;
+    const version = previewVersionRef.current;
     if (
-      !force &&
-      (previewCacheRef.current[themeId] || previewLoadingRef.current[themeId])
+      hasCurrentPreview(
+        previewCacheRef.current,
+        renderedVersionRef.current,
+        themeId,
+        version,
+      )
     ) {
       return;
     }
@@ -248,54 +278,96 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     setPreviewError((p) => ({ ...p, [themeId]: false }));
     try {
       const res = await previewResumeAction(themeId, data);
-      if (previewVersion !== previewVersionRef.current) return;
       if (!res.error && res.html) {
         setPreviewCache((p) => ({ ...p, [themeId]: res.html }));
+        renderedVersionRef.current[themeId] = version;
       } else {
         setPreviewError((p) => ({ ...p, [themeId]: true }));
       }
     } catch (err) {
       console.error('Failed to render layout preview:', err);
-      if (previewVersion === previewVersionRef.current) {
-        setPreviewError((p) => ({ ...p, [themeId]: true }));
-      }
+      setPreviewError((p) => ({ ...p, [themeId]: true }));
     } finally {
       setPreviewLoading((p) => ({ ...p, [themeId]: false }));
     }
+    // Content changed while this render was in flight — re-render to catch up,
+    // but only for layouts still on screen (the hero or a visible thumbnail).
+    if (
+      previewVersionRef.current !== version &&
+      (themeId === selectedThemeIdRef.current ||
+        visibleThemesRef.current.has(themeId))
+    ) {
+      fetchPreviewRef.current(themeId);
+    }
   }, []);
+  useEffect(() => {
+    fetchPreviewRef.current = fetchPreview;
+  }, [fetchPreview]);
 
-  // Ensure the selected theme's hero is rendered (on enter + on theme switch).
   // Flips false→true once tailoring lands the data. Gating previews on this
   // (not just `step`) matters now that we enter the editing step before
   // formData exists — the previews fetch when the data arrives.
   const formDataReady = formData != null;
 
+  // Render the always-on-screen layouts (the hero, plus any thumbnails already
+  // in view) on enter, theme switch, and after each edit settles. Off-screen
+  // thumbnails are left to the IntersectionObserver below — they render only
+  // once scrolled to. fetchPreview no-ops on anything already current.
   useEffect(() => {
-    if (step === 'editing' && formDataReady) fetchPreview(selectedThemeId);
-  }, [step, formDataReady, selectedThemeId, fetchPreview]);
-
-  // Lazily render the remaining thumbnails with bounded concurrency.
-  useEffect(() => {
-    if (step !== 'editing' || !formDataReady || themes.length === 0) return;
-    const rest = themes.map((t) => t.id).filter((id) => id !== selectedThemeId);
+    if (step !== 'editing' || !formDataReady) return;
+    const ids = [selectedThemeId, ...visibleThemesRef.current].filter(
+      (id, i, arr) => arr.indexOf(id) === i,
+    );
     runWithLimit(
-      rest.map((id) => () => fetchPreview(id)),
+      ids.map((id) => () => fetchPreview(id)),
       2,
     );
-  }, [step, formDataReady, themes, selectedThemeId, fetchPreview]);
+  }, [step, formDataReady, selectedThemeId, previewVersion, fetchPreview]);
 
-  // Debounced refresh of the selected theme after edits (thumbnails stay
-  // directional until reselected or synced). Skip the very first run, which is
-  // just entering the editing step.
+  // Lazily render thumbnails as they scroll into view (with a little prefetch
+  // margin), and remember which are visible so edits can refresh just those.
+  useEffect(() => {
+    if (step !== 'editing' || !formDataReady || themes.length === 0) return;
+    const strip = filmstripRef.current;
+    if (!strip) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const toRender: string[] = [];
+        for (const entry of entries) {
+          const id = entry.target.getAttribute('data-theme-id');
+          if (!id) continue;
+          if (entry.isIntersecting) {
+            visibleThemesRef.current.add(id);
+            toRender.push(id);
+          } else {
+            visibleThemesRef.current.delete(id);
+          }
+        }
+        if (toRender.length) {
+          runWithLimit(
+            toRender.map((id) => () => fetchPreview(id)),
+            2,
+          );
+        }
+      },
+      { root: strip, rootMargin: '0px 240px', threshold: 0.01 },
+    );
+    strip
+      .querySelectorAll('[data-theme-id]')
+      .forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [step, formDataReady, themes, fetchPreview]);
+
+  // Debounced bump of the content version after edits. The render effect above
+  // reacts to it, refreshing the hero and any visible thumbnails; off-screen
+  // ones refresh when next scrolled to. Skip the first run (entering editing).
   useEffect(() => {
     if (step !== 'editing' || !formData) return;
     if (skipFirstEditRefresh.current) {
       skipFirstEditRefresh.current = false;
       return;
     }
-    previewVersionRef.current += 1;
-    setPreviewCache((p) => keepSelectedPreviewOnly(p, selectedThemeId));
-    const t = setTimeout(() => fetchPreview(selectedThemeId, true), 800);
+    const t = setTimeout(() => setPreviewVersion((v) => v + 1), 800);
     return () => clearTimeout(t);
   }, [formData]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -417,8 +489,6 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     newEdus[index] = { ...newEdus[index], [key]: value };
     updateField('education', newEdus);
   };
-
-  const anyPreviewLoading = Object.values(previewLoading).some(Boolean);
 
   // ── Render per state ──────────────────────────────────────
   let content: React.ReactNode = null;
@@ -778,19 +848,6 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                   <span className={styles.layoutCount}>{themes.length}</span>
                 )}
               </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() =>
-                  runWithLimit(
-                    themes.map((t) => () => fetchPreview(t.id, true)),
-                    2,
-                  )
-                }
-                loading={anyPreviewLoading}
-              >
-                Sync layouts
-              </Button>
             </div>
 
             <div
@@ -809,6 +866,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                   <button
                     key={theme.id}
                     type="button"
+                    data-theme-id={theme.id}
                     className={`${styles.themeThumb} ${
                       isSelected ? styles.themeThumbSelected : ''
                     }`}
@@ -843,7 +901,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
                 html={previewCache[selectedThemeId] || ''}
                 loading={!!previewLoading[selectedThemeId]}
                 error={!!previewError[selectedThemeId]}
-                onRetry={() => fetchPreview(selectedThemeId, true)}
+                onRetry={() => fetchPreview(selectedThemeId)}
                 scale={0.5}
                 emptyLabel="Rendering your resume…"
                 ariaLabel="Live resume preview"
