@@ -72,9 +72,7 @@ export default async function PublicResumeVersionPage({
           </div>
           {fileUrl && (
             <Button
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`${API_URL}/${username}/${filename}/${version}/download${forQuery}`}
               size="sm"
               className={styles.downloadBtn}
             >

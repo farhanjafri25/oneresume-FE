@@ -69,7 +69,7 @@ export default async function PublicResumePage({
             <span className={styles.resumeName} title={resumeName}>{resumeName}</span>
           </div>
           {fileUrl && (
-            <Button href={`${API_URL}/${username}/${filename}/download${forQuery}`} target="_blank" rel="noopener noreferrer" size="sm" className={styles.downloadBtn}>
+            <Button href={`${API_URL}/${username}/${filename}/download${forQuery}`} size="sm" className={styles.downloadBtn}>
               <DownloadSimple size={14} />
               Download PDF
             </Button>
