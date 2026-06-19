@@ -3,15 +3,37 @@
 import React, { useRef, useState } from 'react';
 import { CloudArrowUp, Lock } from '@phosphor-icons/react/dist/ssr';
 import { uploadResumeAction } from '@/app/actions/upload';
+import { completeOnboardingAction } from '@/app/actions/onboarding';
+import { clearOnboarding } from '@/lib/onboarding';
 import Button from '@/components/Button/Button';
 import styles from '../Onboarding.module.css';
 import { StepProps } from './types';
 
 export default function UploadStep({ patch, next }: StepProps) {
   const [isPending, setIsPending] = useState(false);
+  const [isSkipping, setIsSkipping] = useState(false);
   const [clientError, setClientError] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSkip = async () => {
+    setIsSkipping(true);
+    setClientError(null);
+    clearOnboarding();
+    try {
+      const res = await completeOnboardingAction();
+      if (res?.error) {
+        setClientError(res.error);
+      } else {
+        window.location.assign('/dashboard');
+      }
+    } catch (err: any) {
+      console.error('Failed to skip onboarding:', err);
+      setClientError('Failed to skip onboarding. Please try again.');
+    } finally {
+      setIsSkipping(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -90,11 +112,19 @@ export default function UploadStep({ patch, next }: StepProps) {
           </div>
         )}
 
-        <div className={styles.btnRow} style={{ justifyContent: 'flex-end' }}>
+        <div className={styles.btnRow}>
+          <Button
+            variant="secondary"
+            onClick={handleSkip}
+            loading={isSkipping}
+            disabled={isPending}
+          >
+            Skip for now
+          </Button>
           <Button
             type="submit"
             loading={isPending}
-            disabled={!selectedFileName}
+            disabled={!selectedFileName || isSkipping}
           >
             {isPending ? 'Uploading…' : 'Continue'}
           </Button>
