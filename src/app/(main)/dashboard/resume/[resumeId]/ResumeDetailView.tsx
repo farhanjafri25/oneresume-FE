@@ -289,6 +289,7 @@ export default function ResumeDetailView({ user, resume, analytics, initialTab, 
             resume={resume}
             pdfUrl={pdfUrl}
             hasPdf={hasPdf}
+            hasTailored={tailoredVariants.length > 0}
             analytics={analytics}
             onReplace={() => setIsUploadOpen(true)}
             onOpenTracking={() => setIsTrackingOpen(true)}

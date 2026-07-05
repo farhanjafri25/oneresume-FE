@@ -12,6 +12,7 @@ interface OverviewSectionProps {
   resume: Resume;
   pdfUrl?: string;
   hasPdf: boolean;
+  hasTailored: boolean;
   analytics: AnalyticsData | null;
   onReplace: () => void;
   onOpenTracking: () => void;
@@ -21,6 +22,7 @@ export default function OverviewSection({
   resume,
   pdfUrl,
   hasPdf,
+  hasTailored,
   analytics,
   onReplace,
   onOpenTracking,
@@ -52,24 +54,6 @@ export default function OverviewSection({
         </div>
 
         <div className={styles.toolList}>
-          <Link
-            href={hasPdf ? `/dashboard/resume/${resume.id}/edit` : '#'}
-            className={`${styles.toolCard} ${!hasPdf ? styles.toolDisabled : ''}`}
-            aria-disabled={!hasPdf}
-            onClick={(e) => {
-              if (!hasPdf) e.preventDefault();
-            }}
-          >
-            <span className={styles.toolIcon}>
-              <PencilSimple size={20} />
-            </span>
-            <span className={styles.toolText}>
-              <span className={styles.toolTitle}>Edit content</span>
-              <span className={styles.toolDesc}>Update your details and save a new variant.</span>
-            </span>
-            <ArrowRight size={16} className={styles.toolArrow} />
-          </Link>
-
           <Link
             href={hasPdf ? `/dashboard/ai-builder/${resume.id}` : '#'}
             className={`${styles.toolCard} ${!hasPdf ? styles.toolDisabled : ''}`}
@@ -105,6 +89,26 @@ export default function OverviewSection({
             </span>
             <ArrowRight size={16} className={styles.toolArrow} />
           </Link>
+
+          {hasTailored && (
+            <Link
+              href={hasPdf ? `/dashboard/resume/${resume.id}/edit` : '#'}
+              className={`${styles.toolCard} ${!hasPdf ? styles.toolDisabled : ''}`}
+              aria-disabled={!hasPdf}
+              onClick={(e) => {
+                if (!hasPdf) e.preventDefault();
+              }}
+            >
+              <span className={styles.toolIcon}>
+                <PencilSimple size={20} />
+              </span>
+              <span className={styles.toolText}>
+                <span className={styles.toolTitle}>Edit content</span>
+                <span className={styles.toolDesc}>Update your details and save a new variant.</span>
+              </span>
+              <ArrowRight size={16} className={styles.toolArrow} />
+            </Link>
+          )}
 
           <button type="button" className={styles.toolCard} onClick={onOpenTracking}>
             <span className={styles.toolIcon}>
