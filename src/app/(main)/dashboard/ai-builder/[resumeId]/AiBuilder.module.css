@@ -65,52 +65,9 @@
   background: rgba(20, 85, 51, 0.08);
 }
 
-/* ── Shared field primitives ──────────────────────────────── */
-.fieldGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.fieldGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-
-.fieldLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.inputField,
-.textAreaField {
-  width: 100%;
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  color: var(--text-primary);
-  outline: none;
-  font-size: 14px;
-  font-family: inherit;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.textAreaField {
-  min-height: 100px;
-  line-height: 1.6;
-  resize: vertical;
-}
-
-.inputField:focus,
-.textAreaField:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(20, 85, 51, 0.12);
-}
-
+/* Field primitives, section groups and the save bar moved to
+   src/components/ResumeContentEditor/ResumeContentEditor.module.css, shared
+   with the resume editor. `errorAlert` stays: the JD step uses it too. */
 .errorAlert {
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.2);
@@ -297,96 +254,6 @@
   flex-direction: column;
   gap: 16px;
   min-width: 0;
-}
-
-/* Collapsible content sections */
-.sectionGroup {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.sectionGroupHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 18px;
-  cursor: pointer;
-  list-style: none;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-  user-select: none;
-}
-
-.sectionGroupHeader::-webkit-details-marker {
-  display: none;
-}
-
-.sectionGroupHeader :global(svg).sectionIcon,
-.sectionIcon {
-  color: var(--primary);
-  flex-shrink: 0;
-}
-
-.sectionCount {
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-}
-
-.caret {
-  margin-left: auto;
-  color: var(--text-tertiary);
-  transition: transform 0.2s ease;
-}
-
-.sectionGroup[open] .caret {
-  transform: rotate(90deg);
-}
-
-.sectionBody {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 0 18px 18px;
-}
-
-.experienceCard {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.achievements {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.bulletRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.bulletDot {
-  width: 6px;
-  height: 6px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--primary);
-  margin-left: 4px;
-}
-
-.skillsHint {
-  font-size: 12.5px;
-  color: var(--text-tertiary);
 }
 
 /* Right preview column */
@@ -588,37 +455,6 @@
   pointer-events: none;
 }
 
-/* Sticky save bar */
-.bottomBar {
-  position: sticky;
-  bottom: 16px;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 24px;
-  padding: 16px 18px;
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-}
-
-.bottomBarRow {
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-}
-
-.bottomBarField {
-  flex: 1;
-  min-width: 0;
-}
-
-.bottomBarButton {
-  flex-shrink: 0;
-}
-
 /* ── Success state ────────────────────────────────────────── */
 .successCard {
   display: flex;
@@ -752,31 +588,12 @@
   .tailoringLoader {
     padding: 56px 20px;
   }
-
-  .bottomBarRow {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .bottomBarButton :global(a),
-  .bottomBarButton :global(button) {
-    width: 100%;
-  }
-}
-
-@media (max-width: 640px) {
-  .fieldGrid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .backBtn,
-  .caret,
   .themeThumb,
-  .loadingItem,
-  .inputField,
-  .textAreaField {
+  .loadingItem {
     transition: none;
   }
   .loadingSpinner {

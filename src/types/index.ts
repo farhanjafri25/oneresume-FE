@@ -55,3 +55,54 @@ export interface Resume {
   updatedAt?: string;
   variants?: Variant[];
 }
+
+/**
+ * One job entry in the structured resume content. Bullets are flat
+ * `job_bullet_N` keys (not an array) — that's the shape the backend's tailor,
+ * preview and variant endpoints all speak.
+ */
+export interface Experience {
+  job_title: string;
+  company: string;
+  job_dates: string;
+  job_location: string;
+  job_bullet_1: string;
+  job_bullet_2: string;
+  job_bullet_3: string;
+  job_bullet_4?: string;
+  job_bullet_5?: string;
+}
+
+export interface Education {
+  degree: string;
+  institution: string;
+  edu_date: string;
+  edu_location?: string;
+}
+
+/**
+ * Structured resume content edited in the AI builder and the resume editor.
+ * Produced by POST /resumes/:id/tailor and GET /resumes/:id/content; consumed
+ * by POST /resumes/preview and POST /resumes/:id/variants. `skills` is a
+ * comma-separated string.
+ */
+export interface TailoredData {
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin: string;
+  summary: string;
+  skills: string;
+  experiences: Experience[];
+  education: Education[];
+}
+
+/** A resume layout, as returned by GET /resumes/themes. */
+export interface Theme {
+  id: string;
+  name: string;
+  description: string;
+  vibe: string;
+}

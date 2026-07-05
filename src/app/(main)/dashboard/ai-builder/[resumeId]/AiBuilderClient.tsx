@@ -3,19 +3,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Sparkle,
-  Briefcase,
-  GraduationCap,
   CheckCircle,
   WarningCircle,
   PaperPlaneTilt,
-  FloppyDisk,
   DownloadSimple,
   Eye,
-  CaretRight,
   ArrowsOutSimple,
-  IdentificationCard,
-  TextAlignLeft,
-  Wrench,
 } from '@phosphor-icons/react/dist/ssr';
 import { toast } from 'sonner';
 import {
@@ -27,51 +20,20 @@ import {
 import Button from '@/components/Button/Button';
 import Stepper, { StepItem } from '@/components/Stepper/Stepper';
 import ResumeHtmlPreview from '@/components/ResumeHtmlPreview/ResumeHtmlPreview';
+import ResumeContentEditor from '@/components/ResumeContentEditor/ResumeContentEditor';
+import VariantSaveBar from '@/components/ResumeContentEditor/VariantSaveBar';
 import Modal from '@/components/motion/Modal';
+import { Theme, TailoredData } from '@/types';
+import {
+  DEFAULT_THEME_ID,
+  slugify,
+  toDisplayCase,
+} from '@/lib/resume-utils';
 import { hasCurrentPreview } from './AiBuilderPreviewFreshness';
 import styles from './AiBuilder.module.css';
 
 interface AiBuilderClientProps {
   resumeId: string;
-}
-
-interface Theme {
-  id: string;
-  name: string;
-  description: string;
-  vibe: string;
-}
-
-interface Experience {
-  job_title: string;
-  company: string;
-  job_dates: string;
-  job_location: string;
-  job_bullet_1: string;
-  job_bullet_2: string;
-  job_bullet_3: string;
-  job_bullet_4?: string;
-  job_bullet_5?: string;
-}
-
-interface Education {
-  degree: string;
-  institution: string;
-  edu_date: string;
-  edu_location?: string;
-}
-
-interface TailoredData {
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  location: string;
-  linkedin: string;
-  summary: string;
-  skills: string;
-  experiences: Experience[];
-  education: Education[];
 }
 
 type Step = 'jd_input' | 'editing' | 'success';
@@ -91,31 +53,6 @@ const LOADING_PHASES = [
   'Rewriting experience bullet points',
 ];
 const LOADING_DELAYS = [3000, 6500, 10000];
-
-const BULLET_KEYS: (keyof Experience)[] = [
-  'job_bullet_1',
-  'job_bullet_2',
-  'job_bullet_3',
-  'job_bullet_4',
-  'job_bullet_5',
-];
-
-/**
- * Normalise a backend label to readable Title Case so ALL-CAPS theme names
- * (e.g. "THE TECH MINIMAL") never reach the UI. Centralised so every label
- * site stays consistent.
- */
-function toDisplayCase(value: string): string {
-  return value.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-/** Build a URL-safe slug from arbitrary text. */
-function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
 
 /** Run thunks with bounded concurrency (preview is an AI/render call). */
 async function runWithLimit(thunks: Array<() => Promise<void>>, limit: number) {
@@ -142,7 +79,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
   const [formData, setFormData] = useState<TailoredData | null>(null);
 
   const [themes, setThemes] = useState<Theme[]>([]);
-  const [selectedThemeId, setSelectedThemeId] = useState('theme-1');
+  const [selectedThemeId, setSelectedThemeId] = useState(DEFAULT_THEME_ID);
 
   const [variantTitle, setVariantTitle] = useState('');
   const [variantSlug, setVariantSlug] = useState('');
@@ -463,33 +400,6 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
     if (themes.length) setSelectedThemeId(themes[0].id);
   };
 
-  const updateField = (key: keyof TailoredData, value: unknown) => {
-    if (!formData) return;
-    setFormData({ ...formData, [key]: value });
-  };
-
-  const updateExperience = (
-    index: number,
-    key: keyof Experience,
-    value: string,
-  ) => {
-    if (!formData) return;
-    const newExps = [...formData.experiences];
-    newExps[index] = { ...newExps[index], [key]: value };
-    updateField('experiences', newExps);
-  };
-
-  const updateEducation = (
-    index: number,
-    key: keyof Education,
-    value: string,
-  ) => {
-    if (!formData) return;
-    const newEdus = [...formData.education];
-    newEdus[index] = { ...newEdus[index], [key]: value };
-    updateField('education', newEdus);
-  };
-
   // ── Render per state ──────────────────────────────────────
   let content: React.ReactNode = null;
 
@@ -594,248 +504,7 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
         <div className={styles.editGrid}>
           {/* LEFT: editable content */}
           <div className={styles.editColumn}>
-            <details className={styles.sectionGroup} open>
-              <summary className={styles.sectionGroupHeader}>
-                <IdentificationCard
-                  size={18}
-                  className={styles.sectionIcon}
-                />
-                Contact details
-                <CaretRight size={16} className={styles.caret} />
-              </summary>
-              <div className={styles.sectionBody}>
-                <div className={styles.fieldGrid}>
-                  <div className={styles.fieldGroup}>
-                    <span className={styles.fieldLabel}>Full name</span>
-                    <input
-                      type="text"
-                      className={styles.inputField}
-                      value={formData.name}
-                      onChange={(e) => updateField('name', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.fieldGroup}>
-                    <span className={styles.fieldLabel}>Job title</span>
-                    <input
-                      type="text"
-                      className={styles.inputField}
-                      value={formData.title}
-                      onChange={(e) => updateField('title', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.fieldGroup}>
-                    <span className={styles.fieldLabel}>Email</span>
-                    <input
-                      type="text"
-                      className={styles.inputField}
-                      value={formData.email}
-                      onChange={(e) => updateField('email', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.fieldGroup}>
-                    <span className={styles.fieldLabel}>Phone</span>
-                    <input
-                      type="text"
-                      className={styles.inputField}
-                      value={formData.phone}
-                      onChange={(e) => updateField('phone', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.fieldGroup}>
-                    <span className={styles.fieldLabel}>Location</span>
-                    <input
-                      type="text"
-                      className={styles.inputField}
-                      value={formData.location}
-                      onChange={(e) => updateField('location', e.target.value)}
-                    />
-                  </div>
-                  <div className={styles.fieldGroup}>
-                    <span className={styles.fieldLabel}>LinkedIn</span>
-                    <input
-                      type="text"
-                      className={styles.inputField}
-                      value={formData.linkedin}
-                      onChange={(e) => updateField('linkedin', e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </details>
-
-            <details className={styles.sectionGroup} open>
-              <summary className={styles.sectionGroupHeader}>
-                <TextAlignLeft size={18} className={styles.sectionIcon} />
-                Professional summary
-                <CaretRight size={16} className={styles.caret} />
-              </summary>
-              <div className={styles.sectionBody}>
-                <textarea
-                  className={styles.textAreaField}
-                  rows={4}
-                  value={formData.summary}
-                  onChange={(e) => updateField('summary', e.target.value)}
-                />
-              </div>
-            </details>
-
-            <details className={styles.sectionGroup} open>
-              <summary className={styles.sectionGroupHeader}>
-                <Briefcase size={18} className={styles.sectionIcon} />
-                Experience
-                <span className={styles.sectionCount}>
-                  {formData.experiences.length}
-                </span>
-                <CaretRight size={16} className={styles.caret} />
-              </summary>
-              <div className={styles.sectionBody}>
-                {formData.experiences.map((exp, idx) => (
-                  <div key={idx} className={styles.experienceCard}>
-                    <div className={styles.fieldGrid}>
-                      <div className={styles.fieldGroup}>
-                        <span className={styles.fieldLabel}>Role</span>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={exp.job_title}
-                          onChange={(e) =>
-                            updateExperience(idx, 'job_title', e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className={styles.fieldGroup}>
-                        <span className={styles.fieldLabel}>Company</span>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={exp.company}
-                          onChange={(e) =>
-                            updateExperience(idx, 'company', e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className={styles.fieldGroup}>
-                        <span className={styles.fieldLabel}>Dates</span>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={exp.job_dates}
-                          onChange={(e) =>
-                            updateExperience(idx, 'job_dates', e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className={styles.fieldGroup}>
-                        <span className={styles.fieldLabel}>Location</span>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={exp.job_location}
-                          onChange={(e) =>
-                            updateExperience(
-                              idx,
-                              'job_location',
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.achievements}>
-                      <span className={styles.fieldLabel}>Achievements</span>
-                      {BULLET_KEYS.filter(
-                        (key) => exp[key] !== undefined,
-                      ).map((key) => (
-                        <div key={key} className={styles.bulletRow}>
-                          <span className={styles.bulletDot} />
-                          <input
-                            type="text"
-                            className={styles.inputField}
-                            value={(exp[key] as string) ?? ''}
-                            onChange={(e) =>
-                              updateExperience(idx, key, e.target.value)
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </details>
-
-            <details className={styles.sectionGroup}>
-              <summary className={styles.sectionGroupHeader}>
-                <Wrench size={18} className={styles.sectionIcon} />
-                Skills
-                <CaretRight size={16} className={styles.caret} />
-              </summary>
-              <div className={styles.sectionBody}>
-                <input
-                  type="text"
-                  className={styles.inputField}
-                  value={formData.skills}
-                  onChange={(e) => updateField('skills', e.target.value)}
-                  placeholder="React, TypeScript, Node.js…"
-                />
-                <span className={styles.skillsHint}>
-                  Separate skills with commas.
-                </span>
-              </div>
-            </details>
-
-            <details className={styles.sectionGroup}>
-              <summary className={styles.sectionGroupHeader}>
-                <GraduationCap size={18} className={styles.sectionIcon} />
-                Education
-                <span className={styles.sectionCount}>
-                  {formData.education.length}
-                </span>
-                <CaretRight size={16} className={styles.caret} />
-              </summary>
-              <div className={styles.sectionBody}>
-                {formData.education.map((edu, idx) => (
-                  <div key={idx} className={styles.experienceCard}>
-                    <div className={styles.fieldGroup}>
-                      <span className={styles.fieldLabel}>Degree</span>
-                      <input
-                        type="text"
-                        className={styles.inputField}
-                        value={edu.degree}
-                        onChange={(e) =>
-                          updateEducation(idx, 'degree', e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className={styles.fieldGrid}>
-                      <div className={styles.fieldGroup}>
-                        <span className={styles.fieldLabel}>Institution</span>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={edu.institution}
-                          onChange={(e) =>
-                            updateEducation(idx, 'institution', e.target.value)
-                          }
-                        />
-                      </div>
-                      <div className={styles.fieldGroup}>
-                        <span className={styles.fieldLabel}>Graduation</span>
-                        <input
-                          type="text"
-                          className={styles.inputField}
-                          value={edu.edu_date}
-                          onChange={(e) =>
-                            updateEducation(idx, 'edu_date', e.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </details>
+            <ResumeContentEditor value={formData} onChange={setFormData} />
           </div>
 
           {/* RIGHT: theme filmstrip + sticky hero preview */}
@@ -921,51 +590,17 @@ export default function AiBuilderClient({ resumeId }: AiBuilderClientProps) {
           </div>
         </div>
 
-        {/* Sticky save bar */}
-        <div className={styles.bottomBar}>
-          {error && (
-            <div className={styles.errorAlert}>
-              <WarningCircle size={18} />
-              <span>{error}</span>
-            </div>
-          )}
-          <div className={styles.bottomBarRow}>
-            <div className={styles.bottomBarField}>
-              <div className={styles.fieldGroup}>
-                <span className={styles.fieldLabel}>Variant title</span>
-                <input
-                  type="text"
-                  className={styles.inputField}
-                  placeholder="e.g. Google frontend resume"
-                  value={variantTitle}
-                  onChange={(e) => setVariantTitle(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className={styles.bottomBarField}>
-              <div className={styles.fieldGroup}>
-                <span className={styles.fieldLabel}>URL slug</span>
-                <input
-                  type="text"
-                  className={styles.inputField}
-                  placeholder="e.g. google-frontend"
-                  value={variantSlug}
-                  onChange={(e) => setVariantSlug(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className={styles.bottomBarButton}>
-              <Button
-                loading={saving}
-                onClick={handleSaveVariant}
-                disabled={!variantTitle.trim() || !variantSlug.trim()}
-              >
-                {!saving && <FloppyDisk size={16} />}
-                {saving ? 'Generating PDF…' : 'Build & save variant'}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <VariantSaveBar
+          title={variantTitle}
+          slug={variantSlug}
+          onTitleChange={setVariantTitle}
+          onSlugChange={setVariantSlug}
+          onSave={handleSaveVariant}
+          saving={saving}
+          error={error}
+          saveLabel="Build & save variant"
+          savingLabel="Generating PDF…"
+        />
 
         <Modal
           isOpen={previewModalOpen}

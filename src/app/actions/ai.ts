@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import type { TailoredData } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
@@ -93,12 +94,50 @@ export async function tailorResumeAction(resumeId: string, jd: string) {
   }
 }
 
+export async function getResumeContentAction(resumeId: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      return { error: 'Unauthorized. Please log in first.' };
+    }
+
+    const res = await fetch(`${API_URL}/resumes/${resumeId}/content`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    // 404 = the resume has no parsed content yet (or the endpoint hasn't
+    // shipped). Callers show an empty state rather than a retryable error.
+    if (res.status === 404) {
+      return {
+        error: "This resume's content hasn't been processed yet.",
+        notAvailable: true,
+      };
+    }
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      return { error: errorData.message || 'Failed to load resume content. Please try again.' };
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error('Get Resume Content Error:', err);
+    return { error: 'An unexpected error occurred while loading resume content.' };
+  }
+}
+
 export async function createVariantAction(
   resumeId: string,
   title: string,
   slug: string,
   themeId: string,
-  tailoredData: any,
+  tailoredData: TailoredData,
 ) {
   try {
     const cookieStore = await cookies();
@@ -157,7 +196,10 @@ export async function getThemesAction() {
   }
 }
 
-export async function previewResumeAction(themeId: string, tailoredData: any) {
+export async function previewResumeAction(
+  themeId: string,
+  tailoredData: TailoredData,
+) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
